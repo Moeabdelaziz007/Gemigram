@@ -1,0 +1,58 @@
+name: CD Deploy to Firebase
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy_frontend:
+    runs-on: ubuntu-latest
+    needs: [] # We could require CI to pass by adding "build_and_test"
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci || npm install
+
+    - name: Build Next.js Application
+      run: npm run build
+
+    - name: Deploy Frontend to Firebase Hosting
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+        channelId: live
+        projectId: aetheros-project
+
+  deploy_functions:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: './functions/package-lock.json'
+
+    - name: Install Functions Dependencies
+      working-directory: ./functions
+      run: npm ci || npm install
+
+    - name: Deploy Functions to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only functions
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        PROJECT_ID: aetheros-project

@@ -1,0 +1,66 @@
+name: CI Checks
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Build Next.js Application
+      run: npm run build
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+
+    - name: Run Playwright Tests
+      run: npx playwright test
+
+    - name: Upload Playwright Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 10
+
+  functions_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./functions
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: './functions/package-lock.json'
+
+    - name: Install Functions Dependencies
+      run: npm ci || npm install
+
+    - name: Build Functions
+      run: npm run build
+
+    - name: Run Backend Tests
+      working-directory: ./
+      run: npx -y tsx tests/bridge.test.ts
