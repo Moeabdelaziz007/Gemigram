@@ -1,94 +1,120 @@
 import { useEffect, useRef, useState } from 'react';
-import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 
-// إعدادات الـ Live API
-const MODEL = "gemini-2.5-flash-native-audio-preview-09-2025";
+const MODEL = "models/gemini-2.5-flash-native-audio-preview-09-2025";
 
 export function useLiveAPI(apiKey: string, onFunctionCall: (call: any) => void) {
   const [isConnected, setIsConnected] = useState(false);
-  const sessionRef = useRef<any>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
-  useEffect(() => {
+  const connect = () => {
     if (!apiKey) return;
-    const ai = new GoogleGenAI({ apiKey });
+    
+    // Endpoint: Ensure the WebSocket connects exactly to the v1beta BidiGenerateContent endpoint
+    const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
+    const ws = new WebSocket(wsUrl);
 
-    let session: any = null;
-
-    const connect = async () => {
-      try {
-        session = await ai.live.connect({
+    ws.onopen = () => {
+      setIsConnected(true);
+      console.log("Live API connected");
+      
+      // Initial Setup: Send BidiGenerateContentSetup JSON object
+      ws.send(JSON.stringify({
+        setup: {
           model: MODEL,
-          callbacks: {
-            onopen: () => {
-              setIsConnected(true);
-              console.log("Live API connected");
-            },
-            onmessage: async (message: LiveServerMessage) => {
-              // Handle function calls
-              if (message.serverContent?.modelTurn?.parts) {
-                for (const part of message.serverContent.modelTurn.parts) {
-                  if (part.functionCall) {
-                    // Pause audio
-                    if (audioContextRef.current) audioContextRef.current.suspend();
-                    
-                    // Call Firebase Bridge
-                    try {
-                      const response = await fetch('/api/agent/execute', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(part.functionCall)
-                      });
-                      const result = await response.json();
-                      onFunctionCall(result);
-                    } catch (err) {
-                      console.error("Firebase Bridge error:", err);
-                    } finally {
-                      // Resume audio
-                      if (audioContextRef.current) audioContextRef.current.resume();
-                    }
-                  }
-                }
-              }
-
-              // Handle audio response
-              if (message.serverContent?.modelTurn?.parts[0]?.inlineData) {
-                const base64Audio = message.serverContent.modelTurn.parts[0].inlineData.data;
-                playAudio(base64Audio);
-              }
-            },
-            onerror: (err) => {
-                console.error("Live API error:", err);
-                setIsConnected(false);
-            },
-            onclose: () => {
-                setIsConnected(false);
-                console.log("Live API disconnected");
-            },
-          },
-          config: {
-            responseModalities: [Modality.AUDIO],
+          generationConfig: {
+            responseModalities: ["AUDIO"],
             speechConfig: {
-              voiceConfig: { prebuiltVoiceConfig: { voiceName: "Zephyr" } },
-            },
-          },
-        });
-        sessionRef.current = session;
+              voiceConfig: { prebuiltVoiceConfig: { voiceName: "Zephyr" } }
+            }
+          }
+        }
+      }));
+    };
+
+    ws.onmessage = async (event) => {
+      try {
+        let data = event.data;
+        if (data instanceof Blob) {
+          data = await data.text();
+        }
+        const message = JSON.parse(data);
+        
+        // Listen for serverMessage.toolCall
+        if (message.toolCall) {
+          const functionCalls = message.toolCall.functionCalls;
+          if (functionCalls) {
+            for (const call of functionCalls) {
+              // Pause the audio stream contextually
+              if (audioContextRef.current) audioContextRef.current.suspend();
+              
+              try {
+                // Send the tool execution request to our Firebase API route
+                const response = await fetch('/api/agent/execute', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(call)
+                });
+                const result = await response.json();
+                
+                // Update the VoiceAgent state to render the UI Widget
+                onFunctionCall(result);
+
+                // Crucially: Send back a toolResponse
+                ws.send(JSON.stringify({
+                  toolResponse: {
+                    functionResponses: [{
+                      id: call.id,
+                      name: call.name,
+                      response: result
+                    }]
+                  }
+                }));
+              } catch (err) {
+                console.error("Firebase Bridge error:", err);
+              } finally {
+                // Resume audio
+                if (audioContextRef.current) audioContextRef.current.resume();
+              }
+            }
+          }
+        }
+
+        // Handle audio response
+        if (message.serverContent?.modelTurn?.parts) {
+          for (const part of message.serverContent.modelTurn.parts) {
+            if (part.inlineData) {
+              playAudio(part.inlineData.data);
+            }
+          }
+        }
       } catch (err) {
-        console.error("Connection failed:", err);
-        setIsConnected(false);
+        console.error("Error parsing message:", err);
       }
     };
 
-    connect();
-
-    return () => {
-      if (session) {
-        session.close();
-        sessionRef.current = null;
-      }
+    ws.onerror = (err) => {
+      console.error("Live API error:", err);
+      setIsConnected(false);
     };
-  }, [apiKey, onFunctionCall]);
+
+    ws.onclose = () => {
+      setIsConnected(false);
+      console.log("Live API disconnected");
+    };
+
+    wsRef.current = ws;
+  };
+
+  const disconnect = () => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    setIsConnected(false);
+  };
 
   const playAudio = async (base64Data: string) => {
     if (!audioContextRef.current) {
@@ -105,8 +131,19 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: any) => void) 
     source.start();
   };
 
-  const [isRecording, setIsRecording] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const sendAudio = (base64Data: string) => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      // Streaming Audio: Use the updated schema
+      wsRef.current.send(JSON.stringify({
+        realtimeInput: {
+          audio: {
+            mimeType: 'audio/webm',
+            data: base64Data
+          }
+        }
+      }));
+    }
+  };
 
   const startRecording = async () => {
     try {
@@ -132,13 +169,19 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: any) => void) 
     }
   };
 
-  const sendAudio = (base64Data: string) => {
-    if (sessionRef.current) {
-      sessionRef.current.sendRealtimeInput({
-        media: { data: base64Data, mimeType: 'audio/webm' }
-      });
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
     }
   };
 
-  return { isConnected, isRecording, startRecording, stopRecording };
+  useEffect(() => {
+    return () => {
+      disconnect();
+    };
+  }, []);
+
+  return { isConnected, isRecording, connect, disconnect, startRecording, stopRecording };
 }
+

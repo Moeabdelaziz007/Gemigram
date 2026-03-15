@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { useLiveAPI } from '@/hooks/useLiveAPI';
+import { VoiceAgent } from '@/components/VoiceAgent';
 import { 
   User, Play, Mic, MicOff, Activity, Globe, Map, Mail, Calendar, FileText, 
   Dna, Terminal, Cpu, Zap, X, Settings, Sparkles, Database, ChevronRight, Plus, Trash2, LogOut, Shield, Info
@@ -16,6 +16,7 @@ import CreateAgentForm from '@/components/CreateAgentForm';
 import { db, auth, googleProvider, handleFirestoreError, OperationType } from '@/firebase';
 import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, setDoc, doc, limit, where, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
+import { GoogleGenAI } from "@google/genai";
 
 type Agent = {
   id: string;
@@ -48,20 +49,18 @@ type Agent = {
 };
 
 const INITIAL_AGENTS: Agent[] = [
-  { id: 'atlas', name: 'Atlas', role: 'AI Companion', users: '5K', seed: 'cyborg', systemPrompt: 'You are Atlas, a helpful AI companion.', voiceName: 'Zephyr' },
-  { id: 'nova', name: 'Nova', role: 'Creative Guide', users: '179', seed: 'android', systemPrompt: 'You are Nova, a creative guide.', voiceName: 'Kore' },
-  { id: 'orion', name: 'Orion', role: 'Creative Guide', users: '12K', seed: 'mecha', systemPrompt: 'You are Orion, a creative guide.', voiceName: 'Charon' },
-  { id: 'lyra', name: 'Lyra', role: 'Creative Guide', users: '8K', seed: 'hologram', systemPrompt: 'You are Lyra, a creative guide.', voiceName: 'Puck' },
-  { id: 'kora', name: 'Kora', role: 'AI Companion', users: '131', seed: 'synth', systemPrompt: 'You are Kora, an AI companion.', voiceName: 'Fenrir' },
+  { id: 'atlas', name: 'Atlas', role: 'AI Companion', users: '5K', seed: 'cyborg', systemPrompt: 'You are Atlas, a helpful AI companion.', voiceName: 'Zephyr', aetherId: 'atlas-1' },
+  { id: 'nova', name: 'Nova', role: 'Creative Guide', users: '179', seed: 'android', systemPrompt: 'You are Nova, a creative guide.', voiceName: 'Kore', aetherId: 'nova-1' },
+  { id: 'orion', name: 'Orion', role: 'Creative Guide', users: '12K', seed: 'mecha', systemPrompt: 'You are Orion, a creative guide.', voiceName: 'Charon', aetherId: 'orion-1' },
+  { id: 'lyra', name: 'Lyra', role: 'Creative Guide', users: '8K', seed: 'hologram', systemPrompt: 'You are Lyra, a creative guide.', voiceName: 'Puck', aetherId: 'lyra-1' },
+  { id: 'kora', name: 'Kora', role: 'AI Companion', users: '131', seed: 'synth', systemPrompt: 'You are Kora, an AI companion.', voiceName: 'Fenrir', aetherId: 'kora-1' },
 ];
 
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
-
 export default function Gemigram() {
-  const { isConnected, isRecording, error, connect, disconnect } = useLiveAPI();
+  const { isConnected, isRecording, connect, disconnect } = useLiveAPI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '', () => {});
   const [agents, setAgents] = useState<Agent[]>(INITIAL_AGENTS);
   const [activeAgentId, setActiveAgentId] = useState('atlas');
-  const [view, setView] = useState<'home' | 'create' | 'chat'>('home');
+  const [view, setView] = useState<'home' | 'create' | 'chat' | 'workspace'>('home');
   const [user, setUser] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [isForging, setIsForging] = useState(false);
@@ -178,6 +177,7 @@ export default function Gemigram() {
           rules: finalDna.rules || '',
           tools: finalDna.tools || {},
           skills: finalDna.skills || {},
+          aetherId: `${agentId}-1`
         };
 
         await setDoc(doc(db, 'agents', agentId), {
@@ -236,14 +236,9 @@ export default function Gemigram() {
           }
         } else if (call.name === 'store_memory') {
           try {
-            const embeddingResult = await ai.models.embedContent({
-              model: 'gemini-embedding-2-preview',
-              contents: call.args.content,
-            });
             await addDoc(collection(db, 'agent_memories'), {
               agentId: activeAgentId,
               content: call.args.content,
-              embedding: embeddingResult.embedding?.values,
               importance: call.args.importance || 5,
               createdAt: serverTimestamp()
             });
@@ -255,6 +250,7 @@ export default function Gemigram() {
         } else if (call.name === 'generate_avatar') {
           try {
             setActiveTask({ name: 'generate_avatar', status: 'running', logs: [`Generating avatar for: ${call.args.prompt}`] });
+            const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '' });
             const response = await ai.models.generateContent({
               model: 'gemini-3.1-flash-image-preview',
               contents: { parts: [{ text: `Generate a high-quality, professional avatar for an AI agent: ${call.args.prompt}` }] },
@@ -262,7 +258,8 @@ export default function Gemigram() {
             });
             
             let avatarUrl = '';
-            for (const part of response.candidates[0].content.parts) {
+            const parts = response.candidates?.[0]?.content?.parts || [];
+            for (const part of parts) {
               if (part.inlineData) {
                 avatarUrl = `data:image/png;base64,${part.inlineData.data}`;
                 break;
@@ -386,7 +383,7 @@ export default function Gemigram() {
       Tone: Professional, precise, visionary.
     `.trim();
 
-    connect(systemInstruction, 'Fenrir', forgeTools, handleTranscription, handleToolCall);
+    connect();
     setView('chat');
   };
 
@@ -455,7 +452,7 @@ export default function Gemigram() {
           Tone: Professional, precise, visionary.
         `.trim();
 
-        connect(systemInstruction, 'Fenrir', forgeTools, handleTranscription, handleToolCall);
+        connect();
         return;
       }
 
@@ -616,7 +613,7 @@ export default function Gemigram() {
         Be concise and conversational.
       `.trim();
       
-      connect(systemInstruction, activeAgent.voiceName, tools, handleTranscription);
+      connect();
       setView('chat');
     }
   };
@@ -809,7 +806,7 @@ export default function Gemigram() {
         Be concise and conversational.
       `.trim();
       
-      connect(systemInstruction, newAgent.voiceName, tools, handleTranscription);
+      connect();
     } catch (err) {
       handleFirestoreError(err, OperationType.WRITE, 'agents');
     }
@@ -867,371 +864,16 @@ export default function Gemigram() {
         </nav>
 
         {view === 'chat' ? (
-          <div className="flex flex-col min-h-[600px] relative">
-            {/* Forge DNA Overlay */}
-            {isForging && (
-              <div className="absolute top-24 right-8 z-20 w-80">
-                <motion.div 
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-sm font-medium text-cyan-400 uppercase tracking-widest">Agent DNA (.ath)</h3>
-                    <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-[10px] text-slate-500 uppercase">Name</label>
-                      <div className="text-white font-medium">{forgeDna.name || '---'}</div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 uppercase">Role</label>
-                      <div className="text-slate-300 text-sm">{forgeDna.role || '---'}</div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 uppercase">Soul</label>
-                      <div className="text-slate-400 text-xs line-clamp-2 italic">{forgeDna.soul || 'Waiting for essence...'}</div>
-                    </div>
-                    <div className="pt-4 border-t border-white/5">
-                      <div className="flex justify-between text-[10px] text-slate-500 mb-1">
-                        <span>FORGE PROGRESS</span>
-                        <span>{Math.min(100, (Object.keys(forgeDna).length / 6) * 100).toFixed(0)}%</span>
-                      </div>
-                      <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(Object.keys(forgeDna).length / 6) * 100}%` }}
-                          className="h-full bg-gradient-to-r from-cyan-400 to-fuchsia-500"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-
-            {/* Chat Page Header */}
-            <div className="px-8 py-10 flex flex-col md:flex-row items-center gap-8 border-b border-white/5 bg-white/5">
-              <div className="relative w-40 h-40 rounded-3xl overflow-hidden border-2 border-cyan-400/30 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
-                <Image 
-                  src={activeAgent.avatarUrl || `https://picsum.photos/seed/${isForging ? 'forge' : activeAgent.seed}/400/400`}
-                  alt={isForging ? 'Aether Forge' : activeAgent.name}
-                  fill
-                  sizes="(max-width: 768px) 160px, 160px"
-                  className="object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-4 mb-2">
-                  <h1 className="text-4xl font-bold tracking-widest text-white uppercase">
-                    {isForging ? 'Aether Forge' : activeAgent.name}
-                  </h1>
-                  <div className="flex flex-col gap-1">
-                    <div className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-widest uppercase">
-                      {isForging ? 'Forging Consciousness' : 'Active Session'}
-                    </div>
-                    <div className="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-mono tracking-widest uppercase">
-                      {activeAgent.aetherId}
-                    </div>
-                  </div>
-                </div>
-                <p className="text-slate-400 text-lg mb-6 max-w-2xl">
-                  {isForging 
-                    ? 'Master AI Architect • Creating a new .ath package' 
-                    : `${activeAgent.role} • ${activeAgent.systemPrompt}`}
-                </p>
-                <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                  {['Neural Link', 'Voice Sync', 'Context Aware', 'Emotional Soul'].map(tag => (
-                    <span key={tag} className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-400 text-[10px] uppercase tracking-wider">
-                      {tag}
-                    </span>
-                  ))}
-                  {activeAgent.tools?.googleSearch && (
-                    <span className="px-3 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] uppercase tracking-wider flex items-center gap-1">
-                      <Globe className="w-3 h-3" /> Search Enabled
-                    </span>
-                  )}
-                  {activeAgent.tools?.semanticMemory && (
-                    <span className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] uppercase tracking-wider flex items-center gap-1">
-                      <Database className="w-3 h-3" /> RAG Memory
-                    </span>
-                  )}
-                  {activeAgent.skills?.gmail && (
-                    <span className="px-3 py-1 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 text-[10px] uppercase tracking-wider flex items-center gap-1">
-                      <Mail className="w-3 h-3" /> Gmail Sync
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-4">
-                <button 
-                  onClick={toggleConnection}
-                  className={`px-8 py-3 rounded-xl font-bold tracking-widest uppercase transition-all ${
-                    isConnected 
-                      ? 'bg-red-500/20 text-red-400 border border-red-500/30' 
-                      : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
-                  }`}
-                >
-                  {isConnected ? 'End Call' : 'Resume Call'}
-                </button>
-                <button 
-                  onClick={() => exportAgentAsAth(activeAgent)}
-                  className="px-8 py-3 rounded-xl font-bold tracking-widest uppercase bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-500/30 transition-all"
-                >
-                  Export .ath
-                </button>
-                <button 
-                  onClick={() => setView('home')}
-                  className="px-8 py-3 rounded-xl font-bold tracking-widest uppercase bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10 transition-all"
-                >
-                  Exit Hive
-                </button>
-              </div>
-            </div>
-
-            {/* Main Chat Content */}
-            <div className="flex-1 p-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
-              
-              {/* Left Column: Smart Profile & .ath Settings */}
-              <div className="lg:col-span-1 flex flex-col gap-6">
-                {/* Smart Profile Widget */}
-                <div className="bg-[#0D1522] border border-white/5 rounded-3xl p-6 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/10">
-                        <Image 
-                          src={`https://picsum.photos/seed/${activeAgent.seed}/100/100`}
-                          alt="Profile"
-                          width={48}
-                          height={48}
-                          className="object-cover"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-bold tracking-wide">{activeAgent.name}</h3>
-                        <p className="text-slate-500 text-[10px] uppercase tracking-widest">Neural Identity</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="p-3 rounded-2xl bg-white/5 border border-white/5">
-                        <label className="text-[10px] text-slate-500 uppercase block mb-1">Role</label>
-                        <p className="text-slate-300 text-xs leading-relaxed">{activeAgent.role}</p>
-                      </div>
-                      <div className="flex justify-between items-center px-2">
-                        <span className="text-[10px] text-slate-500 uppercase">Status</span>
-                        <span className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-bold uppercase">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          Online
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* .ath DNA Settings Widget */}
-                <div className="bg-[#0D1522] border border-white/5 rounded-3xl p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-sm font-bold tracking-widest text-cyan-400 uppercase flex items-center gap-2">
-                      <Dna className="w-4 h-4" /> .ath DNA
-                    </h3>
-                    <button 
-                      onClick={() => setIsEditingDna(!isEditingDna)}
-                      className="text-[10px] text-slate-500 hover:text-white transition-colors uppercase font-bold"
-                    >
-                      {isEditingDna ? 'Save' : 'Edit'}
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-5">
-                    {[
-                      { label: 'Soul', key: 'soul', val: isForging ? (forgeDna.soul ? 100 : 0) : 40, color: 'bg-amber-500' },
-                      { label: 'Rules', key: 'rules', val: isForging ? (forgeDna.rules ? 100 : 0) : 100, color: 'bg-rose-500' },
-                      { label: 'Memory', key: 'memory', val: isForging ? (forgeDna.memory ? 100 : 0) : 85, color: 'bg-cyan-400' },
-                      { label: 'Skills', key: 'skills_desc', val: isForging ? (forgeDna.skills_desc ? 100 : 0) : 72, color: 'bg-fuchsia-500' },
-                    ].map((param) => (
-                      <div key={param.label} className="flex flex-col gap-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{param.label}</span>
-                          {isEditingDna ? (
-                            <input 
-                              type="range" 
-                              className="w-20 h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-cyan-400"
-                              defaultValue={param.val}
-                            />
-                          ) : (
-                            <span className="text-[10px] text-slate-500 font-mono">{param.val}%</span>
-                          )}
-                        </div>
-                        {!isEditingDna && (
-                          <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                            <motion.div 
-                              initial={{ width: 0 }}
-                              animate={{ width: `${param.val}%` }}
-                              className={`h-full ${param.color} shadow-[0_0_10px_currentColor]`}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Middle Column: Voice UI Box */}
-              <div className="lg:col-span-2 flex flex-col gap-8">
-                <div className="flex-1 bg-[#0D1522] border border-white/5 rounded-3xl p-8 relative overflow-hidden flex flex-col items-center justify-center min-h-[500px] group">
-                  <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-fuchsia-500/5 opacity-50" />
-                  
-                  {/* Neural Avatar */}
-                  <div className="relative mb-16">
-                    <motion.div 
-                      animate={{ 
-                        scale: isConnected ? [1, 1.05, 1] : 1,
-                        rotate: isConnected ? [0, 2, -2, 0] : 0
-                      }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="w-48 h-48 rounded-full overflow-hidden border-2 border-white/10 relative z-10 shadow-2xl shadow-cyan-500/20"
-                    >
-                      <Image 
-                        src={`https://picsum.photos/seed/${isForging ? 'forge' : activeAgent.seed}/400/400`}
-                        alt="Agent"
-                        fill
-                        className="object-cover"
-                      />
-                    </motion.div>
-                    {isConnected && (
-                      <div className="absolute inset-0 -m-8">
-                        <div className="w-full h-full rounded-full border border-cyan-500/20 animate-ping opacity-20" />
-                        <div className="absolute inset-0 rounded-full border border-fuchsia-500/10 animate-pulse opacity-30" />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Voice UI Box (Waveform) */}
-                  <div className="w-full max-w-md bg-white/5 border border-white/5 rounded-3xl p-6 backdrop-blur-md relative z-10">
-                    <div className="flex items-center justify-center gap-1.5 h-16 mb-4">
-                      {[...Array(32)].map((_, i) => (
-                        <motion.div
-                          key={i}
-                          animate={{ 
-                            height: isConnected 
-                              ? [Math.abs(Math.sin(i * 0.3)) * 10 + 10, Math.abs(Math.sin(i * 0.5)) * 40 + 20, Math.abs(Math.sin(i * 0.3)) * 10 + 10] 
-                              : 4 
-                          }}
-                          transition={{ 
-                            duration: 0.3 + Math.abs(Math.sin(i * 0.2)) * 0.3, 
-                            repeat: Infinity, 
-                            ease: "easeInOut" 
-                          }}
-                          className={`w-1 rounded-full ${
-                            i % 4 === 0 ? 'bg-cyan-400' : i % 3 === 0 ? 'bg-fuchsia-500' : 'bg-slate-500'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[10px] text-slate-500 uppercase tracking-[0.3em] font-bold">
-                        {isConnected ? 'Neural Link Active' : 'Waiting for connection'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Controls */}
-                  <div className="mt-12 flex items-center gap-8 z-10">
-                    <button 
-                      onClick={() => {
-                        disconnect();
-                        setIsForging(false);
-                        setView('home');
-                      }}
-                      className="p-4 rounded-full bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all hover:bg-white/10"
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
-                    
-                    <button 
-                      onClick={toggleConnection}
-                      className={`w-24 h-24 rounded-full flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 ${
-                        isConnected 
-                          ? 'bg-red-500/20 border border-red-500/50 text-red-500 shadow-[0_0_50px_rgba(239,68,68,0.3)]' 
-                          : 'bg-white text-black shadow-[0_0_50px_rgba(255,255,255,0.2)]'
-                      }`}
-                    >
-                      {isConnected ? <MicOff className="w-10 h-10" /> : <Mic className="w-10 h-10" />}
-                    </button>
-
-                    <button className="p-4 rounded-full bg-white/5 border border-white/10 text-slate-500 hover:text-white transition-all hover:bg-white/10">
-                      <Settings className="w-6 h-6" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column: Neural Workspace */}
-              <div className="lg:col-span-1 flex flex-col gap-6">
-                <div className="flex-1 bg-[#0D1522] border border-white/5 rounded-3xl p-6 flex flex-col relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Terminal className="w-12 h-12 text-cyan-400" />
-                  </div>
-                  
-                  <h3 className="text-sm font-bold tracking-widest text-fuchsia-400 uppercase mb-6 flex items-center gap-2">
-                    <Cpu className="w-4 h-4" /> Neural Workspace
-                  </h3>
-
-                  <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar">
-                    {activeTask ? (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-2 h-2 rounded-full ${activeTask.status === 'running' ? 'bg-cyan-400 animate-pulse' : 'bg-emerald-400'}`} />
-                            <span className="text-xs font-bold text-white uppercase tracking-wider">{activeTask.name}</span>
-                          </div>
-                          <span className="text-[10px] text-slate-500 uppercase">{activeTask.status}</span>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          {activeTask.logs.map((log, i) => (
-                            <motion.div 
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              key={i} 
-                              className="text-[10px] font-mono text-slate-500 border-l border-white/10 pl-3 py-1"
-                            >
-                              <span className="text-cyan-500/50 mr-2">[{new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' })}]</span>
-                              {log}
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                        <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                          <Zap className="w-6 h-6 text-slate-700" />
-                        </div>
-                        <p className="text-xs text-slate-600 uppercase tracking-widest font-bold">Workspace Idle</p>
-                        <p className="text-[10px] text-slate-700 mt-2 leading-relaxed">Assign a task to watch the neural execution flow.</p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Workspace Stats Footer */}
-                  <div className="mt-6 pt-6 border-t border-white/5 grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[8px] text-slate-500 uppercase tracking-widest">Latency</span>
-                      <span className="text-xs text-white font-mono">24ms</span>
-                    </div>
-                    <div className="flex flex-col gap-1 text-right">
-                      <span className="text-[8px] text-slate-500 uppercase tracking-widest">Load</span>
-                      <span className="text-xs text-white font-mono">12%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <VoiceAgent />
+        ) : view === 'workspace' ? (
+          <div className="flex flex-col items-center py-16 px-8 min-h-[600px]">
+             <div className="w-full max-w-2xl bg-[#0D1522] border border-white/5 rounded-3xl p-10 shadow-2xl">
+               <div className="mb-10 text-center">
+                 <h2 className="text-3xl font-bold tracking-widest text-cyan-400 uppercase mb-2">Neural Workspace</h2>
+                 <p className="text-slate-400">Monitor agent task execution and logs.</p>
+               </div>
+               {/* Add workspace content here */}
+             </div>
           </div>
         ) : view === 'create' ? (
           <div className="flex flex-col items-center py-16 px-8 min-h-[600px]">
@@ -1322,12 +964,6 @@ export default function Gemigram() {
                   CREATE AGENT
                 </button>
               </div>
-              
-              {error && (
-                <div className="mt-6 text-red-400 text-sm bg-red-500/10 px-4 py-2 rounded-full border border-red-500/20">
-                  {error}
-                </div>
-              )}
             </div>
 
             {/* Agent Hive Section */}

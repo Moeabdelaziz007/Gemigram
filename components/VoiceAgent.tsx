@@ -10,7 +10,7 @@ export function VoiceAgent() {
   const [activeWidget, setActiveWidget] = useState<any>(null);
   const [agentState, setAgentState] = useState<'Disconnected' | 'Listening' | 'Thinking' | 'Speaking'>('Disconnected');
 
-  const { isConnected, isRecording, startRecording, stopRecording } = useLiveAPI(apiKey, (call) => {
+  const { isConnected, isRecording, connect, disconnect, startRecording, stopRecording } = useLiveAPI(apiKey, (call) => {
     setActiveWidget(call);
     setAgentState('Thinking');
   });
@@ -20,6 +20,15 @@ export function VoiceAgent() {
     else if (isRecording) setAgentState('Listening');
     else setAgentState('Speaking');
   }, [isConnected, isRecording]);
+
+  const toggleConnection = () => {
+    if (isConnected) {
+      disconnect();
+      stopRecording();
+    } else {
+      connect();
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 text-white p-6">
@@ -34,15 +43,28 @@ export function VoiceAgent() {
           </div>
         </div>
 
-        <button
-          onClick={isRecording ? stopRecording : startRecording}
-          className={`px-8 py-4 rounded-full font-semibold flex items-center gap-3 transition-all ${
-            isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-emerald-600 hover:bg-emerald-700'
-          }`}
-        >
-          {isRecording ? <MicOff /> : <Mic />}
-          {isRecording ? 'Stop Listening' : 'Start Listening'}
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={toggleConnection}
+            className={`px-8 py-4 rounded-full font-semibold flex items-center gap-3 transition-all ${
+              isConnected ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+            }`}
+          >
+            {isConnected ? 'Disconnect' : 'Connect'}
+          </button>
+          
+          <button
+            onClick={isRecording ? stopRecording : startRecording}
+            disabled={!isConnected}
+            className={`px-8 py-4 rounded-full font-semibold flex items-center gap-3 transition-all ${
+              !isConnected ? 'opacity-50 cursor-not-allowed bg-zinc-800' :
+              isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-emerald-600 hover:bg-emerald-700'
+            }`}
+          >
+            {isRecording ? <MicOff /> : <Mic />}
+            {isRecording ? 'Stop Listening' : 'Start Listening'}
+          </button>
+        </div>
         
         <p className="text-sm text-zinc-400 font-mono tracking-widest uppercase">{agentState}</p>
       </div>

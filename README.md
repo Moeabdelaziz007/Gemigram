@@ -8,6 +8,7 @@ Gemigram is a Voice-First, Zero-Chatbox AI agent platform. Built on the Gemini M
 - **Zero-Chatbox UI:** An immersive interface where the agent's actions are rendered via real-time UI widgets, eliminating traditional text chat.
 - **Action Bridge:** Firebase Cloud Functions bridge the agent's actions to workspace tools (Gmail, Calendar, Tasks).
 - **Real-time Nervous System:** A WebSocket-based connection manages bidirectional audio and function call interception.
+- **Aether Forge (Agent Creation):** A voice-driven interface for synthesizing new AI agents. Users converse with the "Aether Forge Architect" to define the agent's persona, soul, rules, and skills. The Architect dynamically updates the agent's DNA package (`.ath`) in real-time.
 
 ## 🛠️ Tech Stack
 
