@@ -131,3 +131,45 @@ export async function handleNeuralTool(name: string, args: any) {
 
   return result;
 }
+
+/**
+ * 🎙️ Aether Voice Orchestrator (Zero-UI Protocol)
+ * 
+ * Manages the high-speed loop between User Voice Intention and 
+ * Autonomous Tool Execution.
+ */
+export async function AetherVoiceOrchestrator(intent: string, context: any) {
+  console.log(`[AetherVoice] Orchestrating Intent: ${intent}`);
+
+  // 1. Analyze Intention (Neural Route)
+  // In a real scenario, this matches a tool in the Aether Registry
+  const toolMatch = intent.match(/(email|calendar|task|memory|search)/i);
+  const toolName = toolMatch ? toolMatch[0].toLowerCase() : null;
+
+  if (!toolName) {
+    return {
+      status: "fail",
+      message: "Intention does not map to a sovereign skill. Please clarify."
+    };
+  }
+
+  // 2. Dispatch to Neural Handlers
+  let toolId = "";
+  switch(toolName) {
+    case 'email': toolId = 'workspace_gmail'; break;
+    case 'calendar': toolId = 'workspace_calendar'; break;
+    case 'task': toolId = 'workspace_tasks'; break;
+    case 'memory': toolId = 'store_memory'; break;
+    case 'search': toolId = 'searchWeb'; break;
+  }
+
+  const executionResult = await handleNeuralTool(toolId, context);
+
+  // 3. Return Synthesis for Voice Generation
+  return {
+    status: "orchestrated",
+    intent,
+    executionResult,
+    vocalResponse: `Orchestrating ${toolName} for you. ${executionResult.message || 'Execution complete.'}`
+  };
+}

@@ -65,6 +65,7 @@ export interface WorkingBufferActions {
   setUserProjects: (projects: ProjectMetadata[]) => void;
   setAgents: (agents: Agent[]) => void;
   setActiveAgentId: (id: string | null) => void;
+  hydrateAgent: (agent: Agent) => void;
 }
 
 export type AetherState = WorkingBufferState & WorkingBufferActions;
@@ -78,7 +79,7 @@ export const useAetherStore = create<AetherState>()(
       streamingBuffer: '',
       isInterrupted: false,
       contextUsage: 0,
-       agents: [],
+      agents: [],
       activeAgentId: null,
 
       // Actions
@@ -87,7 +88,7 @@ export const useAetherStore = create<AetherState>()(
           transcript: [
             ...state.transcript,
             {
-              id: Math.random().toString(36).substring(7),
+              id: `${Date.now()}-${state.transcript.length}`,
               role,
               content,
               timestamp: Date.now(),
@@ -103,6 +104,10 @@ export const useAetherStore = create<AetherState>()(
       setUserProjects: (projects) => set({ userProjects: projects }),
       setAgents: (agents) => set({ agents }),
       setActiveAgentId: (id) => set({ activeAgentId: id }),
+      hydrateAgent: (agent) => set((state) => ({
+        agents: [...state.agents.filter(a => a.id !== agent.id), agent],
+        activeAgentId: agent.id
+      })),
     }),
     {
       name: 'aether-storage',
