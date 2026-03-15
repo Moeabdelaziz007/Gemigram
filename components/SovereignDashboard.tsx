@@ -29,10 +29,10 @@ export default function SovereignDashboard({ user, agents, onStartForge, onSelec
   }, []);
 
   const stats = [
-    { label: 'Neural Latency', value: '14ms', icon: Zap, color: 'text-aether-neon' },
-    { label: 'Synaptic Density', value: '1.2 PB', icon: Database, color: 'text-fuchsia-400' },
-    { label: 'Compute Threads', value: '512', icon: Cpu, color: 'text-amber-400' },
-    { label: 'Active Relays', value: '8', icon: Network, color: 'text-emerald-400' },
+    { label: 'Performance', value: '98%', icon: Zap, color: 'text-aether-neon' },
+    { label: 'Storage', value: '1.2 PB', icon: Database, color: 'text-fuchsia-400' },
+    { label: 'Threads', value: '512', icon: Cpu, color: 'text-amber-400' },
+    { label: 'Connections', value: '8', icon: Network, color: 'text-emerald-400' },
   ];
 
   const systems = [
@@ -44,40 +44,47 @@ export default function SovereignDashboard({ user, agents, onStartForge, onSelec
   return (
     <div className="p-6 lg:p-10 space-y-10 max-w-7xl mx-auto">
       {/* Header HUD */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-aether-neon/20 flex items-center justify-center border border-aether-neon/30">
-              <Activity className="w-5 h-5 text-aether-neon animate-pulse" />
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="w-8 md:w-10 h-8 md:h-10 rounded-lg md:rounded-xl bg-aether-neon/20 flex items-center justify-center border border-aether-neon/30 flex-shrink-0">
+              <Activity className="w-4 md:w-5 h-4 md:h-5 text-aether-neon animate-pulse" />
             </div>
-            <h1 className="text-3xl font-black uppercase tracking-[0.2em] text-white">Sovereign Core</h1>
+            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-[0.2em] text-white">Dashboard</h1>
           </div>
-          <p className="text-white/40 font-mono text-[10px] uppercase tracking-widest pl-1">
-            Sector 7G // Neural Node: {user?.uid?.slice(0, 8) || 'GUEST-01'} // Status: Synchronized
+          <p className="text-white/40 font-mono text-xs md:text-[10px] uppercase tracking-widest pl-1 hidden sm:block">
+            Node: {user?.uid?.slice(0, 8) || 'GUEST-01'} • Status: Active
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button 
+        <div className="flex items-center gap-3">
+          <motion.button 
             onClick={onStartForge}
-            className="px-6 py-3 rounded-xl bg-white text-black font-black text-[10px] uppercase tracking-widest hover:bg-aether-neon transition-all flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl bg-white text-black font-bold text-xs md:text-[10px] uppercase tracking-widest hover:bg-aether-neon transition-all flex items-center gap-2 whitespace-nowrap"
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            Initiate Forge
-          </button>
+            <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5" />
+            <span className="hidden sm:inline">Create Agent</span>
+            <span className="sm:hidden">New</span>
+          </motion.button>
         </div>
       </div>
 
       {/* Primary Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         {stats.map((stat) => (
-          <div key={stat.label} className="quantum-glass p-6 border border-white/5 rounded-3xl relative overflow-hidden group">
+          <motion.div 
+            key={stat.label} 
+            whileHover={{ y: -4 }}
+            className="quantum-glass p-3 md:p-6 border border-white/5 rounded-2xl md:rounded-3xl relative overflow-hidden group cursor-pointer"
+          >
             <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <stat.icon className="w-24 h-24" />
+              <stat.icon className="w-16 md:w-24 h-16 md:h-24" />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-3">{stat.label}</p>
+            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 md:mb-3 line-clamp-2">{stat.label}</p>
             <div className="flex items-end justify-between">
-              <span className="text-2xl font-bold text-white tracking-tight">{stat.value}</span>
+              <span className="text-lg md:text-2xl font-bold text-white tracking-tight">{stat.value}</span>
               <stat.icon className={`w-5 h-5 ${stat.color} mb-1`} />
             </div>
           </div>

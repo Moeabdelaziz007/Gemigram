@@ -2,9 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
-import { collection, onSnapshot, query, orderBy, where, limit } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from '@/firebase';
-import { AgentRegistry } from '@/lib/agents/AgentRegistry';
 import { useAetherStore, Agent } from '@/lib/store/useAetherStore';
 
 interface AuthContextType {
@@ -43,15 +42,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     const q = query(collection(db, 'agents'), orderBy('name', 'asc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const firestoreAgents = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Agent[];
-      
-      const owned = firestoreAgents.filter(fa => fa.ownerId === user?.uid);
-      setAgents(owned.length > 0 ? owned : firestoreAgents);
-    }, (err) => {
-      handleFirestoreError(err, OperationType.LIST, 'agents');
+      try {
+        const firestoreAgents = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Agent[];
+        
+        const owned = firestoreAgents.filter(fa => fa.ownerId === user?.uid);
+        setAgents(owned.length > 0 ? owned : firestoreAgents);
+      } catch (err) {
+        console.warn('Error syncing agents:', err);
+      }
     });
     return () => unsubscribe();
   }, [user, setAgents]);
@@ -65,7 +66,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       where('read', '==', false)
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      setUnreadNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      try {
+        setUnreadNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      } catch (err) {
+        console.warn('Error syncing notifications:', err);
+      }
     });
     return () => unsubscribe();
   }, [user]);
@@ -78,21 +83,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setGoogleAccessToken(credential.accessToken);
         
         // Universal Project Discovery
-        const response = await fetch('https://cloudresourcemanager.googleapis.com/v1/projects', {
-          headers: {
-            'Authorization': `Bearer ${credential.accessToken}`
+        try {
+          const response = await fetch('https://cloudresourcemanager.googleapis.com/v1/projects', {
+            headers: {
+              'Authorization': `Bearer ${credential.accessToken}`
+            }
+          });
+          const data = await response.json();
+          if (data.projects) {
+            const projects = data.projects.map((p: any) => ({
+              id: p.projectId,
+              name: p.name
+            }));
+            setUserProjects(projects);
+            if (projects.length > 0) {
+              setActiveProjectId(projects[0].id);
+            }
           }
-        });
-        const data = await response.json();
-        if (data.projects) {
-          const projects = data.projects.map((p: any) => ({
-            id: p.projectId,
-            name: p.name
-          }));
-          setUserProjects(projects);
-          if (projects.length > 0) {
-            setActiveProjectId(projects[0].id);
-          }
+        } catch (projectErr) {
+          console.warn('Project discovery failed:', projectErr);
         }
       }
     } catch (error) {
@@ -123,3 +132,11 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <AuthProvider>
+      {children}
+    </AuthProvider>
+  );
+}
