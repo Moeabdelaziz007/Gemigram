@@ -1,10 +1,10 @@
 {
-  "projectId": "ancient-yeti-456601-g4",
-  "appId": "1:1024666742968:web:9ee18084e52f36d5c5044d",
-  "apiKey": "AIzaSyAWS20X9y__vcl_zst-dwON24767mS7mdk",
-  "authDomain": "ancient-yeti-456601-g4.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-b0d1dcc4-3726-429b-b713-1bc374326187",
-  "storageBucket": "ancient-yeti-456601-g4.firebasestorage.app",
-  "messagingSenderId": "1024666742968",
-  "measurementId": ""
+  "projectId": "YOUR_PROJECT_ID",
+  "appId": "YOUR_APP_ID",
+  "apiKey": "YOUR_API_KEY",
+  "authDomain": "YOUR_AUTH_DOMAIN",
+  "firestoreDatabaseId": "YOUR_FIRESTORE_DATABASE_ID",
+  "storageBucket": "YOUR_STORAGE_BUCKET",
+  "messagingSenderId": "YOUR_MESSAGING_SENDER_ID",
+  "measurementId": "YOUR_MEASUREMENT_ID"
 }

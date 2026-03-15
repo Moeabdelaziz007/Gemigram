@@ -8,6 +8,7 @@ coverage/
 .env*
 !.env.example
 *.tsbuildinfo
+firebase-applet-config.json
 functions/lib/
 functions/node_modules/
 dist/
