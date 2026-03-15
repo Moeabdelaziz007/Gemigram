@@ -24,6 +24,16 @@ service cloud.firestore {
     //   - role: string (user/model)
     //   - timestamp: timestamp
     //
+    // Collection: notifications
+    // Fields:
+    //   - userId: string
+    //   - type: string
+    //   - title: string
+    //   - message: string
+    //   - read: boolean
+    //   - timestamp: timestamp
+    //   - secret: string (used for webhook auth)
+    //
     // ===============================================================
 
     // ===============================================================
@@ -77,6 +87,13 @@ service cloud.firestore {
         allow read: if isAuthenticated();
         allow create: if isAuthenticated() && isValidHistory(request.resource.data);
       }
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow create: if request.resource.data.secret == "GEMIGRAM_WEBHOOK_SECRET_2026";
+      allow update: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
     }
 
     match /users/{userId} {

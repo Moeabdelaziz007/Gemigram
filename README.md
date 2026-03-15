@@ -1,24 +1,30 @@
-# Gemigram: The Voice-First AI Agent Platform
+# 🌠 Gemigram: The Voice-Native Agent OS (AetherOS)
 
-Gemigram is a Voice-First, Zero-Chatbox AI agent platform. Built on the Gemini Multimodal Live API, Gemigram provides a real-time, immersive experience where users interact with the agent through natural voice conversation.
+Gemigram هو نظام تشغيل ذكاء اصطناعي صوتي لحظي (Voice-First OS) يعتمد على معمارية **AetherOS**. لا توجد واجهات دردشة، لا كتابة، فقط تفاعل صوتي لحظي معزز بالرؤية الحاسوبية.
 
-## 🌌 System Architecture
+## 🧠 The Neural Spine (Phase 1) - COMPLETE ✅
+لقد قمنا بتنفيذ **Neural Spine**، وهو العمود الفقري للنظام الذي يضمن:
+- **WAL Protocol (Write-Ahead Logging):** تسجيل كل قرار أو تغيير في الحالة قبل إرسال الرد للمستخدم.
+- **Working Buffer:** ذاكرة مؤقتة مستمرة تضمن عدم فقدان السياق عند تحديث المتصفح.
+- **Context Awareness:** تتبع استهلاك السياق (Token Usage) لضمان استقرار الجلسات الطويلة.
 
-- **Voice-First Foundation:** The Gemini Multimodal Live API serves as the foundational UI router, handling real-time audio streams and triggering actions via function calling.
-- **Zero-Chatbox UI:** An immersive interface where the agent's actions are rendered via real-time UI widgets, eliminating traditional text chat.
-- **Action Bridge:** Firebase Cloud Functions bridge the agent's actions to workspace tools (Gmail, Calendar, Tasks).
-- **Real-time Nervous System:** A WebSocket-based connection manages bidirectional audio and function call interception.
-- **Aether Forge (Agent Creation):** A voice-driven interface for synthesizing new AI agents. Users converse with the "Aether Forge Architect" to define the agent's persona, soul, rules, and skills. The Architect dynamically updates the agent's DNA package (`.ath`) in real-time.
+## 🌌 Galaxy Orchestration (Phase 2) - COMPLETE ✅
+التحول من وكيل واحد إلى "سرب من الخبراء":
+- **Dynamic Agent Registry:** جلب مهارات وشخصيات الوكلاء ديناميكياً من Firestore.
+- **Gravity Router:** خوارزمية ذكية تختار الوكيل الأنسب للمهمة بناءً على القدرة، الثقة، وزمن الاستجابة.
+- **Galaxy View:** واجهة بصرية مدارية تظهر توزيع الوكلاء وتفاعلهم اللحظي.
+
+## 👁️ Sensory Hardening (Phase 3) - COMPLETE ✅
+تحقيق تجربة "Zero-Friction":
+- **Vision Pulse:** نظام رؤية استباقي يلتقط سياق المستخدم (الشاشة/الكاميرا) كل 5 ثوانٍ لتعزيز الفهم البصري.
+- **Barge-in Handling:** دعم المقاطعة الصوتية اللحظية، مما يجعل الحوار طبيعياً كالبشر.
 
 ## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 15, Tailwind CSS, Framer Motion
-- **Backend**: Firebase (Firestore, Auth, Cloud Functions)
-- **AI Engine**: Google Gemini Multimodal Live API
-- **Voice**: Web Audio API (PCM 16kHz)
+- **Frontend**: Next.js 15, Zustand (State), Framer Motion (Animations)
+- **Backend**: Python (WAL & Logic), Firebase (Persistence)
+- **AI Engine**: Gemini 2.0 Flash Multimodal Live API
 
 ## 🚀 Getting Started
-
 1. **Clone the repository**
 2. **Install dependencies**: `npm install`
 3. **Configure Environment**:
@@ -26,14 +32,5 @@ Gemigram is a Voice-First, Zero-Chatbox AI agent platform. Built on the Gemini M
    - Set up Firebase and add `firebase-applet-config.json`
 4. **Run Development Server**: `npm run dev`
 
-## 🧬 .ath DNA Structure
-
-The `.ath` package is the core of every agent:
-- **Soul**: The personality and emotional essence.
-- **Rules**: Strict operational constraints.
-- **Memory**: Contextual awareness of past events.
-- **Skills**: Functional capabilities (Search, Workspace, etc.)
-
 ## 📜 License
-
 MIT License. Forged with ❤️ by the Aether Forge team.

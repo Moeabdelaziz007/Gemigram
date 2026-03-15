@@ -20,6 +20,10 @@ import { Database } from 'lucide-react';
 export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isFlashing, setIsFlashing] = useState(false);
+  const [particleConfigs] = useState(() => Array.from({ length: 12 }).map(() => ({
+    duration: 2 + Math.random(),
+    delay: Math.random() * 2
+  })));
 
   useEffect(() => {
     if (currentStepIndex < FORGE_STEPS.length) {
@@ -27,13 +31,24 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
         setCurrentStepIndex(prev => prev + 1);
       }, FORGE_STEPS[currentStepIndex].duration);
       return () => clearTimeout(timer);
-    } else {
+    }
+  }, [currentStepIndex]);
+
+  useEffect(() => {
+    if (currentStepIndex === FORGE_STEPS.length) {
       // Trigger birth flash
-      setIsFlashing(true);
+      const timer = setTimeout(() => {
+        setIsFlashing(true);
+      }, 0);
+      
       const flashTimer = setTimeout(() => {
         onComplete();
       }, 1000); // Flash duration
-      return () => clearTimeout(flashTimer);
+      
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(flashTimer);
+      };
     }
   }, [currentStepIndex, onComplete]);
 
@@ -88,9 +103,9 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
               y: Math.sin(i * 30 * Math.PI / 180) * 150,
             }}
             transition={{ 
-              duration: 2 + Math.random(), 
+              duration: particleConfigs[i].duration, 
               repeat: Infinity, 
-              delay: Math.random() * 2,
+              delay: particleConfigs[i].delay,
               ease: "easeOut" 
             }}
           />

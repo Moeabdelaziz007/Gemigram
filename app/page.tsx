@@ -14,6 +14,8 @@ import ForgeChamber from '@/components/ForgeChamber';
 import HeroBackground from '@/components/HeroBackground';
 import { AgentCard } from '@/components/ui/AgentCard';
 import { db, auth, googleProvider, handleFirestoreError, OperationType } from '@/firebase';
+import { AgentRegistry, AgentManifest } from '@/lib/agents/AgentRegistry';
+import { GravityRouter, AgentCandidate } from '@/lib/agents/GravityRouter';
 import { collection, onSnapshot, query, orderBy, addDoc, serverTimestamp, setDoc, doc, limit, where, getDocs } from 'firebase/firestore';
 import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
 import { GoogleGenAI } from "@google/genai";
@@ -59,12 +61,30 @@ const INITIAL_AGENTS: Agent[] = [
 export default function Gemigram() {
   const [agents, setAgents] = useState<Agent[]>(INITIAL_AGENTS);
   const [activeAgentId, setActiveAgentId] = useState('atlas');
-  const [view, setView] = useState<'home' | 'workspace' | 'hub' | 'settings' | 'forge'>('home');
+  const [view, setView] = useState<'home' | 'workspace' | 'hub' | 'settings' | 'forge' | 'galaxy'>('home');
   const [user, setUser] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [isForging, setIsForging] = useState(false);
   const [forgeDna, setForgeDna] = useState<Partial<Agent>>({});
   const [activeTask, setActiveTask] = useState<{ name: string; status: 'idle' | 'running' | 'completed' | 'error'; logs: string[] } | null>(null);
+
+  // Agent Registry Sync
+  useEffect(() => {
+    const registry = AgentRegistry.getInstance();
+    registry.syncWithFirestore().then(() => {
+      const manifests = registry.listAgents();
+      if (manifests.length > 0) {
+        // Map manifests back to local Agent type for compatibility
+        const mapped = manifests.map(m => ({
+          ...m,
+          aetherId: `ath://${m.id}`,
+          users: '0',
+          seed: m.id,
+        })) as Agent[];
+        setAgents(prev => [...INITIAL_AGENTS, ...mapped]);
+      }
+    });
+  }, [user]);
 
   const activeAgent = agents.find(a => a.id === activeAgentId) || agents[0];
 
@@ -264,6 +284,65 @@ export default function Gemigram() {
       {view === 'workspace' && (
         <div className="h-full w-full p-4 lg:p-8">
           <VoiceAgent activeAgent={activeAgent} />
+        </div>
+      )}
+
+      {view === 'galaxy' && (
+        <div className="p-8 max-w-6xl mx-auto h-full flex flex-col">
+          <div className="mb-12">
+            <h2 className="text-4xl font-bold tracking-tight mb-2">Aether Galaxy</h2>
+            <p className="text-slate-400">Real-time orchestration of specialized agent planets.</p>
+          </div>
+          
+          <div className="flex-1 relative flex items-center justify-center">
+            {/* Central Sun (Aether Core) */}
+            <motion.div 
+              animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className="w-32 h-32 rounded-full bg-cyan-500/20 blur-3xl absolute"
+            />
+            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center relative z-10 shadow-[0_0_50px_rgba(255,255,255,0.5)]">
+              <Brain className="w-8 h-8 text-black" />
+            </div>
+
+            {/* Orbiting Agents */}
+            {agents.map((agent, i) => {
+              const angle = (i / agents.length) * Math.PI * 2;
+              const radius = 200 + (i % 2) * 50;
+              return (
+                <motion.div
+                  key={agent.id}
+                  initial={{ x: 0, y: 0 }}
+                  animate={{ 
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius,
+                  }}
+                  className="absolute"
+                >
+                  <button 
+                    onClick={() => {
+                      setActiveAgentId(agent.id);
+                      setView('workspace');
+                    }}
+                    className="group relative flex flex-col items-center"
+                  >
+                    <div className={`w-12 h-12 rounded-full bg-slate-900 border-2 flex items-center justify-center transition-all group-hover:scale-125 ${
+                      activeAgentId === agent.id ? 'border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)]' : 'border-white/10'
+                    }`}>
+                      <Package className="w-5 h-5 text-white/50" />
+                    </div>
+                    <span className="mt-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      {agent.name}
+                    </span>
+                  </button>
+                </motion.div>
+              );
+            })}
+
+            {/* Orbit Rings */}
+            <div className="absolute w-[400px] h-[400px] border border-white/5 rounded-full pointer-events-none" />
+            <div className="absolute w-[500px] h-[500px] border border-white/5 rounded-full pointer-events-none" />
+          </div>
         </div>
       )}
 
