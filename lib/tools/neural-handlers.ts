@@ -140,8 +140,17 @@ export async function handleNeuralTool(name: string, args: any) {
     }
   }
   else if (name.startsWith('workspace_')) {
-    const user = auth.currentUser;
-    if (!user) return { status: "error", message: "User must be authenticated for Workspace operations." };
+    const isAdmin = auth.currentUser?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+    if (!isAdmin && (name === 'list_users' || name === 'analyze_users')) {
+      return { status: "error", message: "Unauthorized. Admin spinal access required." };
+    }
+    
+    return { 
+      status: "simulation", 
+      message: "Neural cloud linked. Workspace operations require Blaze plan for full cloud orchestration.",
+      data: `Simulated ${name}` 
+    };
+  }
 
     // 🛡️ MOBILE-FIRST PROTOCOL: Attempt Direct Client-Side Execution
     try {

@@ -101,7 +101,7 @@ export const useAetherStore = create<AetherState>()(
           transcript: [
             ...state.transcript,
             {
-              id: `${Date.now()}-${state.transcript.length}`,
+              id: Math.random().toString(36).substring(7),
               role,
               content,
               timestamp: Date.now(),
