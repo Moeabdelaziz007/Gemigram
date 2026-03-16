@@ -55,7 +55,7 @@ export default function AppShell({ children }: AppShellProps) {
         <div className="flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-2">
             <AetherLogo size={16} />
-            <span className="text-[10px] md:text-[8px] font-black uppercase tracking-[0.2em] text-aether-neon">AetherOS</span>
+            <span className="text-[10px] md:text-[8px] font-black uppercase tracking-[0.2em] text-aether-neon">Gemigram</span>
           </div>
           <div className="h-3 md:h-4 w-[1px] bg-white/10 hidden sm:block" />
           <div className="flex items-center gap-2">

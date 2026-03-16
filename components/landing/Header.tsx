@@ -43,7 +43,7 @@ export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
         <Link href="/" className="flex items-center gap-3 group">
           <Fingerprint className="w-8 h-8 text-carbon-neon" />
           <span className="text-xl font-bold tracking-tight text-white uppercase">
-            Aether<span className="text-carbon-neon">OS</span>
+            Gemigram
           </span>
         </Link>
 

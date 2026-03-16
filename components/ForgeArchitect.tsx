@@ -316,7 +316,14 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
             {/* Icon Container */}
             <div className="relative w-full h-full flex items-center justify-center">
               <div className={`w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full bg-white/5 border-2 border-white/20 flex items-center justify-center ${getStatusColor()}`}>
-                {getStatusIcon()}
+                <div className="text-center">
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-widest">
+                    ORD
+                  </div>
+                  <div className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-white/60 uppercase tracking-wider mt-1">
+                    Voice
+                  </div>
+                </div>
               </div>
             </div>
             
