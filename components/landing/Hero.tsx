@@ -37,8 +37,10 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
       {/* Subtle Carbon Fiber Background Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
       
-      {/* Ambient Depth Background - Enhanced with Neon Green */}
-      <div className="absolute inset-0 pointer-events-none">
+      {/* Ambient Depth Background - Fixed with Cinematic Asset */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-screen" style={{ backgroundImage: "url('/hero_bg.png')" }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
         <div className="absolute top-[10%] left-[15%] w-[40vw] h-[40vw] bg-gradient-to-br from-gemigram-neon/20 to-gemigram-neon/5 rounded-full blur-[180px] animate-pulse" />
         <div className="absolute bottom-[10%] right-[15%] w-[35vw] h-[35vw] bg-gradient-to-tl from-gemigram-neon/10 to-transparent rounded-full blur-[130px]" />
         <div className="absolute top-[50%] left-[50%] w-[30vw] h-[30vw] bg-gemigram-neon/10 rounded-full blur-[100px]" />
@@ -142,12 +144,20 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
 
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
             {[1,2,3,4,5].map(i => (
-              <div key={i} className="glass-subtle rounded-3xl p-6 border border-white/5 group hover:border-gemigram-neon/30 transition-all cursor-pointer">
-                <div className="aspect-square rounded-2xl bg-white/5 mb-6 overflow-hidden">
-                   <img src={`/agents/robot_${i}.png`} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all scale-110" />
+              <div key={i} className="sovereign-glass p-6 group hover:border-gemigram-neon/40 transition-all cursor-pointer relative overflow-hidden">
+                <div className="aspect-[4/5] rounded-2xl bg-white/5 mb-6 overflow-hidden relative">
+                   <img 
+                    src={`/agents/robot_${(i % 3) + 1}.png`} 
+                    alt="" 
+                    className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110" 
+                   />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60" />
                 </div>
-                <h4 className="text-sm font-black text-white mb-2 uppercase tracking-widest">Robot_AI_{i}</h4>
-                <p className="text-[10px] text-white/20 font-bold leading-relaxed uppercase">Neural_Signature::Active</p>
+                <h4 className="text-sm font-black text-white/90 mb-2 uppercase tracking-widest group-hover:text-gemigram-neon transition-colors">Neural_Entity_{i}</h4>
+                <div className="flex items-center gap-2">
+                   <span className="w-1 h-1 rounded-full bg-gemigram-neon shadow-[0_0_5px_rgba(57,255,20,0.8)]" />
+                   <p className="text-[9px] text-white/20 font-black leading-relaxed uppercase tracking-[0.2em]">Runtime::Active</p>
+                </div>
               </div>
             ))}
           </div>
