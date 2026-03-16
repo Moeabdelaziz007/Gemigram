@@ -9,6 +9,7 @@ import { EnterpriseHero } from '@/components/landing/Hero';
 import { BentoFeatures } from '@/components/landing/BentoFeatures';
 import { EnterpriseFooter } from '@/components/landing/Footer';
 import { AuthOverlay } from '@/components/auth/AuthOverlay';
+import { motion } from 'framer-motion';
 
 export default function LandingPage() {
   const { user } = useAuth();
