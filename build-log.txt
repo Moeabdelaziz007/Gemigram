@@ -1,0 +1,42 @@
+
+> ai-studio-applet@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.12
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 12.0s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/11) ...
+   Generating static pages (2/11) 
+   Generating static pages (5/11) 
+   Generating static pages (8/11) 
+API key should be set when using the Gemini API.
+API key should be set when using the Gemini API.
+ ✓ Generating static pages (11/11)
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Exporting (0/2) ...
+ ✓ Exporting (2/2)
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    15.9 kB         278 kB
+├ ○ /_not-found                            998 B         103 kB
+├ ○ /analyzer                             125 kB         278 kB
+├ ○ /dashboard                           9.85 kB         269 kB
+├ ○ /forge                               9.75 kB         272 kB
+├ ○ /galaxy                              3.65 kB         147 kB
+├ ○ /hub                                 5.04 kB         265 kB
+├ ○ /settings                            3.74 kB         222 kB
+└ ○ /workspace                             16 kB         281 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/255-83907652c6b4362a.js       45.9 kB
+  ├ chunks/4bd1b696-21f374d1156f834a.js  54.2 kB
+  └ other shared chunks (total)          1.92 kB
+
+
+○  (Static)  prerendered as static content
+

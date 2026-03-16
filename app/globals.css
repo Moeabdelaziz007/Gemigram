@@ -1,57 +1,30 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
+/* Custom Theme Variables */
+:root {
   --color-carbon-black: #050505;
   --color-carbon-surface: #0a0a0a;
   --color-carbon-fiber: #111111;
   --color-carbon-gray: #4a4a4a;
-  --color-aether-neon: #00ff41; /* Pure Matrix/Digital Green */
-  --color-neon-dim: rgba(0, 255, 65, 0.1);
+  --color-aether-neon: #00ff41;
+  --color-neon-green: #10ff87;
+  --color-neon-dim: rgba(16,255,135,0.1);
+  --color-mint-chip: #00ffa3;
+  --color-cyber-lime: #ccff00;
+  --color-neon-blue: #00f0ff;
+  --color-electric-purple: #b026ff;
   --color-glass-border: rgba(255, 255, 255, 0.08);
   --color-glass-bg: rgba(5, 5, 5, 0.6);
-  
-  --font-heading: "Inter", sans-serif;
-  --font-body: "Inter", sans-serif;
-  --font-mono: "IBM Plex Mono", monospace;
-
-  --animate-float: float 6s ease-in-out infinite;
-  --animate-pulse-neon: pulse-neon 2s ease-in-out infinite;
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-
-  @keyframes pulse-neon {
-    0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 65, 0.1); }
-    50% { box-shadow: 0 0 20px rgba(0, 255, 65, 0.3); }
-  }
-
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-
-  @keyframes flicker {
-    0% { opacity: 0.1; }
-    5% { opacity: 0.8; }
-    10% { opacity: 0.2; }
-    15% { opacity: 0.9; }
-    20% { opacity: 0.3; }
-    25% { opacity: 1; }
-    30% { opacity: 0.4; }
-    100% { opacity: 1; }
-  }
-
-  @keyframes grid-move {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(40px); }
-  }
 }
 
 @layer base {
   body {
-    @apply bg-carbon-black text-white/90 font-body antialiased;
+    background-color: var(--color-carbon-black);
+    color: rgba(255, 255, 255, 0.9);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
     font-size: 15px;
     letter-spacing: -0.01em;
     /* Carbon Fiber Matrix Pattern */
@@ -61,17 +34,24 @@
       linear-gradient(45deg, transparent 75%, #0a0a0a 75%), 
       linear-gradient(-45deg, transparent 75%, #0a0a0a 75%);
     background-size: 4px 4px;
-    background-color: #050505;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-[0.05em] font-bold text-white uppercase;
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
   }
 }
 
 @layer utilities {
   .aether-glass {
-    @apply bg-glass-bg backdrop-blur-[20px] border border-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
+    background-color: var(--color-glass-bg);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
     background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
   }
 
@@ -86,25 +66,40 @@
   }
 
   .aether-button {
-    @apply relative overflow-hidden bg-white/[0.03] border border-white/10 hover:border-aether-neon transition-all duration-300;
-    @apply text-white/70 hover:text-aether-neon;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 
   .aether-button:hover {
+    border-color: var(--color-aether-neon);
+    color: var(--color-aether-neon);
     box-shadow: 0 0 15px rgba(0, 255, 65, 0.1), inset 0 0 10px rgba(0, 255, 65, 0.05);
   }
 
   .text-neon {
-    @apply text-aether-neon drop-shadow-[0_0_8px_rgba(0,255,65,0.4)];
+    color: var(--color-aether-neon);
+    text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
   }
 
   .text-hud {
-    @apply font-mono text-[10px] uppercase tracking-[0.2em] text-white/40;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.4);
   }
 
   .skeleton {
-    @apply bg-white/[0.03] animate-pulse rounded-md relative overflow-hidden;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   .skeleton::after {
@@ -143,6 +138,21 @@
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-neon {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 255, 65, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(0, 255, 65, 0.3); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
 @keyframes scanline {
   0% { top: -100px; }
   100% { top: 100%; }
@@ -154,9 +164,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-carbon-black;
+  background-color: var(--color-carbon-black);
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-aether-neon/20 rounded-full hover:bg-aether-neon/40 transition-colors;
+  background-color: rgba(0, 255, 65, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 255, 65, 0.4);
 }

@@ -25,7 +25,7 @@ export default function LandingPage() {
   if (user) return null;
 
   return (
-    <div className="relative min-h-screen bg-carbon-black selection:bg-carbon-neon/20 overflow-x-hidden">
+    <div className="relative min-h-screen selection:bg-aether-neon/20 overflow-x-hidden" style={{ backgroundColor: 'var(--color-carbon-black)' }}>
       <HeroBackground />
       
       <EnterpriseHeader onLogin={() => setIsAuthOpen(true)} />

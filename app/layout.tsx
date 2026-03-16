@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="apple-touch-icon" href="/aether-entity.png" />
       </head>
-      <body suppressHydrationWarning className="font-sans antialiased bg-carbon-black text-white selection:bg-aether-neon/30 overflow-x-hidden">
+      <body suppressHydrationWarning className="font-sans antialiased text-white selection:bg-aether-neon/30 overflow-x-hidden" style={{ backgroundColor: 'var(--color-carbon-black)' }}>
         <div className="fixed inset-0 pointer-events-none hud-grid opacity-10 z-[0]" />
         <AuthProvider>
           <AppShell>
