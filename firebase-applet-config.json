@@ -1,10 +1,10 @@
 {
-  "projectId": "ancient-yeti-456601-g4",
-  "appId": "1:1024666742968:web:9ee18084e52f36d5c5044d",
-  "apiKey": "AIzaSyAWS20X9y__vcl_zst-dwON24767mS7mdk",
-  "authDomain": "ancient-yeti-456601-g4.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-b0d1dcc4-3726-429b-b713-1bc374326187",
-  "storageBucket": "ancient-yeti-456601-g4.firebasestorage.app",
-  "messagingSenderId": "1024666742968",
+  "projectId": "notional-armor-456623-e8",
+  "appId": "1:929157794401:web:be47e76ea4f2598cc3f820",
+  "apiKey": "AIzaSyCDI8Pue0B-_ktUDLbEstSMLTo9GyrBC0M",
+  "authDomain": "notional-armor-456623-e8.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "notional-armor-456623-e8.firebasestorage.app",
+  "messagingSenderId": "929157794401",
   "measurementId": ""
 }

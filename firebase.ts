@@ -10,27 +10,42 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+// Initialize Firebase only if we are in the browser
+let app;
+let db: any;
+let auth: any;
+
+if (typeof window !== 'undefined') {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+} else {
+  // Mock implementations for server-side/build-time
+  app = {} as any;
+  db = {} as any;
+  auth = { currentUser: null } as any;
+}
+
+export { db, auth };
 export const googleProvider = new GoogleAuthProvider();
 
 // Standard Scopes for GWS Discovery
 googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform.read-only');
 googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform');
 
-// Connection test
-async function testConnection() {
-  try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration. The client is offline.");
+// Connection test - only run in browser
+if (typeof window !== 'undefined') {
+  const testConnection = async () => {
+    try {
+      await getDocFromServer(doc(db, 'test', 'connection'));
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('the client is offline')) {
+        console.error("Please check your Firebase configuration. The client is offline.");
+      }
     }
-  }
+  };
+  testConnection();
 }
-testConnection();
 
 export enum OperationType {
   CREATE = 'create',

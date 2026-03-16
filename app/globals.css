@@ -1,102 +1,84 @@
 @import "tailwindcss";
 
 @theme {
-  --color-aether-black: #050505;
-  --color-aether-carbon: #0f0f0f;
-  --color-aether-gray: #1a1a1a;
-  --color-aether-neon: #00f2ff;
-  --color-aether-core: #7000ff;
-  --color-aether-glass: rgba(255, 255, 255, 0.03);
+  --color-carbon-black: #050505;
+  --color-carbon-surface: #0f0f0f;
+  --color-carbon-fiber: #1a1a1a;
+  --color-carbon-gray: #4a4a4a;
+  --color-carbon-neon: #39ff14; /* Cyber Neon Green */
+  --color-carbon-glass: rgba(255, 255, 255, 0.02);
+  --color-carbon-border: rgba(57, 255, 20, 0.1);
   
-  --font-heading: "Outfit", sans-serif;
+  --font-heading: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "Fira Code", monospace;
 
-  --animate-orbit: orbit 60s linear infinite;
-  --animate-pulse-core: pulse-core 4s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
 
-  @keyframes orbit {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  @keyframes pulse-core {
-    0%, 100% { opacity: 0.3; transform: scale(1); filter: blur(20px); }
-    50% { opacity: 0.7; transform: scale(1.1); filter: blur(30px); }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
   }
 }
 
 @layer base {
   body {
-    @apply bg-aether-black text-white font-body selection:bg-aether-neon/30;
-    -webkit-font-smoothing: antialiased;
-    font-size: 14px;
-    line-height: 1.6;
+    @apply bg-carbon-black text-white/90 font-body antialiased;
+    font-size: 15px;
+    letter-spacing: -0.01em;
   }
 
-  h1 {
-    @apply font-heading font-black text-4xl md:text-5xl tracking-tight leading-tight mb-4;
-  }
-
-  h2 {
-    @apply font-heading font-bold text-2xl md:text-3xl tracking-tight leading-snug mb-3;
-  }
-
-  h3 {
-    @apply font-heading font-bold text-lg md:text-xl tracking-tight leading-snug mb-2;
-  }
-
-  h4, h5, h6 {
-    @apply font-heading font-semibold tracking-tight;
-  }
-
-  p {
-    @apply text-base leading-relaxed text-white/80;
-  }
-
-  button {
-    @apply transition-all duration-300;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation: none !important;
-      transition: none !important;
-    }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight font-semibold text-white;
   }
 }
 
 @layer utilities {
-  .quantum-glass {
-    @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)];
+  .cyber-glass {
+    @apply bg-white/[0.01] backdrop-blur-2xl border border-white/[0.05] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)];
   }
 
-  .aether-border {
-    @apply border border-white/5 hover:border-aether-neon/30 transition-colors duration-500;
+  .cyber-panel {
+    @apply bg-carbon-fiber/20 backdrop-blur-xl border border-white/[0.03];
   }
 
-  .neon-text {
-    @apply text-aether-neon drop-shadow-[0_0_8px_rgba(0,242,255,0.5)];
+  .cyber-button {
+    @apply relative overflow-hidden bg-white/[0.05] border border-white/10 hover:bg-carbon-neon/10 hover:border-carbon-neon/30 transition-all active:scale-95;
   }
 
-  .glow-box {
-    @apply relative after:absolute after:inset-0 after:-z-10 after:bg-aether-neon/5 after:blur-3xl after:opacity-0 hover:after:opacity-100 transition-opacity duration-700;
+  .cyber-accent-button {
+    @apply cyber-button bg-carbon-neon/5 border-carbon-neon/20 hover:bg-carbon-neon/20 hover:border-carbon-neon/40 text-carbon-neon;
   }
 
-  .scanline {
-    width: 100%;
-    height: 100px;
-    z-index: 10;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(0, 242, 255, 0.02) 50%, rgba(0, 0, 0, 0) 100%);
-    opacity: 0.1;
+  .text-neon {
+    @apply text-carbon-neon drop-shadow-[0_0_8px_rgba(57,255,20,0.3)];
+  }
+
+  .carbon-gradient {
+    @apply bg-gradient-to-br from-carbon-surface via-carbon-black to-carbon-black;
+  }
+
+  .gradient-border-neon {
+    position: relative;
+    border-radius: inherit;
+  }
+
+  .gradient-border-neon::before {
+    content: "";
     position: absolute;
-    bottom: 100%;
-    animation: scanline 10s linear infinite;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(to bottom right, rgba(57, 255, 20, 0.2), transparent, rgba(255, 255, 255, 0.05));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
   }
-
-  .neon-border {
-    @apply border border-aether-neon/20 shadow-[0_0_15px_rgba(0,242,255,0.05)] hover:border-aether-neon/50 hover:shadow-[0_0_20px_rgba(0,242,255,0.1)] transition-all;
+  .ambient-neon {
+    @apply absolute inset-0 bg-carbon-neon/10 blur-[150px] opacity-0 transition-opacity duration-300;
   }
+}
 
   @keyframes scanline {
     0% { bottom: 100%; }

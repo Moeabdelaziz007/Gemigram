@@ -153,8 +153,17 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
     <div className="relative w-full h-full flex flex-col bg-[#030303] overflow-hidden">
       {/* Central Digital Entity */}
       <div className="absolute inset-0 z-0">
+        {/* Dynamic Ambient Glow (Gem #9: Vitality Mapping) */}
+        <motion.div 
+          className="absolute inset-0 bg-carbon-neon/5 blur-[120px] pointer-events-none"
+          animate={{ 
+            opacity: isRecording || isConnected ? [0.05, 0.1 + volume * 0.4, 0.05] : 0,
+            scale: [1, 1 + volume * 0.2, 1]
+          }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+        />
         <DigitalEntity 
-          state={agentState} 
+          state={agentStatus} 
           volume={volume} 
           agentName={activeAgent?.name || 'Neural Link'} 
           linkType={linkType}
