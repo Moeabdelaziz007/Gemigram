@@ -1,6 +1,6 @@
 import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '../../firebase';
-import { validateAvatar } from './avatar-generator';
+import { validateAvatarData } from './avatar-generator';
 
 /**
  * Firebase Storage paths for agent avatars
@@ -22,7 +22,7 @@ export async function saveAgentAvatar(
 ): Promise<string> {
   try {
     // Validate avatar before upload
-    const validation = validateAvatar(avatarDataUrl);
+    const validation = validateAvatarData(avatarDataUrl);
     if (!validation.valid) {
       throw new Error(`Avatar validation failed: ${validation.error}`);
     }

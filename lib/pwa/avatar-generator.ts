@@ -83,6 +83,52 @@ export async function generateAgentAvatar(config: AvatarConfig): Promise<string>
 }
 
 /**
+ * Validate avatar image data
+ * 
+ * @param dataUrl - Base64 data URL to validate
+ * @returns Validation result with success status and optional error message
+ */
+export function validateAvatarData(dataUrl: string): { valid: boolean; error?: string } {
+  // Check if data URL format is correct
+  const dataUrlRegex = /^data:image\/(png|jpeg|webp);base64,/;
+  if (!dataUrlRegex.test(dataUrl)) {
+    return { valid: false, error: 'Invalid data URL format' };
+  }
+  
+  // Extract base64 data
+  const base64Data = dataUrl.replace(dataUrlRegex, '');
+  
+  // Check minimum size (should be at least 1KB)
+  if (base64Data.length < 1024) {
+    return { valid: false, error: 'Avatar image too small' };
+  }
+  
+  // Check maximum size (should not exceed 5MB)
+  if (base64Data.length > 5 * 1024 * 1024) {
+    return { valid: false, error: 'Avatar image too large (max 5MB)' };
+  }
+  
+  // Try to create Image object to verify it's a valid image
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      // Check dimensions
+      if (img.width < 48 || img.height < 48) {
+        resolve({ valid: false, error: 'Avatar dimensions too small (min 48x48)' });
+      } else if (img.width > 2048 || img.height > 2048) {
+        resolve({ valid: false, error: 'Avatar dimensions too large (max 2048x2048)' });
+      } else {
+        resolve({ valid: true });
+      }
+    };
+    img.onerror = () => {
+      resolve({ valid: false, error: 'Failed to parse image data' });
+    };
+    img.src = dataUrl;
+  }).catch(() => ({ valid: false, error: 'Image validation failed' })) as any;
+}
+
+/**
  * Get gradient colors based on agent soul/role
  */
 function getColorsForSoul(soul: string): [string, string] {
