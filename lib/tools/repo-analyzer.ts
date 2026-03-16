@@ -6,6 +6,10 @@ import JSZip from 'jszip';
 // But for AetherOS Zero-Cost Static Export, we use direct browser-to-Gemini connection.
 const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '' });
 
+// Module-level cache for analysis results with size limit (LRU-like behavior)
+const MAX_CACHE_SIZE = 20;
+const analysisCache = new Map<string, any>();
+
 function shouldIgnore(filename: string): boolean {
   const ignorePatterns = [
     'node_modules/', '.git/', 'dist/', 'build/', '.next/', 'coverage/',
@@ -25,6 +29,36 @@ export async function analyzeRepository(repoUrl: string) {
     }
     const owner = match[1];
     const repo = match[2];
+
+    let commitSha = '';
+    try {
+      const commitUrl = `https://api.github.com/repos/${owner}/${repo}/commits/main`;
+      const commitRes = await fetch(commitUrl, { headers: { 'User-Agent': 'Aether-Voice-OS-Analyzer' } });
+      if (commitRes.ok) {
+        const commitData = await commitRes.json();
+        commitSha = commitData.sha;
+      } else {
+        const commitUrlMaster = `https://api.github.com/repos/${owner}/${repo}/commits/master`;
+        const commitResMaster = await fetch(commitUrlMaster, { headers: { 'User-Agent': 'Aether-Voice-OS-Analyzer' } });
+        if (commitResMaster.ok) {
+          const commitDataMaster = await commitResMaster.json();
+          commitSha = commitDataMaster.sha;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to fetch commit sha for caching', e);
+    }
+
+    const cacheKey = `aether_repo_cache_${owner}_${repo}_${commitSha}`;
+
+    if (commitSha && analysisCache.has(cacheKey)) {
+      console.log(`[Cache Hit] Returning cached analysis for ${owner}/${repo} at ${commitSha}`);
+      // Re-insert to maintain recent usage order
+      const cached = analysisCache.get(cacheKey);
+      analysisCache.delete(cacheKey);
+      analysisCache.set(cacheKey, cached);
+      return cached;
+    }
 
     const zipUrl = `https://api.github.com/repos/${owner}/${repo}/zipball/main`;
     const response = await fetch(zipUrl, {
@@ -99,11 +133,22 @@ ${combinedCode}
       ],
     });
 
-    return {
+    const result = {
       success: true,
       analysis: modelResponse.text as string,
       fileCount,
     };
+
+    if (commitSha) {
+      if (analysisCache.size >= MAX_CACHE_SIZE) {
+        // Remove the oldest entry (the first key in the Map iterator)
+        const firstKey = analysisCache.keys().next().value;
+        if (firstKey) analysisCache.delete(firstKey);
+      }
+      analysisCache.set(cacheKey, result);
+    }
+
+    return result;
 
   } catch (error: any) {
     console.error('Analysis error:', error);
