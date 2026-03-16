@@ -49,55 +49,8 @@ export default function AppShell({ children }: AppShellProps) {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-full bg-carbon-black text-white overflow-hidden selection:bg-aether-neon/30 font-sans">
-      {/* iOS-Style Neural Status Bar */}
-      <header className="fixed top-0 left-0 w-full z-[100] px-4 md:px-6 py-2 md:py-3 flex items-center justify-between aether-glass border-b border-white/[0.05]">
-        <div className="flex items-center gap-2 md:gap-4">
-          <div className="flex items-center gap-2">
-            <AetherLogo size={16} />
-            <span className="text-[10px] md:text-[8px] font-black uppercase tracking-[0.2em] text-aether-neon">Gemigram</span>
-          </div>
-          <div className="h-3 md:h-4 w-[1px] bg-white/10 hidden sm:block" />
-          <div className="flex items-center gap-2">
-            {linkType === 'bridge' ? (
-              <Zap className="w-2.5 h-2.5 text-aether-neon animate-pulse" />
-            ) : (
-              <Globe className="w-2.5 h-2.5 text-white/40" />
-            )}
-            <span className={`text-[10px] md:text-[8px] font-mono font-bold uppercase tracking-widest text-nowrap hidden sm:inline ${linkType === 'bridge' ? 'text-aether-neon' : 'text-white/40'}`}>
-              LINK::{linkType === 'bridge' ? 'LOCAL_SPINE' : 'CLOUD_DIRECT'}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex-1 text-center hidden sm:flex flex-col items-center">
-          <span className="text-hud">Sector</span>
-          <span className="text-xs md:text-[13px] font-bold text-white tracking-widest">{viewLabels[currentView]}</span>
-        </div>
-
-        <div className="flex items-center gap-3 md:gap-6">
-          {/* Theme Toggle */}
-          <ThemeToggle />
-          
-          <div className="h-3 md:h-4 w-[1px] bg-white/10 hidden md:block" />
-          
-          {/* System Status Icons */}
-          <div className="flex items-center gap-1 md:gap-2 text-white/40 hidden md:flex">
-            <Signal className="w-3 h-3" />
-            <Wifi className="w-3 h-3" />
-            <Battery className="w-3 h-3 rotate-90" />
-          </div>
-          
-          <div className="h-3 md:h-4 w-[1px] bg-white/10 hidden md:block" />
-          
-          {/* Clock */}
-          <span className="text-xs md:text-[12px] font-mono font-bold tabular-nums text-aether-neon">
-            {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
-          </span>
-        </div>
-      </header>
-
-      {/* Floating Dock Navigation */}
+    <div className="flex h-[100dvh] w-full bg-theme-primary text-white overflow-hidden selection:bg-gemigram-neon/30 font-sans">
+      {/* Sovereing Sidebar (Desktop) / Sidebar (Mobile) */}
       <FloatingNav 
         currentView={currentView} 
         user={user}
@@ -105,31 +58,74 @@ export default function AppShell({ children }: AppShellProps) {
         onLogout={logout}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full h-full relative overflow-hidden z-10 pt-14 md:pt-16 text-white">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={pathname}
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.02 }}
-            transition={{ duration: 0.3 }}
-            className="w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar pb-24 md:pb-32"
-          >
-            {children}
-          </motion.div>
-        </AnimatePresence>
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        {/* iOS-Style Neural Status Bar */}
+        <header className="h-14 md:h-16 px-4 md:px-6 flex items-center justify-between aether-glass border-b border-white/[0.05] z-[80] shrink-0">
+          <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-2 md:hidden">
+              <AetherLogo size={16} />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gemigram-neon">Gemigram</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {linkType === 'bridge' ? (
+                <Zap className="w-2.5 h-2.5 text-gemigram-neon animate-pulse" />
+              ) : (
+                <Globe className="w-2.5 h-2.5 text-white/40" />
+              )}
+              <span className={`text-[10px] md:text-[8px] font-mono font-bold uppercase tracking-widest text-nowrap hidden sm:inline ${linkType === 'bridge' ? 'text-gemigram-neon' : 'text-white/40'}`}>
+                LINK::{linkType === 'bridge' ? 'LOCAL_SPINE' : 'CLOUD_DIRECT'}
+              </span>
+            </div>
+          </div>
 
-      {/* Footer - Professional HUD Branding */}
-      <footer className="hidden md:flex fixed bottom-0 left-0 w-full py-6 z-50 pointer-events-none justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <div className="px-6 py-2.5 rounded-full aether-glass border border-white/5 flex items-center gap-5 pointer-events-auto">
+          <div className="flex-1 text-center flex flex-col items-center">
+            <span className="text-hud">Sector</span>
+            <span className="text-xs md:text-[13px] font-bold text-white tracking-widest">{viewLabels[currentView]}</span>
+          </div>
+
+          <div className="flex items-center gap-3 md:gap-6">
+            <ThemeToggle />
+            
+            <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
+            
+            <div className="flex items-center gap-2 text-white/40 hidden md:flex">
+              <Signal className="w-3 h-3" />
+              <Wifi className="w-3 h-3" />
+              <Battery className="w-3 h-3 rotate-90" />
+            </div>
+            
+            <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
+            
+            <span className="text-xs md:text-[12px] font-mono font-bold tabular-nums text-gemigram-neon">
+              {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+            </span>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="flex-1 w-full relative overflow-hidden z-10">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.02 }}
+              transition={{ duration: 0.3 }}
+              className="w-full h-full overflow-y-auto overflow-x-hidden custom-scrollbar pb-10"
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+
+        {/* Footer HUD (Desktop Only) */}
+        <footer className="hidden xl:flex absolute bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <div className="px-6 py-2.5 rounded-full glass-medium border border-white/5 flex items-center gap-5 pointer-events-auto">
             <div className="flex items-center gap-2 pr-5 border-r border-white/10">
               <span className="text-hud">INFRA::</span>
               <div className="flex items-center gap-3">
                 <Flame className="w-3.5 h-3.5 text-orange-500/50" />
-                <Sparkles className="w-3.5 h-3.5 text-aether-neon/50" />
+                <Sparkles className="w-3.5 h-3.5 text-gemigram-neon/50" />
                 <Cloud className="w-3.5 h-3.5 text-blue-400/50" />
               </div>
             </div>
@@ -140,12 +136,13 @@ export default function AppShell({ children }: AppShellProps) {
             </div>
 
             <div className="flex items-center gap-2 pl-5 border-l border-white/10">
-              <Activity className="w-3 h-3 text-aether-neon animate-pulse" />
-              <span className="text-hud text-aether-neon">SOVEREIGN_LINK_11/10</span>
+              <Activity className="w-3 h-3 text-gemigram-neon animate-pulse" />
+              <span className="text-hud text-gemigram-neon uppercase">Sovereign_Link_Stable</span>
             </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
+    </div>
     </div>
   );
 }

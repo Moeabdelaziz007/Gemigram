@@ -26,7 +26,7 @@ export default function LandingPage() {
   if (user) return null;
 
   return (
-    <div className="relative min-h-screen selection:bg-aether-neon/20 overflow-x-hidden" style={{ backgroundColor: 'var(--color-carbon-black)' }}>
+    <div className="relative min-h-screen selection:bg-gemigram-neon/20 overflow-x-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <HeroBackground />
       
       <EnterpriseHeader onLogin={() => setIsAuthOpen(true)} />
@@ -143,10 +143,10 @@ export default function LandingPage() {
         {/* Final Interactive CTA Section */}
         <section className="py-32 relative">
           <div className="container mx-auto px-6">
-            <div className="max-w-4xl mx-auto cyber-glass p-16 rounded-[3rem] border-carbon-neon/10 text-center relative overflow-hidden">
+            <div className="max-w-4xl mx-auto cyber-glass p-16 rounded-[3rem] border-gemigram-neon/10 text-center relative overflow-hidden">
               <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
               <h2 className="text-4xl md:text-6xl font-black mb-8 tracking-tighter uppercase relative z-10">
-                Ready for <span className="text-carbon-neon">Sovereignty?</span>
+                Ready for <span className="text-gemigram-neon">Sovereignty?</span>
               </h2>
               <p className="text-white/30 text-lg mb-12 max-w-xl mx-auto font-medium relative z-10">
                 Join the mainnet and initialize your first neural entity in seconds. 

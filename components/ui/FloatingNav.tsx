@@ -13,49 +13,49 @@ const ORBS_CONFIG = [
   {
     id: 'home',
     path: '/dashboard',
-    color: 'bg-aether-neon',
+    color: 'bg-gemigram-neon',
     icon: <Home className="w-5 h-5" />,
-    label: 'HOME_OPS'
+    label: 'SOVEREIGN_CORE'
   },
   {
-    id: 'workspace',
-    path: '/workspace',
-    color: 'bg-blue-500',
-    icon: <LayoutDashboard className="w-5 h-5" />,
-    label: 'WORKSPACE'
+    id: 'galaxy',
+    path: '/galaxy',
+    color: 'bg-gemigram-neon',
+    icon: <Globe className="w-5 h-5" />,
+    label: 'AETHER_GALAXY'
   },
   {
     id: 'hub',
     path: '/hub',
-    color: 'bg-aether-neon',
+    color: 'bg-gemigram-neon',
     icon: <Users className="w-5 h-5" />,
     label: 'NEURAL_HUB'
   },
   {
     id: 'forge',
     path: '/forge',
-    color: 'bg-emerald-500',
+    color: 'bg-gemigram-neon',
     icon: <Plus className="w-5 h-5" />,
-    label: 'FORGE'
+    label: 'AETHER_FORGE'
   },
   {
-    id: 'galaxy',
-    path: '/galaxy',
-    color: 'bg-cyan-500',
-    icon: <Globe className="w-5 h-5" />,
-    label: 'GALAXY'
+    id: 'workspace',
+    path: '/workspace',
+    color: 'bg-gemigram-neon',
+    icon: <LayoutDashboard className="w-5 h-5" />,
+    label: 'WORKSPACE'
   },
   {
     id: 'settings',
     path: '/settings',
-    color: 'bg-gray-500',
+    color: 'bg-white/20',
     icon: <Settings className="w-5 h-5" />,
     label: 'CONFIG'
   }
 ];
 
 interface FloatingNavProps {
-  currentView: 'home' | 'workspace' | 'hub' | 'settings' | 'forge' | 'galaxy';
+  currentView: string;
   user: any;
   onLogin: () => void;
   onLogout: () => void;
@@ -64,18 +64,15 @@ interface FloatingNavProps {
 export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNavProps) {
   const [expandingOrb, setExpandingOrb] = useState<string | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState<any[]>([]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (!user) return;
-
     const q = query(
       collection(db, 'notifications'),
       where('userId', '==', user.uid),
       where('read', '==', false)
     );
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
       try {
         const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -84,14 +81,12 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
         console.warn('Notifications error:', err);
       }
     });
-
     return () => unsubscribe();
   }, [user]);
 
   const handleNavigate = (id: string, path: string) => {
     if (currentView === id) return;
     setExpandingOrb(id);
-    setMobileMenuOpen(false);
     setTimeout(() => {
       router.push(path);
       setTimeout(() => setExpandingOrb(null), 400);
@@ -108,162 +103,107 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
             animate={{ opacity: 1, scale: 200 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed z-[100] w-10 h-10 rounded-full bg-aether-black/90 backdrop-blur-2xl pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            className="fixed z-[100] w-10 h-10 rounded-full bg-theme-primary opacity-90 backdrop-blur-2xl pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
           />
         )}
       </AnimatePresence>
 
-      {/* Bottom Navigation Dock (Desktop & Tablet) */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] hidden md:flex items-center gap-2 px-5 py-3 rounded-2xl aether-glass border border-white/5 shadow-2xl shadow-black/50 max-w-[90vw] overflow-x-auto overflow-y-hidden hide-scrollbar"
+      {/* Sovereign Sidebar (Desktop) */}
+      <motion.aside
+        initial={{ x: -80, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        className="hidden md:flex flex-col items-center py-8 w-20 xl:w-64 bg-theme-secondary border-r border-white/5 z-[90] shrink-0"
       >
-        {ORBS_CONFIG.map((orb, index) => {
-          const isActive = currentView === orb.id;
-          const hasNotif = orb.id === 'workspace' && unreadNotifications.length > 0;
+        <div className="mb-12">
+          <div className="flex items-center gap-3 px-4">
+            <AetherLogo size={28} />
+            <span className="hidden xl:block text-sm font-black uppercase tracking-[0.2em] text-white">Gemigram AIOS</span>
+          </div>
+        </div>
 
-          return (
-            <motion.button
-              key={orb.id}
-              whileHover={{ y: -2, scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleNavigate(orb.id, orb.path)}
-              className={`relative px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2.5 ${
-                isActive
-                  ? 'bg-aether-neon/10 text-aether-neon border border-aether-neon/30 shadow-[0_0_15px_rgba(0,255,65,0.15)] ring-1 ring-aether-neon/20'
-                  : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
-              title={orb.label}
-            >
-              <div className={isActive ? 'drop-shadow-[0_0_8px_rgba(0,255,65,0.5)]' : ''}>
-                {orb.icon}
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.1em] hidden lg:inline">{orb.label}</span>
-              {hasNotif && (
-                <motion.span
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="w-2 h-2 rounded-full bg-red-500 ml-1"
-                />
-              )}
-            </motion.button>
-          );
-        })}
-
-        {/* User Profile Inline */}
-        <div className="ml-4 pl-4 border-l border-white/10 flex-shrink-0">
-          {user ? (
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col items-end">
-                <span className="text-xs font-semibold text-white">{user.displayName || 'User'}</span>
-                <span className="text-[10px] text-white/50">Active</span>
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={onLogout}
-                className="w-9 h-9 rounded-full overflow-hidden border border-white/20 hover:border-red-400/50 transition-colors"
+        <nav className="flex-1 flex flex-col gap-3 w-full px-3">
+          {ORBS_CONFIG.map((orb) => {
+            const isActive = currentView === orb.id;
+            return (
+              <button
+                key={orb.id}
+                onClick={() => handleNavigate(orb.id, orb.path)}
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all group ${
+                  isActive 
+                    ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/20 shadow-[0_0_20px_rgba(16,255,135,0.1)]' 
+                    : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'
+                }`}
               >
-                {user.photoURL ? (
-                  <Image 
-                    src={user.photoURL}
-                    alt={user.displayName || 'User'}
-                    width={36}
-                    height={36}
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-aether-neon/20 flex items-center justify-center">
-                    <User className="w-4 h-4 text-aether-neon" />
-                  </div>
-                )}
-              </motion.button>
+                <div className={`${isActive ? 'text-gemigram-neon' : 'group-hover:text-white'}`}>
+                  {orb.icon}
+                </div>
+                <span className="hidden xl:block text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap">{orb.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto px-3 w-full space-y-4">
+          {user ? (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/5">
+                <div className="w-8 h-8 rounded-full overflow-hidden border border-gemigram-neon/30">
+                  {user.photoURL ? (
+                    <Image src={user.photoURL} alt="User" width={32} height={32} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gemigram-neon/20 flex items-center justify-center">
+                      <User className="w-4 h-4 text-gemigram-neon" />
+                    </div>
+                  )}
+                </div>
+                <div className="hidden xl:flex flex-col truncate">
+                  <span className="text-xs font-bold text-white truncate">{user.displayName || 'Architect'}</span>
+                  <span className="text-[8px] text-white/40 uppercase tracking-widest leading-none mt-1">Sovereign_Active</span>
+                </div>
+              </div>
+              <button 
+                onClick={onLogout}
+                className="flex items-center gap-4 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-400/10 transition-colors border border-transparent hover:border-red-400/20"
+              >
+                <LogOut className="w-5 h-5 flex-shrink-0" />
+                <span className="hidden xl:block text-[10px] font-black uppercase tracking-widest">Terminate_Session</span>
+              </button>
             </div>
           ) : (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button 
               onClick={onLogin}
-              className="px-4 py-2 rounded-lg bg-aether-neon text-black font-semibold text-sm hover:bg-white transition-all"
+              className="w-full py-4 rounded-2xl bg-gemigram-neon text-black font-black uppercase text-[10px] tracking-widest shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:scale-[1.02] transition-all"
             >
-              Sign In
-            </motion.button>
+              Access_System
+            </button>
           )}
         </div>
-      </motion.div>
+      </motion.aside>
 
-      {/* Mobile Top Navigation */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="md:hidden fixed top-14 right-6 z-[90]"
+      {/* Mobile Dock (Bottom) */}
+      <motion.nav
+        initial={{ y: 80 }}
+        animate={{ y: 0 }}
+        className="md:hidden fixed bottom-6 left-6 right-6 h-16 aether-glass border border-white/10 rounded-2xl z-[100] flex items-center justify-around px-2"
       >
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="w-10 h-10 rounded-lg quantum-glass flex items-center justify-center"
-          title="Menu"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-          </svg>
-        </motion.button>
-
-        {/* Mobile Menu Dropdown */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute top-12 right-0 w-48 rounded-lg quantum-glass mt-2 overflow-hidden"
+        {ORBS_CONFIG.slice(0, 5).map((orb) => {
+          const isActive = currentView === orb.id;
+          return (
+            <button
+              key={orb.id}
+              onClick={() => handleNavigate(orb.id, orb.path)}
+              className={`p-3 rounded-xl transition-all ${
+                isActive ? 'text-gemigram-neon bg-gemigram-neon/10' : 'text-white/40'
+              }`}
             >
-              {ORBS_CONFIG.map((orb) => {
-                const isActive = currentView === orb.id;
-                return (
-                  <motion.button
-                    key={orb.id}
-                    whileHover={{ x: 4 }}
-                    onClick={() => handleNavigate(orb.id, orb.path)}
-                    className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-all border-b border-white/5 last:border-b-0 ${
-                      isActive ? 'bg-white/10 text-aether-neon' : 'text-white/70 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    {orb.icon}
-                    <span className="font-medium text-sm">{orb.label}</span>
-                  </motion.button>
-                );
-              })}
-              
-              {/* Mobile User Section */}
-              <div className="border-t border-white/5 p-3">
-                {user ? (
-                  <motion.button
-                    whileHover={{ x: 4 }}
-                    onClick={onLogout}
-                    className="w-full px-3 py-2 flex items-center gap-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-all text-sm font-medium"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
-                  </motion.button>
-                ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    onClick={onLogin}
-                    className="w-full px-3 py-2 bg-aether-neon text-black rounded-lg font-semibold text-sm hover:bg-white transition-all"
-                  >
-                    Sign In
-                  </motion.button>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+              {orb.icon}
+            </button>
+          );
+        })}
+      </motion.nav>
+    </>
+  );
+}
     </>
   );
 }

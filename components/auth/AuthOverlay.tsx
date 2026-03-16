@@ -33,28 +33,17 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
             className="absolute inset-0 bg-black/80 backdrop-blur-xl"
           />
           
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="w-full max-w-lg cyber-glass rounded-[3rem] p-12 relative overflow-hidden border-carbon-neon/10"
-          >
-            {/* Background Texture */}
-            <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-
-            <button 
-              onClick={onClose}
-              className="absolute top-8 right-8 text-white/10 hover:text-carbon-neon transition-colors"
+              className="absolute top-8 right-8 text-white/10 hover:text-gemigram-neon transition-colors"
             >
               <X size={20} />
             </button>
 
             <div className="text-center mb-12 relative z-10">
-              <div className="w-20 h-20 cyber-button rounded-3xl flex items-center justify-center mx-auto mb-8 border-carbon-neon/20 shadow-[0_0_30px_rgba(57,255,20,0.05)] relative overflow-hidden">
-                <Fingerprint className="w-10 h-10 text-carbon-neon" />
+              <div className="w-20 h-20 cyber-button rounded-3xl flex items-center justify-center mx-auto mb-8 border-gemigram-neon/20 shadow-[0_0_30px_rgba(16,255,135,0.05)] relative overflow-hidden">
+                <Fingerprint className="w-10 h-10 text-gemigram-neon" />
                 {/* Industrial Scanning Bar */}
                 <motion.div 
-                  className="absolute left-0 right-0 h-0.5 bg-carbon-neon/50 shadow-[0_0_10px_#39ff14]"
+                  className="absolute left-0 right-0 h-0.5 bg-gemigram-neon/50 shadow-[0_0_10px_#10ff87]"
                   animate={{ top: ['0%', '100%', '0%'] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 />
@@ -81,13 +70,13 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
                 <div className="h-px flex-1 bg-white/5" />
               </div>
 
-              <div className="cyber-panel p-1.5 rounded-2xl flex items-center gap-3 border-white/5 focus-within:border-carbon-neon/30 transition-colors">
-                <div className="p-3 bg-carbon-neon/10 rounded-xl">
-                  <Mail className="w-4 h-4 text-carbon-neon/60" />
+              <div className="cyber-panel p-1.5 rounded-2xl flex items-center gap-3 border-white/5 focus-within:border-gemigram-neon/30 transition-colors">
+                <div className="p-3 bg-gemigram-neon/10 rounded-xl">
+                  <Mail className="w-4 h-4 text-gemigram-neon/60" />
                 </div>
                 <input 
                   type="email" 
-                  placeholder="admin@aether.os" 
+                  placeholder="admin@gemigram.ai" 
                   className="bg-transparent border-none outline-none text-sm p-2 flex-1 text-white placeholder:text-white/10 font-bold uppercase tracking-widest"
                 />
               </div>
@@ -104,17 +93,17 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
 
             <div className="grid grid-cols-2 gap-4 relative z-10">
               <div className="cyber-panel px-5 py-4 rounded-2xl border-white/5 flex items-center gap-4">
-                 <ShieldCheck className="w-5 h-5 text-carbon-neon/20" />
+                 <ShieldCheck className="w-5 h-5 text-gemigram-neon/20" />
                  <span className="text-[9px] uppercase font-black tracking-widest text-white/20">Secure-Spine</span>
               </div>
               <div className="cyber-panel px-5 py-4 rounded-2xl border-white/5 flex items-center gap-4">
-                 <Globe className="w-5 h-5 text-carbon-neon/20" />
+                 <Globe className="w-5 h-5 text-gemigram-neon/20" />
                  <span className="text-[9px] uppercase font-black tracking-widest text-white/20">Mainnet v2</span>
               </div>
             </div>
 
             <p className="mt-12 text-center text-[9px] text-white/10 leading-relaxed max-w-[80%] mx-auto font-bold uppercase tracking-widest">
-              AetherOS Hybrid Intelligence Protocol · Deployment v2.4.0
+              Gemigram Sovereign Intelligence Protocol · Deployment v2.5.0
             </p>
           </motion.div>
         </div>

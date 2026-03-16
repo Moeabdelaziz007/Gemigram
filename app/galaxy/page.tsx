@@ -43,21 +43,21 @@ export default function GalaxyPage() {
       >
         <button 
           onClick={() => setZoom(z => Math.min(z + 0.2, 2))}
-          className="w-10 h-10 rounded-xl quantum-glass border border-white/10 flex items-center justify-center hover:border-neon-green/50 hover:bg-neon-green/10 transition-all group"
+          className="w-10 h-10 rounded-xl glass-medium border border-white/10 flex items-center justify-center hover:border-gemigram-neon/50 hover:bg-gemigram-neon/10 transition-all group"
         >
-          <ZoomIn className="w-4 h-4 text-white/60 group-hover:text-neon-green" />
+          <ZoomIn className="w-4 h-4 text-white/60 group-hover:text-gemigram-neon" />
         </button>
         <button 
           onClick={() => setZoom(z => Math.max(z - 0.2, 0.6))}
-          className="w-10 h-10 rounded-xl quantum-glass border border-white/10 flex items-center justify-center hover:border-neon-blue/50 hover:bg-neon-blue/10 transition-all group"
+          className="w-10 h-10 rounded-xl glass-medium border border-white/10 flex items-center justify-center hover:border-gemigram-neon/50 hover:bg-gemigram-neon/10 transition-all group"
         >
-          <ZoomOut className="w-4 h-4 text-white/60 group-hover:text-neon-blue" />
+          <ZoomOut className="w-4 h-4 text-white/60 group-hover:text-gemigram-neon" />
         </button>
         <button 
           onClick={() => setShowConnections(!showConnections)}
-          className={`w-10 h-10 rounded-xl quantum-glass border transition-all group ${showConnections ? 'border-electric-purple/50 bg-electric-purple/10' : 'border-white/10'}`}
+          className={`w-10 h-10 rounded-xl glass-medium border transition-all group ${showConnections ? 'border-gemigram-neon/50 bg-gemigram-neon/10' : 'border-white/10'}`}
         >
-          <Network className={`w-4 h-4 ${showConnections ? 'text-electric-purple' : 'text-white/60 group-hover:text-white'}`} />
+          <Network className={`w-4 h-4 ${showConnections ? 'text-gemigram-neon' : 'text-white/60 group-hover:text-white'}`} />
         </button>
         <div className="w-10 h-10 rounded-xl quantum-glass border border-white/10 flex items-center justify-center cursor-move">
           <Move className="w-4 h-4 text-white/40" />
@@ -69,7 +69,7 @@ export default function GalaxyPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-2 uppercase bg-clip-text text-transparent bg-gradient-to-r from-neon-green via-cyan-400 to-electric-purple drop-shadow-[0_0_30px_rgba(16,255,135,0.3)]">
+          <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-2 uppercase bg-clip-text text-transparent bg-gradient-to-r from-gemigram-neon via-white to-gemigram-neon drop-shadow-[0_0_30px_rgba(16,255,135,0.3)]">
             Aether Galaxy
           </h2>
           <p className="text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em]">Sovereign Planet Architecture // Live Orchestration</p>
@@ -80,16 +80,16 @@ export default function GalaxyPage() {
         {/* Enhanced Dark Matter Background with Nebula */}
         <div className="absolute inset-0">
           {/* Base gradient */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0%,transparent_70%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,255,135,0.05)_0%,transparent_70%)]" />
           
           {/* Nebula Clouds - Neon Green Accent */}
           <motion.div 
             style={{ x: parallaxX, y: parallaxY }}
-            className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-neon-green/3 to-cyan-500/5 rounded-full blur-[100px]" 
+            className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-gradient-to-br from-gemigram-neon/5 to-transparent rounded-full blur-[100px]" 
           />
           <motion.div 
             style={{ x: useTransform(parallaxX, x => -x * 0.5), y: useTransform(parallaxY, y => -y * 0.5) }}
-            className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-tl from-electric-purple/3 to-pink-500/5 rounded-full blur-[100px]" 
+            className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-gradient-to-tl from-gemigram-neon/5 to-transparent rounded-full blur-[100px]" 
           />
           
           {/* Star Field */}
@@ -108,25 +108,22 @@ export default function GalaxyPage() {
               rotate: 360
             }}
             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="w-48 h-48 rounded-full bg-gradient-to-br from-cyan-500/10 via-neon-green/5 to-transparent blur-[60px] absolute -inset-16" 
+            className="w-48 h-48 rounded-full bg-gradient-to-br from-gemigram-neon/10 via-transparent to-transparent blur-[60px] absolute -inset-16" 
           />
           
-          {/* Multiple glow layers */}
-          <div className="absolute inset-0 rounded-full bg-cyan-500/5 blur-[40px]" />
-          <div className="absolute inset-2 rounded-full bg-neon-green/3 blur-[30px]" />
           
-          <div className="w-24 h-24 rounded-full bg-black border border-cyan-400/30 flex items-center justify-center relative z-10 shadow-[0_0_80px_rgba(34,211,238,0.1),inset_0_0_40px_rgba(16,255,135,0.05)] group-hover:scale-110 group-hover:border-neon-green/50 transition-all duration-700">
-            <Brain className="w-10 h-10 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
+          <div className="w-24 h-24 rounded-full bg-black border border-gemigram-neon/30 flex items-center justify-center relative z-10 shadow-[0_0_80px_rgba(16,255,135,0.1),inset_0_0_40px_rgba(16,255,135,0.05)] group-hover:scale-110 group-hover:border-gemigram-neon/50 transition-all duration-700">
+            <Brain className="w-10 h-10 text-gemigram-neon drop-shadow-[0_0_10px_rgba(16,255,135,0.5)]" />
           </div>
           
           {/* Core Labels */}
-          <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 text-center">
+          <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 text-center whitespace-nowrap">
             <motion.div 
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400"
+              className="text-[10px] font-black uppercase tracking-[0.3em] text-gemigram-neon"
             >
-              Core Active
+              CORE_OS_ACTIVE
             </motion.div>
           </div>
         </motion.div>
@@ -136,12 +133,12 @@ export default function GalaxyPage() {
           <motion.div 
             key={i} 
             style={{ scale: zoom }}
-            className="absolute border border-gradient-to-r from-cyan-500/10 via-neon-green/5 to-transparent rounded-full pointer-events-none" 
+            className="absolute border border-white/5 border-dashed rounded-full pointer-events-none" 
             initial={{ width: r*2, height: r*2 }}
             animate={{ 
-              borderColor: ['rgba(6,182,212,0.1)', 'rgba(16,255,135,0.05)', 'rgba(6,182,212,0.1)']
+              borderColor: ['rgba(16,255,135,0.05)', 'rgba(255,255,255,0.02)', 'rgba(16,255,135,0.05)']
             }}
-            transition={{ duration: 3, repeat: Infinity }}
+            transition={{ duration: 4, repeat: Infinity }}
           />
         ))}
 
@@ -178,7 +175,7 @@ export default function GalaxyPage() {
         {/* Orbiting Agent Planets - Enhanced */}
         {agents.map((agent, i) => {
           const radius = 220 + (i * 40);
-          const duration = 15 + (i * 5);
+          const duration = 20 + (i * 5);
           const delay = i * -3.5;
           
           return (
@@ -204,8 +201,8 @@ export default function GalaxyPage() {
                     whileHover={{ scale: 1.4 }}
                     className={`relative w-14 h-14 rounded-full bg-slate-900 border-2 flex items-center justify-center transition-all ${
                       activeAgentId === agent.id 
-                        ? 'border-neon-green shadow-[0_0_30px_rgba(16,255,135,0.5)] bg-neon-green/10' 
-                        : 'border-white/5 bg-white/[0.02] hover:border-cyan-400/50'
+                        ? 'border-gemigram-neon shadow-[0_0_30px_rgba(16,255,135,0.5)] bg-gemigram-neon/10' 
+                        : 'border-white/5 bg-white/[0.02] hover:border-gemigram-neon/50 shadow-none'
                     }`}
                   >
                     {/* Pulsing ring for active agent */}
@@ -213,25 +210,25 @@ export default function GalaxyPage() {
                       <motion.div 
                         animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute inset-0 rounded-full border-2 border-neon-green"
+                        className="absolute inset-0 rounded-full border-2 border-gemigram-neon"
                       />
                     )}
                     
-                    <Globe className={`w-6 h-6 ${activeAgentId === agent.id ? 'text-neon-green' : 'text-white/20 group-hover:text-cyan-400'}`} />
+                    <Globe className={`w-6 h-6 ${activeAgentId === agent.id ? 'text-gemigram-neon' : 'text-white/20 group-hover:text-gemigram-neon'}`} />
                     
                     {/* Status indicator */}
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-gradient-to-br from-neon-green to-cyan-400 shadow-[0_0_10px_rgba(16,255,135,0.8)]" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-gemigram-neon shadow-[0_0_10px_rgba(16,255,135,0.8)]" />
                     
                     {/* Agent Label Bubble - Enhanced */}
                     <div className="absolute left-full ml-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 pointer-events-none z-50">
                       <motion.div 
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="cyber-panel p-4 border border-neon-green/30 bg-gradient-to-br from-neon-green/10 to-transparent rounded-2xl min-w-[160px] backdrop-blur-xl"
+                        className="glass-medium p-4 border border-gemigram-neon/30 bg-black/80 rounded-2xl min-w-[160px] backdrop-blur-xl"
                       >
                         <div className="text-[8px] font-bold uppercase tracking-widest text-white/40 mb-1">Entity // {String(i+1).padStart(2, '0')}</div>
                         <div className="text-sm font-black text-white mb-1.5">{agent.name}</div>
-                        <div className="text-[9px] text-neon-green font-mono uppercase tracking-wide">{agent.role}</div>
+                        <div className="text-[9px] text-gemigram-neon font-mono uppercase tracking-wide">{agent.role}</div>
                         
                         {/* Quick action */}
                         <div className="mt-2 pt-2 border-t border-white/10">
@@ -254,27 +251,27 @@ export default function GalaxyPage() {
         transition={{ delay: 1 }}
         className="absolute bottom-12 right-12 z-20 hidden lg:block"
       >
-        <div className="cyber-panel p-6 border border-neon-green/20 bg-gradient-to-br from-neon-green/5 to-transparent rounded-[2rem] w-72 backdrop-blur-xl">
+        <div className="glass-medium p-6 border border-gemigram-neon/20 bg-black/40 rounded-[2rem] w-72 backdrop-blur-xl">
           <div className="flex items-center gap-2 mb-4">
-            <Network className="w-4 h-4 text-neon-green" />
-            <div className="text-[10px] font-black uppercase tracking-widest text-neon-green">Gravity Field Stats</div>
+            <Network className="w-4 h-4 text-gemigram-neon" />
+            <div className="text-[10px] font-black uppercase tracking-widest text-gemigram-neon">Sync Telemetry</div>
           </div>
           
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-white/40">Entities Attached</span>
+              <span className="text-xs text-white/40">Entities_Registry</span>
               <motion.span 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="text-xs font-bold text-neon-green"
+                className="text-xs font-bold text-gemigram-neon"
               >
                 {agents.length}
               </motion.span>
             </div>
             
             <div className="flex justify-between items-center">
-              <span className="text-xs text-white/40">Core Sync-Rate</span>
-              <span className="text-xs font-bold text-cyan-400">99.8%</span>
+              <span className="text-xs text-white/40">Neural_Load</span>
+              <span className="text-xs font-bold text-gemigram-neon">99.8%</span>
             </div>
             
             <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
@@ -282,7 +279,7 @@ export default function GalaxyPage() {
                 initial={{ width: '0%' }}
                 animate={{ width: '99.8%' }}
                 transition={{ duration: 2, delay: 0.5 }}
-                className="h-full bg-gradient-to-r from-neon-green to-cyan-500 shadow-[0_0_10px_rgba(16,255,135,0.5)]"
+                className="h-full bg-gemigram-neon shadow-[0_0_10px_rgba(16,255,135,0.5)]"
               />
             </div>
             

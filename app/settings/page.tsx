@@ -74,7 +74,7 @@ export default function SettingsPage() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-gradient-to-r from-neon-green to-mint-chip text-black shadow-[0_0_20px_rgba(16,255,135,0.3)]'
+                ? 'bg-gemigram-neon text-black shadow-[0_0_20px_rgba(16,255,135,0.3)]'
                 : 'text-white/40 hover:text-white hover:bg-white/5'
             }`}
           >
@@ -306,12 +306,12 @@ export default function SettingsPage() {
           disabled={!hasChanges}
           className={`flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all ${
             hasChanges
-              ? 'bg-gradient-to-r from-neon-green to-mint-chip text-black shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:shadow-[0_0_50px_rgba(16,255,135,0.5)]'
+              ? 'bg-gemigram-neon text-black shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:shadow-[0_0_50px_rgba(16,255,135,0.5)]'
               : 'bg-white/5 text-white/30 cursor-not-allowed'
           }`}
         >
           <Save className="w-4 h-4" />
-          <span className={hasChanges ? '' : 'opacity-50'}>Save Changes</span>
+          <span className={hasChanges ? '' : 'opacity-50'}>Persist_Changes</span>
         </button>
       </motion.div>
     </div>

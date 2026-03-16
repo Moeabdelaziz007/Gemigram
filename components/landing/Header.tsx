@@ -41,7 +41,7 @@ export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
       <div className="container mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group">
-          <Fingerprint className="w-8 h-8 text-carbon-neon" />
+          <Fingerprint className="w-8 h-8 text-gemigram-neon" />
           <span className="text-xl font-bold tracking-tight text-white uppercase">
             Gemigram
           </span>
@@ -53,7 +53,7 @@ export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
             <Link 
               key={link.name} 
               href={link.href}
-              className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-carbon-neon transition-colors"
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-gemigram-neon transition-colors"
             >
               {link.name}
             </Link>
@@ -80,7 +80,7 @@ export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
 
         {/* Mobile Toggle */}
         <button 
-          className="md:hidden text-carbon-neon/70"
+          className="md:hidden text-gemigram-neon/70"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X /> : <Menu />}

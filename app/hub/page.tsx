@@ -45,9 +45,9 @@ export default function HubPage() {
           
           <button 
             onClick={() => router.push('/forge')}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-cyan-500 text-black border border-cyan-400 hover:bg-cyan-400 transition-all font-black uppercase text-xs tracking-widest shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gemigram-neon text-black border border-gemigram-neon/30 hover:shadow-[0_0_30px_rgba(16,255,135,0.4)] transition-all font-black uppercase text-xs tracking-widest"
           >
-            <Plus className="w-4 h-4" /> Create Entity
+            <Plus className="w-4 h-4" /> Materialize_Entity
           </button>
         </div>
       </div>
@@ -59,8 +59,8 @@ export default function HubPage() {
             onClick={() => setFilterRole(role)}
             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
               filterRole === role 
-                ? 'bg-white text-black border-white' 
-                : 'bg-white/[0.03] text-slate-500 border-white/5 hover:border-white/20'
+                ? 'bg-gemigram-neon text-black border-gemigram-neon shadow-[0_0_15px_rgba(16,255,135,0.2)]' 
+                : 'bg-white/[0.03] text-white/40 border-white/5 hover:border-white/20'
             }`}
           >
             {role}

@@ -61,7 +61,7 @@ function FlowGrid() {
         {Array.from({ length: 12 }).map((_, i) => (
           <motion.div
             key={i}
-            className="h-[1px] bg-gradient-to-r from-transparent via-neon-green/30 to-transparent"
+            className="h-[1px] bg-gradient-to-r from-transparent via-gemigram-neon/30 to-transparent"
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: 0.3 }}
             transition={{
@@ -91,7 +91,7 @@ function FloatingShapes() {
         return (
           <motion.div
             key={shape}
-            className="absolute border border-neon-green/20"
+            className="absolute border border-gemigram-neon/20"
             style={{
               width: size,
               height: shape === 'triangle' ? size : size,
@@ -174,7 +174,7 @@ export default function HeroBackground() {
         style={{ x: x1, y: y1 }}
         className="absolute inset-[-10%] opacity-30"
       >
-        <div className="absolute top-[20%] left-[15%] w-[40vw] h-[40vw] bg-gradient-to-br from-neon-green/20 to-emerald-500/10 rounded-full blur-[140px] animate-pulse" />
+        <div className="absolute top-[20%] left-[15%] w-[40vw] h-[40vw] bg-gradient-to-br from-gemigram-neon/20 to-emerald-500/10 rounded-full blur-[140px] animate-pulse" />
         <div className="absolute bottom-[20%] right-[15%] w-[35vw] h-[35vw] bg-gradient-to-tl from-fuchsia-500/10 to-purple-500/5 rounded-full blur-[120px]" />
         <div className="absolute top-[60%] left-[60%] w-[25vw] h-[25vw] bg-cyan-500/10 rounded-full blur-[100px]" />
       </motion.div>
@@ -194,7 +194,7 @@ export default function HeroBackground() {
           repeat: Infinity,
           times: [0, 0.5, 1] 
         }}
-        className="absolute inset-0 bg-gradient-to-b from-neon-green/10 to-transparent pointer-events-none"
+        className="absolute inset-0 bg-gradient-to-b from-gemigram-neon/10 to-transparent pointer-events-none"
       />
 
       {/* Layer 8: Surface Noise */}

@@ -13,9 +13,9 @@ export function EnterpriseFooter() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-10 group">
-              <Fingerprint className="w-10 h-10 text-carbon-neon" />
+              <Fingerprint className="w-10 h-10 text-gemigram-neon" />
               <span className="text-2xl font-black tracking-tight text-white uppercase">
-                Aether<span className="text-carbon-neon">OS</span>
+                Gemi<span className="text-gemigram-neon">gram</span>
               </span>
             </Link>
             <p className="text-white/20 text-xs font-bold leading-relaxed mb-10 uppercase tracking-widest">
@@ -24,7 +24,7 @@ export function EnterpriseFooter() {
             </p>
             <div className="flex gap-4">
               {[Github, Twitter, Linkedin].map((Icon, i) => (
-                <Link key={i} href="#" className="p-3 cyber-panel rounded-2xl text-white/20 hover:text-carbon-neon hover:bg-carbon-neon/5 transition-all">
+                <Link key={i} href="#" className="p-3 cyber-panel rounded-2xl text-white/20 hover:text-gemigram-neon hover:bg-gemigram-neon/5 transition-all">
                   <Icon size={18} />
                 </Link>
               ))}
@@ -41,7 +41,7 @@ export function EnterpriseFooter() {
               <ul className="space-y-6">
                 {col.links.map(item => (
                   <li key={item}>
-                    <Link href="#" className="text-sm font-bold text-white/20 hover:text-carbon-neon transition-colors uppercase tracking-widest">
+                    <Link href="#" className="text-sm font-bold text-white/20 hover:text-gemigram-neon transition-colors uppercase tracking-widest">
                       {item}
                     </Link>
                   </li>
@@ -54,11 +54,11 @@ export function EnterpriseFooter() {
         <div className="pt-12 border-t border-white/[0.02] flex flex-col md:flex-row justify-between items-center gap-10">
           <div className="flex items-center gap-12">
             <p className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10">
-              © 2026 Aether Architect. Secure Node.
+              © 2026 Gemigram Team. Secure Node.
             </p>
             <div className="hidden md:flex items-center gap-4">
-               <span className="w-1.5 h-1.5 rounded-full bg-carbon-neon shadow-[0_0_10px_rgba(57,255,20,0.5)]" />
-               <span className="text-[9px] font-black uppercase tracking-[0.5em] text-carbon-neon/50 uppercase">Mainnet Online</span>
+               <span className="w-1.5 h-1.5 rounded-full bg-gemigram-neon shadow-[0_0_10px_rgba(16,255,135,0.5)]" />
+               <span className="text-[9px] font-black uppercase tracking-[0.5em] text-gemigram-neon/50 uppercase">Mainnet Online</span>
             </div>
           </div>
           

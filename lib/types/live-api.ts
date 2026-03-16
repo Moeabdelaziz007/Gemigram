@@ -1,5 +1,6 @@
 
 export interface WeatherResult {
+  name?: string;
   location: string;
   temperature: number;
   condition: string;
@@ -7,12 +8,14 @@ export interface WeatherResult {
 }
 
 export interface CryptoResult {
+  name?: string;
   symbol: string;
   price: string;
   change24h: string;
 }
 
 export interface MapLocationResult {
+  name?: string;
   location: string;
   lat: string;
   lng: string;
@@ -21,6 +24,7 @@ export interface MapLocationResult {
 }
 
 export interface SearchWebResult {
+  name?: string;
   results: Array<{
     title: string;
     snippet: string;
@@ -30,6 +34,7 @@ export interface SearchWebResult {
 }
 
 export interface MemoryResult {
+  name?: string;
   status: "success" | "error";
   message?: string;
   memories?: Array<{
@@ -42,12 +47,14 @@ export interface MemoryResult {
 }
 
 export interface ProjectResult {
+  name?: string;
   status: "success" | "error";
   projects?: any[];
   message?: string;
 }
 
 export interface WorkspaceResult {
+  name?: string;
   status: "simulation";
   message: string;
   action: string;
@@ -55,6 +62,7 @@ export interface WorkspaceResult {
 }
 
 export interface GenericToolResponse {
+  name?: string;
   [key: string]: unknown;
 }
 
@@ -77,6 +85,7 @@ export interface FunctionDeclaration {
       type: string;
       description?: string;
       enum?: string[];
+      items?: { type: string };
     }>;
     required?: string[];
   };

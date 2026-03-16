@@ -14,7 +14,7 @@ const FORGE_STEPS = [
   { id: 'memory', text: 'Initializing Semantic Memory Networks...', icon: Database, duration: 3500 },
   { id: 'identity', text: 'Inscribing Sovereign Digital Signature...', icon: Fingerprint, duration: 2000 },
   { id: 'package', text: 'Materializing .ath Entity...', icon: Package, duration: 2000 },
-  { id: 'heartbeat', text: 'Initiating Vital Signs Monitor...', icon: Sparkles, duration: 1500 },
+  { id: 'heartbeat', text: 'Initiating Vital Signs Monitor...', icon: Activity, duration: 1500 },
 ];
 
 // Forge Chamber internal imports
@@ -46,10 +46,10 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
   }, [pendingManifest]);
 
   const colorClasses = {
-    cyan: 'bg-cyan-400 text-cyan-400 border-cyan-500 shadow-cyan-500',
+    cyan: 'bg-gemigram-neon text-gemigram-neon border-gemigram-neon/50 shadow-gemigram-neon/50',
     fuchsia: 'bg-fuchsia-400 text-fuchsia-400 border-fuchsia-500 shadow-fuchsia-500',
-    red: 'bg-red-400 text-red-400 border-red-500 shadow-red-500',
-    purple: 'bg-purple-400 text-purple-400 border-purple-500 shadow-purple-500'
+    red: 'bg-rose-500 text-rose-500 border-rose-600 shadow-rose-600',
+    purple: 'bg-violet-500 text-violet-500 border-violet-600 shadow-violet-600'
   }[soulColor];
 
   useEffect(() => {

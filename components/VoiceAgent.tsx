@@ -140,13 +140,11 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
             voiceName: { type: "STRING", enum: ["Charon", "Puck", "Kore", "Fenrir"], description: "The auditory identity of the agent" },
             tools: { 
               type: "ARRAY", 
-              items: { type: "STRING" }, 
-              description: "List of enabled modules (search, maps, weather, crypto, math, memory)" 
+              items: { type: "STRING" }
             },
             skills: {
               type: "ARRAY",
-              items: { type: "STRING" },
-              description: "Google Workspace skills (gmail, calendar, drive)"
+              items: { type: "STRING" }
             }
           },
           required: ["name", "role", "systemPrompt"]
@@ -185,7 +183,7 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
       <div className="absolute inset-0 z-0">
         {/* Dynamic Ambient Glow (Gem #9: Vitality Mapping) */}
         <motion.div 
-          className="absolute inset-0 bg-carbon-neon/5 blur-[120px] pointer-events-none"
+          className="absolute inset-0 bg-gemigram-neon/5 blur-[120px] pointer-events-none"
           animate={{ 
             opacity: isRecording || isConnected ? [0.05, 0.1 + volume * 0.4, 0.05] : 0,
             scale: [1, 1 + volume * 0.2, 1]
@@ -193,7 +191,7 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
           transition={{ duration: 0.2, ease: "easeOut" }}
         />
         <DigitalEntity 
-          state={agentStatus} 
+          state={agentStatus === 'Hibernating' ? 'Disconnected' : agentStatus as any} 
           volume={volume} 
           agentName={activeAgent?.name || 'Neural Link'} 
           linkType={linkType}
@@ -336,19 +334,19 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
               >
                 <div className="relative group">
                   {/* Holographic Border Effects */}
-                  <div className="absolute -inset-1 bg-gradient-to-r from-aether-neon via-purple-500 to-aether-neon rounded-[34px] opacity-20 blur-xl group-hover:opacity-40 transition-opacity animate-pulse" />
+                  <div className="absolute -inset-1 bg-gradient-to-r from-gemigram-neon via-purple-500 to-gemigram-neon rounded-[34px] opacity-20 blur-xl group-hover:opacity-40 transition-opacity animate-pulse" />
                   
                   <div className="relative bg-[#050A10]/90 backdrop-blur-3xl border border-white/10 rounded-[32px] p-8 shadow-2xl overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-aether-neon/50 to-transparent" />
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gemigram-neon/50 to-transparent" />
                     
                     <div className="flex items-center justify-between mb-8">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-aether-neon/10 border border-aether-neon/30 flex items-center justify-center">
-                          <Zap className="w-5 h-5 text-aether-neon animate-pulse" />
+                        <div className="w-10 h-10 rounded-xl bg-gemigram-neon/10 border border-gemigram-neon/30 flex items-center justify-center">
+                          <Zap className="w-5 h-5 text-gemigram-neon animate-pulse" />
                         </div>
                         <div>
                           <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white">Neural Execution HUD</h4>
-                          <p className="text-[8px] font-mono text-aether-neon opacity-70 uppercase tracking-widest">Active Tool: {activeWidget.name || 'Universal Resolver'}</p>
+                          <p className="text-[8px] font-mono text-gemigram-neon opacity-70 uppercase tracking-widest">Active Tool: {activeWidget?.name || 'Universal Resolver'}</p>
                         </div>
                       </div>
                       <button 
@@ -362,7 +360,7 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
                     <div className="space-y-6">
                       <div className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
                         <div className="flex-1">
-                          <WidgetRenderer data={activeWidget} />
+                          <WidgetRenderer data={activeWidget!} />
                         </div>
                       </div>
                       
@@ -373,7 +371,7 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
                           <span>Precision: 0.998</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Activity className="w-3 h-3 text-aether-neon/50" />
+                          <Activity className="w-3 h-3 text-gemigram-neon/50" />
                           <span>Stream Stable</span>
                         </div>
                       </div>
