@@ -144,18 +144,14 @@ export async function handleNeuralTool(name: string, args: any) {
     if (!isAdmin && (name === 'list_users' || name === 'analyze_users')) {
       return { status: "error", message: "Unauthorized. Admin spinal access required." };
     }
-    
-    return { 
-      status: "simulation", 
-      message: "Neural cloud linked. Workspace operations require Blaze plan for full cloud orchestration.",
-      data: `Simulated ${name}` 
-    };
-  }
 
     // 🛡️ MOBILE-FIRST PROTOCOL: Attempt Direct Client-Side Execution
     try {
       console.log(`[NeuralHandler] Attempting Client-Spine Execution for ${name}...`);
       
+      const user = auth.currentUser;
+      if (!user) return { status: "error", message: "User must be authenticated for Workspace operations." };
+
       // We need a fresh token with GWS scopes if not provided
       let gwsToken = args.accessToken;
       if (!gwsToken) {
@@ -166,9 +162,13 @@ export async function handleNeuralTool(name: string, args: any) {
       }
 
       if (gwsToken) {
-        const clientResult = await executeGWSClientAction(name, args.action || '+triage', args.params || {}, gwsToken);
-        console.log("[NeuralHandler] Client-Spine Execution Successful.");
-        return clientResult;
+        try {
+          const clientResult = await executeGWSClientAction(name, args.action || '+triage', args.params || {}, gwsToken);
+          console.log("[NeuralHandler] Client-Spine Execution Successful.");
+          return clientResult;
+        } catch (clientErr) {
+          console.warn("[NeuralHandler] Client-Spine direct API failed, falling back to bridge.");
+        }
       }
 
       // ☁️ Local/Cloud fallback if client execution is impossible (Legacy Support)
@@ -182,7 +182,7 @@ export async function handleNeuralTool(name: string, args: any) {
           params: args.params || {},
           persona: args.persona || 'AetherAssistant'
         })
-      }).catch(() => null); // Silent fail if local bridge is down
+      }).catch(() => null);
 
       if (localResponse && localResponse.ok) {
         result = await localResponse.json();

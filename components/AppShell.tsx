@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingNav } from './ui/FloatingNav';
-import { Flame, Sparkles, Cloud, Wifi, Battery, Signal, Zap } from 'lucide-react';
+import { Flame, Sparkles, Cloud, Wifi, Battery, Signal, Zap, Activity, Globe } from 'lucide-react';
 import { AetherLogo } from './AetherLogo';
 import { ProjectSwitcher } from './ui/ProjectSwitcher';
 import { useAuth } from './Providers';
 import { usePathname } from 'next/navigation';
+import { useAetherStore } from '../lib/store/useAetherStore';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function AppShell({ children }: AppShellProps) {
   const { user, login, logout } = useAuth();
   const [time, setTime] = useState(new Date());
   const pathname = usePathname();
+  const { linkType } = useAetherStore();
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 60000);
@@ -55,9 +57,16 @@ export default function AppShell({ children }: AppShellProps) {
             <span className="text-[10px] md:text-[8px] font-black uppercase tracking-[0.2em] text-white/90">Gemigram</span>
           </div>
           <div className="h-3 md:h-4 w-[1px] bg-white/10 hidden sm:block" />
-          <span className="text-[10px] md:text-[8px] font-bold text-aether-neon/80 uppercase tracking-widest text-nowrap hidden sm:inline">
-            Neural Link: Active
-          </span>
+          <div className="flex items-center gap-2">
+            {linkType === 'bridge' ? (
+              <Zap className="w-2.5 h-2.5 text-aether-neon animate-pulse" />
+            ) : (
+              <Globe className="w-2.5 h-2.5 text-white/40" />
+            )}
+            <span className={`text-[10px] md:text-[8px] font-bold uppercase tracking-widest text-nowrap hidden sm:inline ${linkType === 'bridge' ? 'text-aether-neon' : 'text-white/40'}`}>
+              Link: {linkType === 'bridge' ? 'Local Spine' : 'Cloud Direct'}
+            </span>
+          </div>
           <div className="h-3 md:h-4 w-[1px] bg-white/10 hidden md:block" />
           <div className="hidden lg:block">
             <ProjectSwitcher />
@@ -121,11 +130,11 @@ export default function AppShell({ children }: AppShellProps) {
             
             <div className="flex items-center gap-2">
               <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30">Gemigram</span>
-              <span className="text-[10px] font-bold text-white/80 tracking-tighter">AIOS v2.5.0</span>
+              <span className="text-[10px] font-bold text-white/80 tracking-tighter">AIOS v2.6.0-Sovereign</span>
             </div>
 
             <div className="flex items-center gap-2 pl-5 border-l border-white/10">
-              <Zap className="w-3 h-3 text-aether-neon" />
+              <Activity className="w-3 h-3 text-aether-neon" />
               <span className="text-[9px] font-black uppercase tracking-widest text-aether-neon/80">Sovereign Layer Active</span>
             </div>
           </div>
