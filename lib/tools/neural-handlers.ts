@@ -11,14 +11,15 @@ import { collection, addDoc, query, where, getDocs, orderBy, limit, Timestamp } 
 import { executeGWSClientAction } from './workspace-client';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { useAetherStore } from '../store/useAetherStore';
+import { ToolResult } from '../types/live-api';
 
-export async function handleNeuralTool(name: string, args: any) {
+export async function handleNeuralTool(name: string, args: Record<string, any>): Promise<ToolResult> {
   console.log(`[NeuralHandler] Executing: ${name}`, args);
 
   const FUNCTION_URL = "https://executeagenttool-v7vofv7mxa-uc.a.run.app"; 
   const LOCAL_BRIDGE_URL = "http://localhost:9999/execute"; // For zero-cost local execution
 
-  let result: any = { status: "success" };
+  let result: ToolResult = { status: "success" };
 
   // 🌐 Stateless Web Navigation (Jina Reader)
   if (name === 'browse_url' || (name === 'searchWeb' && args.url)) {

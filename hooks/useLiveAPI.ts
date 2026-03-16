@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAetherStore } from '../lib/store/useAetherStore';
 import { useVisionPulse } from './useVisionPulse';
 import { handleNeuralTool } from '../lib/tools/neural-handlers';
+import { ToolResult, Tool } from '../lib/types/live-api';
 
 const MODEL = "models/gemini-2.5-flash-native-audio-preview-09-2025";
 
-export function useLiveAPI(apiKey: string, onFunctionCall: (call: any) => void, accessToken?: string | null) {
+export function useLiveAPI(apiKey: string, onFunctionCall: (call: ToolResult) => void, accessToken?: string | null) {
   const [isConnected, setIsConnected] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [logs, setLogs] = useState<{ id: string; text: string; type: 'system' | 'user' | 'agent' | 'tool'; timestamp: string }[]>([]);
@@ -27,7 +28,7 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: any) => void, 
   const baseReconnectDelay = 1000; // 1s
   const maxReconnectDelay = 30000; // 30s
   const intentionalDisconnectRef = useRef(false);
-  const lastConnectArgsRef = useRef<{ systemInstruction?: string; voiceName?: string; tools?: any[] }>({});
+  const lastConnectArgsRef = useRef<{ systemInstruction?: string; voiceName?: string; tools?: Tool[] }>({});
 
   // 1. Utility Callbacks (Top-Level)
   const addLog = useCallback((text: string, type: 'system' | 'user' | 'agent' | 'tool') => {
@@ -87,7 +88,7 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: any) => void, 
   // We use a forward reference for reconnect to avoid TDZ in connect ws.onclose
   const scheduleReconnectRef = useRef<() => void>(() => {});
 
-  const connect = useCallback((systemInstruction?: string, voiceName: string = "Zephyr", tools?: any[]) => {
+  const connect = useCallback((systemInstruction?: string, voiceName: string = "Zephyr", tools?: Tool[]) => {
     if (!apiKey) return;
 
     lastConnectArgsRef.current = { systemInstruction, voiceName, tools };
