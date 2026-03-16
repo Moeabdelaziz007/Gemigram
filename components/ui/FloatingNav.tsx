@@ -8,6 +8,7 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import Image from 'next/image';
 import { AetherLogo } from '@/components/AetherLogo';
 import { useRouter } from 'next/navigation';
+import { Notification } from '@/lib/types/models';
 
 const ORBS_CONFIG = [
   {
@@ -70,7 +71,7 @@ interface FloatingNavProps {
 
 export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNavProps) {
   const [expandingOrb, setExpandingOrb] = useState<string | null>(null);
-  const [unreadNotifications, setUnreadNotifications] = useState<any[]>([]);
+  const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       try {
-        const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
         setUnreadNotifications(notifs);
       } catch (err) {
         console.warn('Notifications error:', err);

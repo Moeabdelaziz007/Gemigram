@@ -5,13 +5,14 @@ import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User } from 'f
 import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { auth, db, googleProvider, handleFirestoreError, OperationType } from '@/firebase';
 import { useAetherStore, Agent } from '@/lib/store/useAetherStore';
+import { Notification } from '@/lib/types/models';
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  unreadNotifications: any[];
+  unreadNotifications: Notification[];
   googleAccessToken: string | null;
 }
 
@@ -20,7 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [unreadNotifications, setUnreadNotifications] = useState<any[]>([]);
+  const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
   const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(null);
   
   const { setAgents, setUserProjects, setActiveProjectId } = useAetherStore();
@@ -67,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       try {
-        setUnreadNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setUnreadNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification)));
       } catch (err) {
         console.warn('Error syncing notifications:', err);
       }
