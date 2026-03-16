@@ -59,46 +59,82 @@ export default function AppShell({ children }: AppShellProps) {
       />
 
       <div className="flex-1 flex flex-col min-w-0 relative">
-        {/* iOS-Style Neural Status Bar */}
-        <header className="h-14 md:h-16 px-4 md:px-6 flex items-center justify-between aether-glass border-b border-white/[0.05] z-[80] shrink-0">
-          <div className="flex items-center gap-2 md:gap-4">
-            <div className="flex items-center gap-2 md:hidden">
-              <AetherLogo size={16} />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gemigram-neon">Gemigram</span>
+        {/* Sovereign Intelligence Header */}
+        <header className="h-14 md:h-16 px-4 md:px-8 flex items-center justify-between glass-medium border-b border-white/[0.05] z-[80] shrink-0">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gemigram-neon/10 border border-gemigram-neon/30 flex items-center justify-center">
+                <AetherLogo size={14} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gemigram-neon leading-none">Gemigram</span>
+                <span className="text-[8px] font-mono text-white/30 uppercase tracking-[0.1em]">OS_Sovereign.v2.4</span>
+              </div>
             </div>
+
+            <div className="h-6 w-[1px] bg-white/5 hidden lg:block" />
+
+            {/* Smart Intelligence Tray */}
+            <div className="hidden lg:flex items-center gap-6">
+              <div className="flex items-center gap-2 group cursor-pointer">
+                <Cloud className="w-3.5 h-3.5 text-blue-400/50 group-hover:text-blue-400 transition-colors" />
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-white/40 group-hover:text-white transition-colors">Weather</span>
+                  <span className="text-[10px] font-mono font-bold text-white">24°C · Overcast</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 group cursor-pointer border-l border-white/5 pl-6">
+                <Activity className="w-3.5 h-3.5 text-gemigram-neon/50 group-hover:text-gemigram-neon transition-colors" />
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-white/40 group-hover:text-white transition-colors">Network</span>
+                  <span className="text-[10px] font-mono font-bold text-gemigram-neon">2.1ms Latency</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 text-center hidden xl:flex flex-col items-center">
+            <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.5em] mb-1">Active_Sector</span>
             <div className="flex items-center gap-2">
-              {linkType === 'bridge' ? (
-                <Zap className="w-2.5 h-2.5 text-gemigram-neon animate-pulse" />
-              ) : (
-                <Globe className="w-2.5 h-2.5 text-white/40" />
-              )}
-              <span className={`text-[10px] md:text-[8px] font-mono font-bold uppercase tracking-widest text-nowrap hidden sm:inline ${linkType === 'bridge' ? 'text-gemigram-neon' : 'text-white/40'}`}>
-                LINK::{linkType === 'bridge' ? 'LOCAL_SPINE' : 'CLOUD_DIRECT'}
-              </span>
+              <span className="w-1.5 h-1.5 rounded-full bg-gemigram-neon animate-pulse" />
+              <span className="text-xs font-black text-white uppercase tracking-[0.3em]">{viewLabels[currentView]}</span>
             </div>
           </div>
 
-          <div className="flex-1 text-center flex flex-col items-center">
-            <span className="text-hud">Sector</span>
-            <span className="text-xs md:text-[13px] font-bold text-white tracking-widest">{viewLabels[currentView]}</span>
-          </div>
-
-          <div className="flex items-center gap-3 md:gap-6">
-            <ThemeToggle />
-            
-            <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
-            
-            <div className="flex items-center gap-2 text-white/40 hidden md:flex">
-              <Signal className="w-3 h-3" />
-              <Wifi className="w-3 h-3" />
-              <Battery className="w-3 h-3 rotate-90" />
+          <div className="flex items-center gap-4 md:gap-8">
+            {/* System Tools */}
+            <div className="flex items-center gap-4 border-r border-white/5 pr-6 hidden md:flex">
+              <button className="relative p-2 group">
+                <div className="absolute top-1 right-1 w-2 h-2 bg-gemigram-neon rounded-full border-2 border-bg-primary z-10" />
+                <Signal className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
+              </button>
+              <button className="p-2 group">
+                <Activity className="w-4 h-4 text-white/30 group-hover:text-white transition-colors" />
+              </button>
+              <button className="p-2 group">
+                <ThemeToggle />
+              </button>
             </div>
-            
-            <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
-            
-            <span className="text-xs md:text-[12px] font-mono font-bold tabular-nums text-gemigram-neon">
-              {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
-            </span>
+
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col items-end">
+                <span className="text-[11px] font-mono font-black tabular-nums text-white">
+                  {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                </span>
+                <span className="text-[8px] font-mono font-bold text-white/20 uppercase tracking-widest leading-none">
+                  {time.toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
+              </div>
+              
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-gemigram-neon/20 to-transparent border border-gemigram-neon/30 p-0.5 relative cursor-pointer hover:border-gemigram-neon transition-colors group">
+                <div className="w-full h-full rounded-[10px] overflow-hidden bg-black/40">
+                  <img src={user?.photoURL || "/avatars/default.png"} alt="User" className="w-full h-full object-cover" />
+                </div>
+                {/* Online status indicator */}
+                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gemigram-neon rounded-full border-2 border-bg-primary" />
+              </div>
+            </div>
           </div>
         </header>
 
@@ -142,7 +178,6 @@ export default function AppShell({ children }: AppShellProps) {
           </div>
         </footer>
       </div>
-    </div>
     </div>
   );
 }

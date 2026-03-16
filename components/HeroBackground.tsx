@@ -172,36 +172,37 @@ export default function HeroBackground() {
       {/* Layer 5: Dynamic Glow Blobs with Neon Green */}
       <motion.div 
         style={{ x: x1, y: y1 }}
-        className="absolute inset-[-10%] opacity-30"
+        className="absolute inset-[-10%] opacity-40 mix-blend-screen"
       >
-        <div className="absolute top-[20%] left-[15%] w-[40vw] h-[40vw] bg-gradient-to-br from-gemigram-neon/20 to-emerald-500/10 rounded-full blur-[140px] animate-pulse" />
-        <div className="absolute bottom-[20%] right-[15%] w-[35vw] h-[35vw] bg-gradient-to-tl from-fuchsia-500/10 to-purple-500/5 rounded-full blur-[120px]" />
-        <div className="absolute top-[60%] left-[60%] w-[25vw] h-[25vw] bg-cyan-500/10 rounded-full blur-[100px]" />
+        <div className="absolute top-[10%] left-[10%] w-[50vw] h-[50vw] bg-gemigram-neon/10 rounded-full blur-[160px] animate-pulse" />
+        <div className="absolute bottom-[10%] right-[10%] w-[45vw] h-[45vw] bg-emerald-500/10 rounded-full blur-[140px]" />
+        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-gemigram-neon/5 rounded-full blur-[180px]" />
       </motion.div>
 
       {/* Layer 6: Digital Rain / Scanlines Area */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
         <div className="absolute inset-0 scanline" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
       </div>
 
       {/* Layer 7: Interactive Flash Overlay - Neon Green */}
       <motion.div
         animate={{ 
-          opacity: [0, 0.05, 0],
+          opacity: [0.02, 0.08, 0.02],
         }}
         transition={{ 
-          duration: 4, 
+          duration: 10, 
           repeat: Infinity,
           times: [0, 0.5, 1] 
         }}
-        className="absolute inset-0 bg-gradient-to-b from-gemigram-neon/10 to-transparent pointer-events-none"
+        className="absolute inset-0 bg-gemigram-neon/5 pointer-events-none"
       />
 
       {/* Layer 8: Surface Noise */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] mix-blend-overlay" />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-overlay" />
       
-      {/* Layer 9: Vignette */}
-      <div className="absolute inset-0 bg-radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%)" />
+      {/* Layer 9: Vignette - Industrial Strong */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
     </div>
   );
 }

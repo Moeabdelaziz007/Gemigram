@@ -45,7 +45,7 @@ export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
           <span className="text-xl font-bold tracking-tight text-white uppercase">
             Gemigram
           </span>
-        </Link>
+        </motion.div>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-10">

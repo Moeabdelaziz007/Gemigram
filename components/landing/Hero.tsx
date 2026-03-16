@@ -44,72 +44,104 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
         <div className="absolute top-[50%] left-[50%] w-[30vw] h-[30vw] bg-cyber-lime/5 rounded-full blur-[100px]" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-5xl mx-auto text-center">
+      <div className="container mx-auto px-6 relative z-10 flex flex-col items-center">
+        {/* Animated Central Core (Orb/Brain) - Matching reference image 2 */}
+        <div className="relative mb-20">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full cyber-panel mb-12 border-neon-green/30 bg-gradient-to-r from-neon-green/10 to-transparent"
+            animate={{ 
+              scale: [1, 1.1, 1],
+              rotate: [0, 90, 180, 270, 360],
+              opacity: [0.6, 0.8, 0.6]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="w-[450px] h-[450px] md:w-[600px] md:h-[600px] rounded-full relative"
+            style={{
+              background: 'radial-gradient(circle, rgba(16,255,135,0.4) 0%, rgba(16,255,135,0.1) 40%, transparent 70%)',
+              filter: 'blur(30px)'
+            }}
           >
-            <span className="w-2 h-2 rounded-full bg-neon-green animate-pulse shadow-[0_0_10px_rgba(16,255,135,0.8)]" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neon-green">
-              Protocol: Neural-Local · Active Node
-            </span>
+            {/* Spinning Energy Rings */}
+            <div className="absolute inset-0 border-4 border-gemigram-neon/10 rounded-full animate-spin [animation-duration:8s]" />
+            <div className="absolute inset-10 border-2 border-gemigram-neon/20 rounded-full animate-spin [animation-duration:12s] direction-reverse" />
           </motion.div>
+          
+          {/* Internal Neural Hub (Glassy Center) */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-64 h-64 md:w-80 md:h-80 rounded-full glass-strong border border-gemigram-neon/40 flex items-center justify-center p-8 overflow-hidden">
+               <motion.div 
+                 animate={{ 
+                    filter: ['hue-rotate(0deg)', 'hue-rotate(45deg)', 'hue-rotate(0deg)'],
+                    boxShadow: ['0 0 50px rgba(16,255,135,0.5)', '0 0 100px rgba(16,255,135,0.8)', '0 0 50px rgba(16,255,135,0.5)']
+                 }}
+                 transition={{ duration: 4, repeat: Infinity }}
+                 className="w-full h-full rounded-full bg-gradient-to-br from-gemigram-neon to-fuchsia-500/20 mix-blend-screen opacity-80" 
+               />
+               {/* Mascot Silhouette */}
+               <img src="/avatars/mascot_silhouette.png" className="absolute w-40 h-40 opacity-40 mix-blend-overlay" alt="" />
+            </div>
+          </div>
+        </div>
 
+        {/* Brand Typography - Matching reference image 2 */}
+        <div className="text-center z-20">
           <motion.h1 
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85] text-white mb-10"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-8xl md:text-[12rem] font-black tracking-[-0.05em] leading-[0.8] mb-6 neon-shimmer uppercase"
           >
-            Architecting <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-neon-green via-mint-chip to-neon-blue drop-shadow-[0_0_30px_rgba(16,255,135,0.3)]">
-              Autonomous Hubs.
-            </span>
+            Gemigram
           </motion.h1>
-
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg md:text-xl text-white/30 max-w-2xl mx-auto mb-16 leading-relaxed font-medium"
+            className="text-xl md:text-2xl text-white/40 font-bold uppercase tracking-[0.4em] mb-12"
           >
-            Deploy enterprise neural entities with absolute sovereignty. 
-            Native <span className="text-white/60">Gemini 2.5 Flash</span> orchestration on a zero-latency carbon spine.
+            The Voice-Native AI Social Nexus
           </motion.p>
 
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-5"
+            className="flex items-center justify-center gap-8"
           >
             <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 0 50px rgba(16,255,135,0.3)' }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.05, boxShadow: '0 0 60px rgba(16,255,135,0.4)' }}
               onClick={onLogin}
-              className="w-full sm:w-auto px-12 py-5 cyber-accent-button rounded-2xl text-lg font-black uppercase tracking-widest bg-gradient-to-r from-neon-green to-mint-chip border-neon-green/50 shadow-[0_0_30px_rgba(16,255,135,0.2)] hover:shadow-[0_0_50px_rgba(16,255,135,0.4)]"
+              className="px-16 py-6 bg-gemigram-neon text-black rounded-full text-xl font-black uppercase tracking-widest shadow-[0_0_30px_rgba(16,255,135,0.2)]"
             >
-              Launch Terminal
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(0,240,255,0.2)' }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full sm:w-auto px-12 py-5 cyber-panel rounded-2xl text-white/50 font-bold text-lg hover:text-white transition-all border border-white/10 hover:border-neon-blue/30"
-            >
-              Docs & API
+              Construct_Self
             </motion.button>
           </motion.div>
+        </div>
 
-          {/* Trust Indicators */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mt-20 max-w-4xl mx-auto border-t border-white/[0.03] pt-10"
-          >
+        {/* Agent Hive Preview - The grid of bots in reference image 2 */}
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="w-full mt-40 glass-medium border border-white/5 rounded-[3rem] p-12 overflow-hidden relative"
+        >
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gemigram-neon/5 blur-[100px] pointer-events-none" />
+          
+          <div className="flex justify-between items-center mb-16">
+            <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Agent_Hive</h2>
+            <div className="flex gap-4">
+               {[1,2].map(i => <div key={i} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30">{"< >"[i-1]}</div>)}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="glass-subtle rounded-3xl p-6 border border-white/5 group hover:border-gemigram-neon/30 transition-all cursor-pointer">
+                <div className="aspect-square rounded-2xl bg-white/5 mb-6 overflow-hidden">
+                   <img src={`/agents/robot_${i}.png`} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all scale-110" />
+                </div>
+                <h4 className="text-sm font-black text-white mb-2 uppercase tracking-widest">Robot_AI_{i}</h4>
+                <p className="text-[10px] text-white/20 font-bold leading-relaxed uppercase">Neural_Signature::Active</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
             {[
               { icon: Shield, label: 'Carbon Secure', value: 'AES-256', color: 'text-neon-green' },
               { icon: Activity, label: 'L1 Latency', value: `${stats.latency}ms`, color: 'text-neon-blue' },

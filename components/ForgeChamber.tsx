@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Sparkles, Cpu, Brain, Package, Fingerprint, Database, Rocket } from 'lucide-react';
+import { Loader2, Sparkles, Cpu, Brain, Package, Fingerprint, Database, Rocket, Activity } from 'lucide-react';
 
 interface ForgeChamberProps {
   onComplete: () => void;

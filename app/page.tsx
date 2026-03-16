@@ -63,7 +63,6 @@ export default function LandingPage() {
                 Connect to GitHub, access 20,000+ APIs, and integrate with external models via MCP protocol
               </p>
             </div>
-            
             <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
               {/* MCP Integration Card */}
               <motion.div

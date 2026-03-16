@@ -53,23 +53,23 @@ export function EnterpriseFooter() {
 
         <div className="pt-12 border-t border-white/[0.02] flex flex-col md:flex-row justify-between items-center gap-10">
           <div className="flex items-center gap-12">
-            <p className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10">
-              © 2026 Gemigram Team. Secure Node.
+            <p className="text-[9px] font-black uppercase tracking-[0.5em] text-white/20">
+              © 2026 Gemigram AIOS. Developed by Moe_Abdelaziz.
             </p>
             <div className="hidden md:flex items-center gap-4">
                <span className="w-1.5 h-1.5 rounded-full bg-gemigram-neon shadow-[0_0_10px_rgba(16,255,135,0.5)]" />
-               <span className="text-[9px] font-black uppercase tracking-[0.5em] text-gemigram-neon/50 uppercase">Mainnet Online</span>
+               <span className="text-[9px] font-black uppercase tracking-[0.5em] text-gemigram-neon">Sector_Mainnet_Stable</span>
             </div>
           </div>
           
           <div className="flex items-center gap-8">
-            <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10 border border-white/5 px-4 py-2 rounded-lg">
-              v2.4.0-Stable
-            </span>
+            <Link href="https://github.com/Moeabdelaziz007/Gemigram" target="_blank" className="text-[9px] font-black uppercase tracking-[0.5em] text-white/20 hover:text-white transition-colors border border-white/5 px-4 py-2 rounded-lg">
+              Source_Code::v2.4.0
+            </Link>
             <div className="h-6 w-px bg-white/5" />
-            <span className="text-[9px] font-black uppercase tracking-[0.5em] text-white/10">
-              Neural L1 Spine
-            </span>
+            <Link href="/privacy" className="text-[9px] font-black uppercase tracking-[0.5em] text-white/20 hover:text-white">
+              Privacy_Policy
+            </Link>
           </div>
         </div>
       </div>

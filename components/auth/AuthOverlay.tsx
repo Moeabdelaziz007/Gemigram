@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Fingerprint, Mail, ShieldCheck, ChevronRight, Globe } from 'lucide-react';
+import { X, Fingerprint, Mail, ShieldCheck, Globe, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/components/Providers';
 
 export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
@@ -33,78 +33,93 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
             className="absolute inset-0 bg-black/80 backdrop-blur-xl"
           />
           
-              className="absolute top-8 right-8 text-white/10 hover:text-gemigram-neon transition-colors"
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="w-full max-w-md glass-medium border border-white/10 rounded-[2.5rem] p-10 relative overflow-hidden"
+          >
+            {/* Glow behind modal */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-gemigram-neon/5 blur-[80px] rounded-full" />
+            
+            <button 
+              onClick={onClose}
+              className="absolute top-8 right-8 text-white/10 hover:text-gemigram-neon transition-colors z-20"
             >
               <X size={20} />
             </button>
 
-            <div className="text-center mb-12 relative z-10">
-              <div className="w-20 h-20 cyber-button rounded-3xl flex items-center justify-center mx-auto mb-8 border-gemigram-neon/20 shadow-[0_0_30px_rgba(16,255,135,0.05)] relative overflow-hidden">
-                <Fingerprint className="w-10 h-10 text-gemigram-neon" />
-                {/* Industrial Scanning Bar */}
-                <motion.div 
-                  className="absolute left-0 right-0 h-0.5 bg-gemigram-neon/50 shadow-[0_0_10px_#10ff87]"
-                  animate={{ top: ['0%', '100%', '0%'] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                />
+            <div className="flex flex-col items-center text-center mb-10 relative z-10">
+              <div className="w-16 h-16 rounded-2xl bg-gemigram-neon/10 border border-gemigram-neon/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,255,135,0.1)]">
+                <Fingerprint className="w-8 h-8 text-gemigram-neon" />
               </div>
-              <h2 className="text-4xl font-black mb-3 tracking-tighter uppercase glitch-text">Access Node</h2>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Authorized Biometric Protocol</p>
+              <h2 className="text-3xl font-black uppercase tracking-widest text-white mb-2">Access Portal</h2>
+              <p className="text-hud text-gemigram-neon/60">Initialize Sovereign Identity</p>
             </div>
 
-            <div className="space-y-5 mb-10 relative z-10">
-              <motion.button
-                whileHover={{ scale: 1.01, boxShadow: '0 0 30px rgba(255,255,255,0.05)' }}
-                whileTap={{ scale: 0.99 }}
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                className="w-full py-5 cyber-button rounded-2xl flex items-center justify-center gap-4 hover:border-white/20 transition-all"
-              >
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-                <span className="font-bold text-white/60 tracking-tight">{loading ? 'Verifying...' : 'Workspace Auth'}</span>
-              </motion.button>
-
-              <div className="flex items-center gap-4 my-8">
-                <div className="h-px flex-1 bg-white/5" />
-                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/10">Neural Spine ID</span>
-                <div className="h-px flex-1 bg-white/5" />
-              </div>
-
-              <div className="cyber-panel p-1.5 rounded-2xl flex items-center gap-3 border-white/5 focus-within:border-gemigram-neon/30 transition-colors">
-                <div className="p-3 bg-gemigram-neon/10 rounded-xl">
-                  <Mail className="w-4 h-4 text-gemigram-neon/60" />
-                </div>
+            <div className="space-y-6 relative z-10">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-4">Credential_ID</label>
                 <input 
                   type="email" 
-                  placeholder="admin@gemigram.ai" 
-                  className="bg-transparent border-none outline-none text-sm p-2 flex-1 text-white placeholder:text-white/10 font-bold uppercase tracking-widest"
+                  placeholder="user@ath.genesis"
+                  className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 focus:border-gemigram-neon/50 focus:bg-white/10 outline-none transition-all placeholder:text-white/20 text-sm font-medium"
                 />
               </div>
-              
-              <motion.button
-                whileHover={{ scale: 1.01, boxShadow: '0 0 30px rgba(57,255,20,0.1)' }}
-                whileTap={{ scale: 0.99 }}
-                className="w-full py-5 cyber-accent-button rounded-2xl font-black flex items-center justify-center gap-3 uppercase tracking-[0.2em] text-[10px]"
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-white/40 ml-4">Access_Cipher</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••••••"
+                  className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 focus:border-gemigram-neon/50 focus:bg-white/10 outline-none transition-all placeholder:text-white/20 text-sm font-medium"
+                />
+              </div>
+
+              <button 
+                onClick={onClose}
+                className="w-full py-5 rounded-2xl bg-gemigram-neon text-black font-black uppercase tracking-widest text-xs shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
               >
-                <span>Initialize Command</span>
-                <ChevronRight size={14} />
-              </motion.button>
+                Authenticate_Node
+              </button>
+
+              <div className="flex items-center gap-4 py-4">
+                <div className="h-[1px] flex-1 bg-white/5" />
+                <span className="text-hud uppercase">OR</span>
+                <div className="h-[1px] flex-1 bg-white/5" />
+              </div>
+
+              <button 
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all flex items-center justify-center gap-3"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-4 h-4" alt="Google" />
+                )}
+                {loading ? 'Verifying...' : 'Genesis_Login (Google)'}
+              </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 relative z-10">
-              <div className="cyber-panel px-5 py-4 rounded-2xl border-white/5 flex items-center gap-4">
-                 <ShieldCheck className="w-5 h-5 text-gemigram-neon/20" />
-                 <span className="text-[9px] uppercase font-black tracking-widest text-white/20">Secure-Spine</span>
+            <div className="grid grid-cols-2 gap-4 mt-8 relative z-10">
+              <div className="glass-medium px-4 py-3 rounded-xl border-white/5 flex items-center gap-3">
+                 <ShieldCheck className="w-4 h-4 text-gemigram-neon/20" />
+                 <span className="text-[8px] uppercase font-black tracking-widest text-white/20 text-nowrap">Secure-Spine</span>
               </div>
-              <div className="cyber-panel px-5 py-4 rounded-2xl border-white/5 flex items-center gap-4">
-                 <Globe className="w-5 h-5 text-gemigram-neon/20" />
-                 <span className="text-[9px] uppercase font-black tracking-widest text-white/20">Mainnet v2</span>
+              <div className="glass-medium px-4 py-3 rounded-xl border-white/5 flex items-center gap-3">
+                 <Globe className="w-4 h-4 text-gemigram-neon/20" />
+                 <span className="text-[8px] uppercase font-black tracking-widest text-white/20 text-nowrap">Mainnet v2</span>
               </div>
             </div>
 
-            <p className="mt-12 text-center text-[9px] text-white/10 leading-relaxed max-w-[80%] mx-auto font-bold uppercase tracking-widest">
-              Gemigram Sovereign Intelligence Protocol · Deployment v2.5.0
-            </p>
+            <button 
+              onClick={onClose}
+              className="w-full text-center mt-6 text-hud text-white/30 hover:text-white transition-colors uppercase"
+            >
+              New Architect? <span className="text-gemigram-neon">Create_Nexus_ID</span>
+            </button>
           </motion.div>
         </div>
       )}
