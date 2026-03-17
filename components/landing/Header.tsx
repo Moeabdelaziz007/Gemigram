@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Fingerprint, Menu, X, Cloud, Activity, Bell, History } from 'lucide-react';
 import Link from 'next/link';
