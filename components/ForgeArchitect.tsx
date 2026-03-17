@@ -7,29 +7,10 @@ import {
   Terminal, Radio, Waves, Settings2, SlidersHorizontal
 } from 'lucide-react';
 import { CinematicDeploy } from './ui/CinematicDeploy';
-import { getRecommendedSkills, synthesizeAgentMetadata } from '@/lib/agents/skills-assignment';
-import { matchPersonaFromDescription, enhanceSystemPromptWithPersona } from '@/lib/persona/persona-templates';
+import { useForgeLogic, VoiceState, AgentFormData } from '@/lib/hooks/useForgeLogic';
 
-interface VoiceState {
-  isListening: boolean;
-  isSpeaking: boolean;
-  currentStep: 'intro' | 'description' | 'synthesis' | 'blueprint' | 'complete';
-  status: 'idle' | 'listening' | 'processing' | 'speaking' | 'complete';
-}
 
-interface AgentFormData {
-  name: string;
-  description: string;
-  systemPrompt: string;
-  voiceName: string;
-  soul: string;
-  role: string;
-  tools: any;
-  skills: any;
-  persona?: string;
-  rules?: string[];
-  memoryDecay?: number;
-}
+// Using types from useForgeLogic hook
 
 interface ForgeArchitectProps {
   onComplete: (data: AgentFormData) => void;
@@ -39,147 +20,17 @@ interface ForgeArchitectProps {
 const VOICES = ['Zephyr', 'Kore', 'Charon', 'Puck', 'Fenrir'];
 
 export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectProps) {
-  const [formData, setFormData] = useState<AgentFormData>({
-    name: 'Nexus_Entity',
-    description: '',
-    systemPrompt: '',
-    voiceName: 'Zephyr',
-    soul: 'Analytical',
-    role: 'Synthesized Intelligence',
-    tools: { webSearch: true, memoryStore: true },
-    skills: { analysis: true, generation: true },
-    persona: 'Analytical',
-    rules: ['Always remain objective', 'Prioritize user intent'],
-    memoryDecay: 0.01,
-  });
+  const {
+    formData,
+    voiceState,
+    transcript,
+    showDeployment,
+    speak,
+    startListening,
+    finalizeMaterialization,
+    resynthesize
+  } = useForgeLogic();
 
-  const [voiceState, setVoiceState] = useState<VoiceState>({
-    isListening: false,
-    isSpeaking: false,
-    currentStep: 'intro',
-    status: 'idle'
-  });
-
-  const [showDeployment, setShowDeployment] = useState(false);
-  const [transcript, setTranscript] = useState('');
-
-  // 1. Voice Synthesis Pipeline Initiation
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      speak("Welcome to the Neural Forge. Describe the entity you wish to materialize.");
-      setVoiceState(prev => ({ ...prev, currentStep: 'description' }));
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const speak = (text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.pitch = 0.8;
-      utterance.rate = 1.1;
-      // Find a robotic/neutral voice if available
-      const voices = window.speechSynthesis.getVoices();
-      const techVoice = voices.find(v => v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Zira'));
-      if(techVoice) utterance.voice = techVoice;
-
-      utterance.onstart = () => setVoiceState(prev => ({ ...prev, isSpeaking: true, status: 'speaking' }));
-      utterance.onend = () => {
-        setVoiceState(prev => ({ ...prev, isSpeaking: false, status: 'listening' }));
-        if (voiceState.currentStep === 'description' || voiceState.currentStep === 'intro') {
-            startListening();
-        }
-      };
-      speechSynthesis.speak(utterance);
-    } else {
-        // Fallback if no TTS
-        setVoiceState(prev => ({ ...prev, status: 'listening', currentStep: 'description' }));
-        startListening();
-    }
-  };
-
-  const startListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      if (voiceState.isSpeaking) return; // Prevent listening while speaking
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-
-      recognition.continuous = false;
-      recognition.interimResults = true;
-
-      recognition.onstart = () => {
-          setVoiceState(prev => ({ ...prev, isListening: true, status: 'listening' }));
-      };
-
-      recognition.onresult = (event: any) => {
-        let interimTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            const finalPhrase = event.results[i][0].transcript;
-            setTranscript(prev => prev + ' ' + finalPhrase);
-            handleVoiceCommand(finalPhrase);
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
-        }
-      };
-
-      recognition.onerror = (e: any) => {
-          console.error("Speech recognition error:", e);
-          // Simulate extraction on error for testing UI
-          handleVoiceCommand("I want a creative writing assistant that helps me write sci-fi stories.");
-      };
-
-      recognition.onend = () => {
-          setVoiceState(prev => ({ ...prev, isListening: false }));
-      };
-
-      recognition.start();
-    } else {
-        // Mock if not supported
-        setTimeout(() => handleVoiceCommand("A data analyst specialized in financial metrics."), 2000);
-    }
-  };
-
-  const handleVoiceCommand = async (command: string) => {
-    if (command.trim().length === 0) return;
-    
-    setVoiceState(prev => ({ ...prev, status: 'processing', currentStep: 'synthesis' }));
-    
-    // Simulate complex neural extraction (in reality this calls an LLM)
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-    const persona = matchPersonaFromDescription(command) || 'Analytical';
-    const metadata = synthesizeAgentMetadata(command);
-
-    setFormData(prev => ({
-        ...prev,
-        description: command,
-        name: metadata.suggestedName || prev.name,
-        role: metadata.suggestedRole || prev.role,
-        persona: persona,
-        rules: metadata.suggestedRules || ['Always remain objective'],
-        skills: metadata.skills || { analysis: true },
-        tools: metadata.tools || { webSearch: true }
-    }));
-
-    setVoiceState(prev => ({ ...prev, status: 'idle', currentStep: 'blueprint' }));
-    speak(`Synthesis complete. Generating blueprint for ${metadata.suggestedName || 'entity'}. Review parameters.`);
-  };
-
-  const finalizeMaterialization = () => {
-    let finalSystemPrompt = formData.systemPrompt || `You are ${formData.name}, an AI assistant.`;
-    if (formData.persona) {
-        finalSystemPrompt = enhanceSystemPromptWithPersona(finalSystemPrompt, formData.persona);
-    }
-    
-    if (formData.rules && formData.rules.length > 0) {
-        finalSystemPrompt += `\n\nCORE DIRECTIVES:\n${formData.rules.map(r => `- ${r}`).join('\n')}`;
-    }
-
-    const finalData = { ...formData, systemPrompt: finalSystemPrompt };
-    setShowDeployment(true);
-  };
 
   return (
     <div className="w-full h-full flex items-center justify-center relative overflow-hidden bg-black selection:bg-gemigram-neon/30">
@@ -399,8 +250,7 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
                                 <div className="pt-4 flex gap-6">
                                     <button
                                         onClick={() => {
-                                            setTranscript('');
-                                            setVoiceState(prev => ({ ...prev, currentStep: 'description', status: 'idle' }));
+                                            resynthesize();
                                             speak("Re-initiating neural capture. Describe the entity.");
                                         }}
                                         className="px-8 py-5 glass-medium border border-white/10 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-white/10 transition-all flex items-center justify-center gap-3"

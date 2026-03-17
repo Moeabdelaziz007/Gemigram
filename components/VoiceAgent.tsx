@@ -1,173 +1,32 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useLiveAPI } from '../hooks/useLiveAPI';
+import { useVoiceAgentLogic } from '@/lib/hooks/useVoiceAgentLogic';
 import { useAetherStore, Agent } from '../lib/store/useAetherStore';
-import { useAudioProcessor } from '../hooks/useAudioProcessor';
 import { WidgetRenderer } from './WidgetRenderer';
-import { ToolResult, Tool, FunctionDeclaration } from '../lib/types/live-api';
-import { Mic, MicOff, Zap, Activity, Settings, Maximize2, User, Terminal, Eye, EyeOff } from 'lucide-react';
+import { Mic, MicOff, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
 import Image from 'next/image';
 import { SovereignDashboard } from './SovereignDashboard';
 
-export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) {
-  const [apiKey] = useState(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
-  const [activeWidget, setActiveWidget] = useState<ToolResult | null>(null);
-  const [isThinking, setIsThinking] = useState(false);
-  const [showLogs, setShowLogs] = useState(false);
-  const transcript = useAetherStore(state => state.transcript);
-  const contextUsage = useAetherStore(state => state.contextUsage);
-  const linkType = useAetherStore(state => state.linkType);
-  const setLinkType = useAetherStore(state => state.setLinkType);
-
-  useEffect(() => {
-    const checkBridge = async () => {
-      try {
-        const res = await fetch('http://localhost:9999/status');
-        if (res.ok) setLinkType('bridge');
-        else setLinkType('stateless');
-      } catch (e) {
-        setLinkType('stateless');
-      }
-    };
-    checkBridge();
-  }, [setLinkType]);
-
-  const { 
-    isConnected, 
-    isRecording, 
-    logs, 
-    volume: cloudVolume, 
-    connect, 
-    disconnect, 
-    startRecording, 
+export function VoiceAgent({ activeAgent, googleAccessToken }: { activeAgent: Agent; googleAccessToken?: string }) {
+  const {
+    isConnected,
+    isRecording,
+    logs,
+    volume,
+    agentStatus,
+    activeWidget,
+    transcript,
+    linkType,
+    showLogs,
+    setShowLogs,
+    toggleConnection,
+    startRecording,
     stopRecording,
-    isCapturing,
-    startPulse,
-    stopPulse
-  } = useLiveAPI(apiKey, (call) => {
-    setActiveWidget(call);
-    setIsThinking(false);
-  }, googleAccessToken);
+    setActiveWidget
+  } = useVoiceAgentLogic({ activeAgent, googleAccessToken });
 
-  const { processStream, getVolume, isWasmLoaded, isSpeaking } = useAudioProcessor();
-
-  // Optimized volume selection: WASM/AL (Local) > Cloud Direct
-  const volume = isWasmLoaded || isSpeaking ? getVolume() : cloudVolume;
-
-  const agentStatus = useMemo(() => {
-    if (linkType === 'hibernating') return 'Hibernating';
-    if (!isConnected) return 'Disconnected';
-    if (activeWidget) return 'Executing';
-    if (isThinking) return 'Thinking';
-    if (isRecording || isSpeaking) return 'Listening';
-    return 'Speaking';
-  }, [isConnected, isThinking, isRecording, isSpeaking, activeWidget, linkType]);
-
-  const toggleConnection = () => {
-    if (isConnected) {
-      disconnect();
-      stopRecording();
-    } else {
-      const tools: Tool[] = [];
-      const functionDeclarations: FunctionDeclaration[] = [];
-
-      if (activeAgent?.tools?.googleSearch) {
-        tools.push({ googleSearch: {} });
-      }
-      
-      if (activeAgent?.tools?.weather) {
-        functionDeclarations.push({
-          name: "getWeather",
-          description: "Get the current weather for a location.",
-          parameters: {
-            type: "OBJECT",
-            properties: {
-              location: { type: "STRING", description: "The city and state, e.g. San Francisco, CA" }
-            },
-            required: ["location"]
-          }
-        });
-      }
-
-      if (activeAgent?.tools?.crypto) {
-        functionDeclarations.push({
-          name: "getCryptoPrice",
-          description: "Get the current price of a cryptocurrency.",
-          parameters: {
-            type: "OBJECT",
-            properties: {
-              symbol: { type: "STRING", description: "The cryptocurrency symbol, e.g. BTC, ETH" }
-            },
-            required: ["symbol"]
-          }
-        });
-      }
-
-      if (activeAgent?.tools?.googleMaps) {
-        functionDeclarations.push({
-          name: "getMapLocation",
-          description: "Get geographical data for a location.",
-          parameters: {
-            type: "OBJECT",
-            properties: {
-              location: { type: "STRING" }
-            }
-          }
-        });
-      }
-
-      functionDeclarations.push({
-        name: "create_agent",
-        description: "Materialize a new specialized Sovereign Intelligence agent based on user description.",
-        parameters: {
-          type: "OBJECT",
-          properties: {
-            name: { type: "STRING", description: "The name of the new agent" },
-            role: { type: "STRING", description: "The primary role or purpose of the agent" },
-            systemPrompt: { type: "STRING", description: "The technical system instructions for the agent" },
-            soul: { type: "STRING", description: "The personality traits and ethical framework of the agent" },
-            rules: { type: "STRING", description: "Operational constraints and behavioral rules" },
-            voiceName: { type: "STRING", enum: ["Charon", "Puck", "Kore", "Fenrir"], description: "The auditory identity of the agent" },
-            tools: { 
-              type: "ARRAY", 
-              items: { type: "STRING" }
-            },
-            skills: {
-              type: "ARRAY",
-              items: { type: "STRING" }
-            }
-          },
-          required: ["name", "role", "systemPrompt"]
-        }
-      });
-
-      functionDeclarations.push({
-        name: "listProjects",
-        description: "List all Firebase projects the user has access to.",
-        parameters: { type: "OBJECT", properties: {} }
-      });
-
-      functionDeclarations.push({
-        name: "getProjectDetails",
-        description: "Get detailed information about a specific project.",
-        parameters: {
-          type: "OBJECT",
-          properties: {
-            projectId: { type: "STRING" }
-          },
-          required: ["projectId"]
-        }
-      });
-
-      if (functionDeclarations.length > 0) {
-        tools.push({ functionDeclarations });
-      }
-      
-      connect(activeAgent?.systemPrompt, activeAgent?.voiceName, tools);
-    }
-  };
 
   return (
     <div className="relative w-full h-full flex flex-col bg-[#030303] overflow-hidden">

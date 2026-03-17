@@ -14,6 +14,7 @@ AetherOS is a voice-native, sovereign AI operating system. It prioritizes local 
 - [x] Phase 16: Neural-Spine Voice Protocol (NSVP - Raw PCM & Rust)
 - [x] Phase 17: Enterprise Sovereignty Redesign (Gemini 2.5 Flash & Google Auth)
 - [x] Phase 18: Sovereign Identity Unification & Voice-First Prototyping
+- [x] Phase 19: Smart Simplification & Cognitive Offloading (Neural Slices)
 
 ### Major Milestones
 - [x] Sovereign Neural Spine Bridge implemented (`scripts/aether-local-bridge.ts`).
@@ -55,12 +56,12 @@ AetherOS is a voice-native, sovereign AI operating system. It prioritizes local 
 - **2026-03-15**: Completed **E2E UI/UX Master Polish**. Integrated premium Workspace Selector in Dashboard for multi-project GCP orchestration and high-fidelity Widget rendering for GWS/Weather/Crypto results.
 - **2026-03-16**: Launched **Enterprise Sovereignty v2.4.0**. Redesigned Landing Page for Gemini 2.5 Flash, implemented industrial Biometric Auth via Google, and optimized Neural Engine for Zero-Friction tool responses.
 - **2026-03-16**: Completed final surgical merge of all functional branches (`fix`, `refactor`, `perf`, `ci-cd`, `uiux`) into `main`. Unified Firebase deployment to `notional-armor-456623-e8`. System is now Live and production-ready for the Gemini Live Agent Challenge 2026.
-- **2026-03-17**: Successfully completed the **Sovereign identity unification**. Orchestrated 12 architectural changes: unified neon (#39FF14) and glassmorphism across components, stabilized the primary Settings and Analyzer engines, launched the `about/` sector with high-fidelity Sovereign UI, and prototyped the **Voice-First** landing wireframe. System architecture is now fully aligned with the **AetherOS Sovereignty** mandate.
+- **2026-03-17**: Successfully completed the **Sovereign identity unification**. Orchestrated 12 architectural changes: unified neon (#39FF14) and glassmorphism across components, stabilized the primary Settings and Analyzer engines, launched the `about/` sector with high-fidelity Sovereign UI.
+- **2026-03-18**: Executed **Smart Simplification (Phase 3)**. Deployed `MemoryWorker` for off-thread cognitive processing (decay/weighting). Refactored monolithic `useAetherStore` into domain-specific **Neural Slices** (Agent, Sensory, Cognitive, UI). Modularized `ForgeArchitect` and `VoiceAgent` via custom sensory hooks (`useForgeLogic`, `useVoiceAgentLogic`). System latency reduced & architectural clarity maximized.
 
-## Architectural Vision (V7 Evolution)
-1. **Core Logic**: Next.js 15 + Stateless Neural Handlers.
-2. **GWS Integration**: Client-side execution via `workspace-client.ts` (Zero technical debt).
-3. **Execution Engine**: Hybrid Dual-Engine (Client-first, Local/Cloud fallback).
-4. **Web Navigation**: Stateless Jina Reader Protocol ($0 Cloud Cost).
-5. **Billing**: 100% Free-Tier compliant (Firebase Hosting + Spark Functions).
-6. **Audio Engine**: Rust-WASM Jitter Compensation & Jina-Sync protocol.
+## Architectural Vision (V8 Evolution)
+1. **Core Logic**: Next.js 15 + Domain-Specific Neural Slices.
+2. **Cognitive Layer**: Asynchronous `MemoryWorker` (Off-thread processing).
+3. **Sensory Layer**: Modular Hooks for Voice Synthesis/Recognition.
+4. **Execution Engine**: Hybrid Dual-Engine (Client-first, Local/Cloud fallback).
+5. **Billing**: 100% Free-Tier compliant.
