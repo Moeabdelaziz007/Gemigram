@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, Users, Settings, Plus, User, LogOut, Bell, Globe, Home, ChevronRight } from 'lucide-react';
 import { db } from '@/firebase';
@@ -15,56 +15,56 @@ const ORBS_CONFIG = [
     id: 'home',
     path: '/dashboard',
     color: 'bg-gemigram-neon',
-    icon: <Home className="w-5 h-5" />,
+    icon: <Home aria-hidden="true" className="w-5 h-5" />,
     label: 'SOVEREIGN_CORE'
   },
   {
     id: 'galaxy',
     path: '/galaxy',
     color: 'bg-gemigram-neon',
-    icon: <Globe className="w-5 h-5" />,
+    icon: <Globe aria-hidden="true" className="w-5 h-5" />,
     label: 'GEMIGALAXY'
   },
   {
     id: 'hub',
     path: '/hub',
     color: 'bg-gemigram-neon',
-    icon: <Users className="w-5 h-5" />,
+    icon: <Users aria-hidden="true" className="w-5 h-5" />,
     label: 'NEURAL_HUB'
   },
   {
     id: 'forge',
     path: '/forge',
     color: 'bg-gemigram-neon',
-    icon: <Plus className="w-5 h-5" />,
+    icon: <Plus aria-hidden="true" className="w-5 h-5" />,
     label: 'GEMI_FORGE'
   },
   {
     id: 'workspace',
     path: '/workspace',
     color: 'bg-gemigram-neon',
-    icon: <LayoutDashboard className="w-5 h-5" />,
+    icon: <LayoutDashboard aria-hidden="true" className="w-5 h-5" />,
     label: 'WORKSPACE'
   },
   {
     id: 'marketplace',
     path: '/marketplace',
     color: 'bg-gemigram-neon',
-    icon: <Globe className="w-5 h-5" />,
+    icon: <Globe aria-hidden="true" className="w-5 h-5" />,
     label: 'GEMIGRAM_MARKET'
   },
   {
     id: 'settings',
     path: '/settings',
     color: 'bg-white/20',
-    icon: <Settings className="w-5 h-5" />,
+    icon: <Settings aria-hidden="true" className="w-5 h-5" />,
     label: 'CONFIG'
   },
   {
     id: 'about',
     path: '/about',
     color: 'bg-gemigram-neon',
-    icon: <Users className="w-5 h-5" />,
+    icon: <Users aria-hidden="true" className="w-5 h-5" />,
     label: 'ABOUT'
   }
 ];
@@ -79,6 +79,8 @@ interface FloatingNavProps {
 export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNavProps) {
   const [expandingOrb, setExpandingOrb] = useState<string | null>(null);
   const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
+  const [activeHint, setActiveHint] = useState<string | null>(null);
+  const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -107,6 +109,19 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
       setTimeout(() => setExpandingOrb(null), 400);
     }, 400);
   };
+
+  const showHint = (id: string) => {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    hintTimerRef.current = setTimeout(() => setActiveHint(id), 450);
+  };
+  const hideHint = () => {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    setActiveHint(null);
+  };
+
+  useEffect(() => () => {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+  }, []);
 
   return (
     <>
@@ -140,20 +155,26 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
           {ORBS_CONFIG.map((orb) => {
             const isActive = currentView === orb.id;
             return (
-              <button
-                key={orb.id}
-                onClick={() => handleNavigate(orb.id, orb.path)}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all group ${
-                  isActive 
-                    ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/25 shadow-[0_0_25px_rgba(57,255,20,0.15)]' 
-                    : 'text-white/30 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06]'
-                }`}
-              >
-                <div className={`${isActive ? 'text-gemigram-neon' : 'group-hover:text-white'}`}>
-                  {orb.icon}
-                </div>
-                <span className="hidden xl:block text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap">{orb.label}</span>
-              </button>
+              <div key={orb.id} className="relative group">
+                <button
+                  onClick={() => handleNavigate(orb.id, orb.path)}
+                  title={`Navigate to ${orb.label}`}
+                  aria-label={`Navigate to ${orb.label}`}
+                  className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
+                    isActive 
+                      ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/25 shadow-[0_0_25px_rgba(57,255,20,0.15)]' 
+                      : 'text-white/30 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06]'
+                  }`}
+                >
+                  <div className={`${isActive ? 'text-gemigram-neon' : 'group-hover:text-white'}`}>
+                    {orb.icon}
+                  </div>
+                  <span className="hidden xl:block text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap">{orb.label}</span>
+                </button>
+                <span className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 opacity-0 invisible transition-opacity duration-200 group-hover:opacity-100 group-hover:visible xl:hidden">
+                  {orb.label}
+                </span>
+              </div>
             );
           })}
         </nav>
@@ -167,7 +188,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
                     <Image src={user.photoURL} alt="User" width={32} height={32} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gemigram-neon/20 flex items-center justify-center">
-                      <User className="w-4 h-4 text-gemigram-neon" />
+                      <User aria-hidden="true" className="w-4 h-4 text-gemigram-neon" />
                     </div>
                   )}
                 </div>
@@ -178,16 +199,18 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
               </div>
               <button 
                 onClick={onLogout}
-                className="flex items-center gap-4 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-400/10 transition-colors border border-transparent hover:border-red-400/20"
+                title="Terminate session"
+                aria-label="Terminate session"
+                className="flex items-center gap-4 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-400/10 transition-colors border border-transparent hover:border-red-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
               >
-                <LogOut className="w-5 h-5 flex-shrink-0" />
+                <LogOut aria-hidden="true" className="w-5 h-5 flex-shrink-0" />
                 <span className="hidden xl:block text-[10px] font-black uppercase tracking-widest">Terminate_Session</span>
               </button>
             </div>
           ) : (
             <button 
               onClick={onLogin}
-              className="w-full py-4 rounded-2xl bg-gemigram-neon text-black font-black uppercase text-[10px] tracking-widest shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:scale-[1.02] transition-all"
+              className="w-full py-4 rounded-2xl bg-gemigram-neon text-black font-black uppercase text-[10px] tracking-widest shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:scale-[1.02] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
             >
               Access_System
             </button>
@@ -204,15 +227,24 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
         {ORBS_CONFIG.slice(0, 5).map((orb) => {
           const isActive = currentView === orb.id;
           return (
-            <button
-              key={orb.id}
-              onClick={() => handleNavigate(orb.id, orb.path)}
-              className={`p-3 rounded-xl transition-all ${
-                isActive ? 'text-gemigram-neon bg-gemigram-neon/10' : 'text-white/40'
-              }`}
-            >
-              {orb.icon}
-            </button>
+            <div key={orb.id} className="relative group flex items-center justify-center">
+              <button
+                onClick={() => handleNavigate(orb.id, orb.path)}
+                title={`Navigate to ${orb.label}`}
+                aria-label={`Navigate to ${orb.label}`}
+                onTouchStart={() => showHint(orb.id)}
+                onTouchEnd={hideHint}
+                onTouchCancel={hideHint}
+                className={`p-3 rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
+                  isActive ? 'text-gemigram-neon bg-gemigram-neon/10' : 'text-white/40'
+                }`}
+              >
+                {orb.icon}
+              </button>
+              <span className={`pointer-events-none absolute bottom-full mb-2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 transition-opacity duration-200 md:group-hover:opacity-100 md:group-hover:visible ${activeHint === orb.id ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                {orb.label}
+              </span>
+            </div>
           );
         })}
       </motion.nav>
