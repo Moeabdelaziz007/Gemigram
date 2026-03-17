@@ -99,37 +99,40 @@ export default function GalaxyPage() {
         {/* Central Sun (Sovereign Core) - Enhanced */}
         <motion.div 
           style={{ scale: zoom }}
-          className="relative group"
+          className="relative group z-30"
         >
+          {/* Outer expansive glow */}
           <motion.div 
             animate={{ 
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.6, 0.3],
+              scale: [1, 1.3, 1],
+              opacity: [0.4, 0.8, 0.4],
               rotate: 360
             }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="w-48 h-48 rounded-full bg-gradient-to-br from-gemigram-neon/10 via-transparent to-transparent blur-[60px] absolute -inset-16" 
+            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+            className="w-64 h-64 rounded-full bg-gradient-to-br from-gemigram-neon/20 via-neon-blue/10 to-transparent blur-[80px] absolute -inset-20 mix-blend-screen pointer-events-none"
           />
           
           
-          <div className="w-24 h-24 rounded-full bg-black border border-gemigram-neon/50 flex items-center justify-center relative z-10 shadow-[0_0_100px_rgba(16,255,135,0.2),inset_0_0_40px_rgba(16,255,135,0.1)] group-hover:scale-110 group-hover:border-gemigram-neon transition-all duration-700">
+          <div className="w-24 h-24 rounded-full bg-black/80 backdrop-blur-xl border-2 border-gemigram-neon/60 flex items-center justify-center relative z-10 shadow-[0_0_120px_rgba(57,255,20,0.4),inset_0_0_50px_rgba(57,255,20,0.2)] group-hover:scale-110 group-hover:border-gemigram-neon transition-all duration-700 cursor-pointer overflow-hidden">
             <motion.div
               animate={{ 
                 rotate: 360,
-                boxShadow: ['0 0 20px rgba(16,255,135,0.2)', '0 0 50px rgba(16,255,135,0.4)', '0 0 20px rgba(16,255,135,0.2)']
+                boxShadow: ['0 0 30px rgba(57,255,20,0.3)', '0 0 80px rgba(57,255,20,0.6)', '0 0 30px rgba(57,255,20,0.3)']
               }}
-              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 rounded-full border border-gemigram-neon/20 border-dashed"
+              transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 rounded-full border border-gemigram-neon/30 border-dashed"
             />
-            <Brain className="w-10 h-10 text-gemigram-neon drop-shadow-[0_0_15px_rgba(16,255,135,0.6)]" />
+            {/* Inner scanning light */}
+            <div className="absolute top-0 left-0 w-full h-2 bg-gemigram-neon/80 blur-sm opacity-50 animate-[scanline_2s_linear_infinite]" />
+            <Brain className="w-10 h-10 text-gemigram-neon drop-shadow-[0_0_20px_rgba(57,255,20,0.8)] relative z-10" />
           </div>
           
           {/* Core Labels */}
-          <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 text-center whitespace-nowrap">
+          <div className="absolute top-full mt-6 left-1/2 -translate-x-1/2 text-center whitespace-nowrap bg-black/40 backdrop-blur-md border border-gemigram-neon/20 rounded-full px-4 py-1.5 shadow-[0_0_20px_rgba(57,255,20,0.1)]">
             <motion.div 
-              animate={{ opacity: [0.5, 1, 0.5] }}
+              animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="text-[10px] font-black uppercase tracking-[0.3em] text-gemigram-neon"
+              className="text-[10px] font-black uppercase tracking-[0.4em] text-gemigram-neon drop-shadow-[0_0_5px_rgba(57,255,20,0.5)]"
             >
               CORE_OS_ACTIVE
             </motion.div>
@@ -182,21 +185,22 @@ export default function GalaxyPage() {
 
         {/* Orbiting Agent Planets - Enhanced */}
         {agents.map((agent, i) => {
-          const radius = 220 + (i * 40);
-          const duration = 20 + (i * 5);
-          const delay = i * -3.5;
+          const radius = 220 + (i * 45); // Spread them out slightly more
+          const duration = 25 + (i * 6); // Slightly slower for smoother tracking
+          const delay = i * -4;
           
           return (
             <motion.div
               key={agent.id}
               animate={{ rotate: 360 }}
               transition={{ duration, repeat: Infinity, ease: "linear", delay }}
-              className="absolute"
+              className="absolute z-20 pointer-events-none"
               style={{ width: radius * 2, height: radius * 2, scale: zoom }}
             >
               <motion.div 
-                initial={{ rotate: -delay * (360/duration) }}
-                className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2"
+                animate={{ rotate: -360 }} // Counter-rotate to keep upright
+                transition={{ duration, repeat: Infinity, ease: "linear", delay }}
+                className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 pointer-events-auto"
               >
                 <button 
                   onClick={() => {
@@ -206,41 +210,43 @@ export default function GalaxyPage() {
                   className="group relative flex flex-col items-center"
                 >
                   <motion.div 
-                    whileHover={{ scale: 1.4 }}
-                    className={`relative w-14 h-14 rounded-full bg-slate-900 border-2 flex items-center justify-center transition-all ${
+                    whileHover={{ scale: 1.3 }}
+                    className={`relative w-14 h-14 rounded-full backdrop-blur-md border-2 flex items-center justify-center transition-all duration-300 ${
                       activeAgentId === agent.id 
-                        ? 'border-gemigram-neon shadow-[0_0_30px_rgba(16,255,135,0.5)] bg-gemigram-neon/10' 
-                        : 'border-white/5 bg-white/[0.02] hover:border-gemigram-neon/50 shadow-none'
+                        ? 'border-gemigram-neon shadow-[0_0_40px_rgba(57,255,20,0.6)] bg-gemigram-neon/20'
+                        : 'border-white/10 bg-black/60 hover:border-gemigram-neon/50 hover:bg-gemigram-neon/10 hover:shadow-[0_0_20px_rgba(57,255,20,0.3)]'
                     }`}
                   >
                     {/* Pulsing ring for active agent */}
                     {activeAgentId === agent.id && (
                       <motion.div 
-                        animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="absolute inset-0 rounded-full border-2 border-gemigram-neon"
+                        animate={{ scale: [1, 1.4, 1], opacity: [0.8, 0, 0.8] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute inset-0 rounded-full border-2 border-gemigram-neon/80"
                       />
                     )}
                     
-                    <Globe className={`w-6 h-6 ${activeAgentId === agent.id ? 'text-gemigram-neon' : 'text-white/20 group-hover:text-gemigram-neon'}`} />
+                    <Globe className={`w-6 h-6 transition-colors duration-300 ${activeAgentId === agent.id ? 'text-gemigram-neon drop-shadow-[0_0_8px_rgba(57,255,20,1)]' : 'text-white/40 group-hover:text-gemigram-neon'}`} />
                     
                     {/* Status indicator */}
-                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-gemigram-neon shadow-[0_0_10px_rgba(16,255,135,0.8)]" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-gemigram-neon shadow-[0_0_12px_rgba(57,255,20,1)] border border-black" />
+
+                    {/* Connection line to core on hover */}
+                    <div className="absolute top-1/2 left-1/2 w-[200px] h-0.5 bg-gradient-to-r from-gemigram-neon to-transparent origin-left rotate-180 opacity-0 group-hover:opacity-30 transition-opacity duration-300 -z-10 pointer-events-none" />
                     
                     {/* Agent Label Bubble - Enhanced */}
-                    <div className="absolute left-full ml-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 pointer-events-none z-50">
+                    <div className="absolute left-full ml-6 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0 pointer-events-none z-50">
                       <motion.div 
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="glass-medium p-4 border border-gemigram-neon/30 bg-black/80 rounded-2xl min-w-[160px] backdrop-blur-xl"
+                        className="glass-strong p-4 border border-gemigram-neon/40 bg-black/80 rounded-2xl min-w-[180px] shadow-[0_10px_30px_rgba(0,0,0,0.8)] relative overflow-hidden"
                       >
-                        <div className="text-[8px] font-bold uppercase tracking-widest text-white/40 mb-1">Entity // {String(i+1).padStart(2, '0')}</div>
-                        <div className="text-sm font-black text-white mb-1.5">{agent.name}</div>
-                        <div className="text-[9px] text-gemigram-neon font-mono uppercase tracking-wide">{agent.role}</div>
+                        <div className="absolute top-0 left-0 w-1 h-full bg-gemigram-neon" />
+                        <div className="text-[8px] font-black uppercase tracking-widest text-white/50 mb-1 pl-1">Entity // {String(i+1).padStart(2, '0')}</div>
+                        <div className="text-sm font-black text-white mb-1.5 pl-1 truncate drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{agent.name}</div>
+                        <div className="text-[9px] text-gemigram-neon font-mono uppercase tracking-wide pl-1 truncate">{agent.role}</div>
                         
                         {/* Quick action */}
-                        <div className="mt-2 pt-2 border-t border-white/10">
-                          <div className="text-[8px] text-white/30 uppercase tracking-wider">Click to activate</div>
+                        <div className="mt-3 pt-2 border-t border-white/10 pl-1">
+                          <div className="text-[9px] text-white/40 uppercase tracking-widest font-bold">Access Terminal ↗</div>
                         </div>
                       </motion.div>
                     </div>

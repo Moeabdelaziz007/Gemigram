@@ -13,13 +13,6 @@ async function generateAvatar() {
     },
   });
 
-  if (response.candidates && response.candidates[0]?.content?.parts) {
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
-        console.log(part.inlineData.data);
-      }
-    }
-  }
 }
 
 generateAvatar();

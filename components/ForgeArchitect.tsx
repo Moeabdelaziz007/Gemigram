@@ -126,15 +126,22 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-3xl overflow-hidden selection:bg-gemigram-neon/30">
-      <AnimatePresence>
+    <div className="w-full h-full flex items-center justify-center relative overflow-hidden selection:bg-gemigram-neon/30">
+      <AnimatePresence mode="wait">
         {!showDeployment ? (
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            className="w-full max-w-5xl aspect-video sovereign-glass border border-white/10 rounded-[40px] shadow-2xl relative flex flex-col overflow-hidden mx-4"
+            key="architect"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 1.05, y: -20, filter: 'blur(10px)' }}
+            transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            className="w-full max-w-6xl aspect-video glass-strong border border-gemigram-neon/20 rounded-[3rem] shadow-[0_0_50px_rgba(0,0,0,0.8)] relative flex flex-col overflow-hidden mx-6 bg-black/40 backdrop-blur-2xl"
           >
+            {/* Dynamic inner glow */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-gemigram-neon/10 blur-[100px] rounded-full mix-blend-screen" />
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-neon-blue/10 blur-[100px] rounded-full mix-blend-screen" />
+            </div>
             {/* HUD Content Mapping to reference image style */}
             <div className="p-8 pb-0 flex items-center justify-between">
                <div className="flex items-center gap-4">
@@ -149,10 +156,10 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
                <button onClick={onCancel} className="text-[9px] font-black text-white/20 hover:text-white uppercase tracking-widest transition-colors mb-auto">Abort_Creation</button>
             </div>
 
-            <div className="flex-1 grid grid-cols-12 gap-8 p-12">
+            <div className="flex-1 grid grid-cols-12 gap-10 p-12 relative z-10">
               {/* Left Column: Synthesis Status */}
-              <div className="col-span-4 flex flex-col gap-6">
-                <div className="sovereign-glass p-8 rounded-[2rem] border-white/5 bg-white/5 space-y-6">
+              <div className="col-span-4 flex flex-col gap-6 h-full">
+                <div className="glass-medium p-8 rounded-[2.5rem] border border-white/10 bg-white/5 space-y-6 shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-gemigram-neon/60">Inference_Streams</h3>
                    
                    <InferenceNode label="Audio_Spectrogram" active={voiceState.status === 'listening' || voiceState.status === 'speaking'} />
@@ -164,15 +171,18 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
                 <div className="flex-1 flex flex-col items-center justify-center">
                    <motion.div 
                      animate={{ 
-                       scale: voiceState.status === 'listening' ? [1, 1.2, 1] : 1,
-                       rotate: voiceState.status === 'processing' ? 360 : 0
+                       scale: voiceState.status === 'listening' ? [1, 1.15, 1] : 1,
+                       rotate: voiceState.status === 'processing' ? 360 : 0,
+                       boxShadow: voiceState.status === 'listening' ? ['0 0 20px rgba(57,255,20,0.2)', '0 0 40px rgba(57,255,20,0.6)', '0 0 20px rgba(57,255,20,0.2)'] : 'none'
                      }}
-                     transition={{ duration: 2, repeat: Infinity }}
-                     className={`w-32 h-32 rounded-full border-2 flex items-center justify-center ${voiceState.status === 'listening' ? 'border-gemigram-neon text-gemigram-neon shadow-[0_0_20px_rgba(16,255,135,0.4)]' : 'border-white/10 text-white/20'}`}
+                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                     className={`w-32 h-32 rounded-full border border-dashed flex items-center justify-center relative bg-black/50 backdrop-blur-md ${voiceState.status === 'listening' ? 'border-gemigram-neon text-gemigram-neon' : 'border-white/20 text-white/30'}`}
                    >
+                     {/* Inner glowing ring */}
+                     <div className={`absolute inset-2 rounded-full border ${voiceState.status === 'listening' ? 'border-gemigram-neon/50 bg-gemigram-neon/10' : 'border-white/5 bg-white/5'}`} />
                       {voiceState.status === 'processing' ? <Brain className="w-12 h-12" /> : <Mic className="w-12 h-12" />}
                    </motion.div>
-                   <div className="mt-8 sovereign-glass p-4 rounded-2xl border-white/5 bg-gemigram-neon/5">
+                   <div className="mt-8 glass-medium p-5 rounded-2xl border border-white/10 bg-black/40 w-full max-w-[240px]">
                       <h4 className="text-[8px] font-black uppercase tracking-widest text-gemigram-neon mb-3">Neural_Spectral_Analysis</h4>
                       <div className="flex items-end gap-1 h-12">
                          {[...Array(12)].map((_, i) => (
@@ -208,8 +218,10 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
                         exit={{ opacity: 0, x: -20 }}
                         className="space-y-8"
                       >
-                         <h2 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">Describe the_Entity</h2>
-                         <div className="h-40 bg-white/5 rounded-[2rem] border border-white/5 p-8 font-mono text-sm text-gemigram-neon/80 italic leading-relaxed">
+                         <h2 className="text-5xl font-black text-white uppercase tracking-tighter leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">Describe the_Entity</h2>
+                         <div className="h-48 glass-medium rounded-[2.5rem] border border-white/10 p-8 font-mono text-base text-gemigram-neon/80 italic leading-relaxed shadow-[inset_0_0_30px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                            {/* Scanning overlay */}
+                            <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent,rgba(57,255,20,0.05),transparent)] opacity-50 animate-[scanline_3s_linear_infinite]" />
                             {voiceState.status === 'listening' ? 'Materializing voice buffer...' : 'Awaiting initialization command...'}
                          </div>
                       </motion.div>
@@ -236,29 +248,35 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
                          <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-4">
                                <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Neural_Capabilities</h4>
-                               <div className="flex flex-wrap gap-2">
+                               <div className="flex flex-wrap gap-3 mt-2">
                                   {Object.entries(formData.tools).filter(([_, v]) => v).map(([t]) => (
-                                    <span key={t} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-bold text-gemigram-neon uppercase tracking-widest">{t}</span>
+                                    <span key={t} className="px-4 py-1.5 glass-medium border border-gemigram-neon/20 rounded-full text-[10px] font-bold text-gemigram-neon uppercase tracking-widest shadow-[0_0_10px_rgba(57,255,20,0.1)]">{t}</span>
                                   ))}
                                </div>
                             </div>
                             <div className="space-y-4">
                                <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Cognitive_Persona</h4>
-                               <div className="p-4 bg-gemigram-neon/5 border border-gemigram-neon/20 rounded-2xl flex items-center gap-4">
-                                  <Shield className="w-5 h-5 text-gemigram-neon" />
-                                  <span className="text-xs font-black text-white uppercase tracking-[0.2em]">{formData.persona}</span>
+                               <div className="p-5 glass-medium border border-neon-blue/20 rounded-2xl flex items-center gap-4 shadow-[inset_0_0_20px_rgba(0,240,255,0.05)] relative overflow-hidden">
+                                  <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-neon-blue/10 to-transparent pointer-events-none" />
+                                  <div className="w-10 h-10 rounded-full bg-neon-blue/10 flex items-center justify-center border border-neon-blue/30">
+                                    <Shield className="w-5 h-5 text-neon-blue" />
+                                  </div>
+                                  <span className="text-sm font-black text-white uppercase tracking-[0.2em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">{formData.persona}</span>
                                </div>
                             </div>
                          </div>
 
-                         <motion.button
-                           whileHover={{ scale: 1.02 }}
-                           whileTap={{ scale: 0.98 }}
-                           onClick={finalizeMaterialization}
-                           className="w-full py-6 mt-4 bg-gemigram-neon text-black font-black uppercase tracking-[0.5em] text-sm rounded-[2rem] shadow-[0_0_30px_rgba(16,255,135,0.4)] hover:shadow-[0_0_50px_rgba(16,255,135,0.6)] transition-all"
-                         >
-                            Initiate_Materialization
-                         </motion.button>
+                         <div className="pt-6">
+                           <motion.button
+                             whileHover={{ scale: 1.02, boxShadow: '0 0 60px rgba(57,255,20,0.6)' }}
+                             whileTap={{ scale: 0.98 }}
+                             onClick={finalizeMaterialization}
+                             className="w-full py-6 bg-gemigram-neon text-black font-black uppercase tracking-[0.4em] text-sm rounded-[2rem] shadow-[0_0_40px_rgba(57,255,20,0.4)] transition-all relative overflow-hidden group"
+                           >
+                              <span className="relative z-10">Initiate_Materialization</span>
+                              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                           </motion.button>
+                         </div>
                       </motion.div>
                     )}
                  </AnimatePresence>

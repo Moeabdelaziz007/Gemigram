@@ -1,8 +1,40 @@
 import { onRequest } from "firebase-functions/v2/https";
+import { onDocumentWritten } from "firebase-functions/v2/firestore";
+import * as admin from "firebase-admin";
 import { exec } from "child_process";
 import { promisify } from "util";
 
+admin.initializeApp();
+
 const execAsync = promisify(exec);
+
+export const syncAdminRole = onDocumentWritten("users/{userId}", async (event) => {
+  const userId = event.params.userId;
+  const snapshot = event.data;
+
+  // If document was deleted, remove admin claim
+  if (!snapshot || !snapshot.after || !snapshot.after.exists) {
+    try {
+      await admin.auth().setCustomUserClaims(userId, { admin: false });
+    } catch (error) {
+      console.error(`Error removing admin claim for ${userId}:`, error);
+    }
+    return;
+  }
+
+  const role = snapshot.after.data().role;
+  const wasAdmin = snapshot.before && snapshot.before.exists ? snapshot.before.data().role === 'admin' : false;
+  const isAdmin = role === 'admin';
+
+  // Only update claims if the role actually changed to/from admin
+  if (wasAdmin !== isAdmin) {
+    try {
+      await admin.auth().setCustomUserClaims(userId, { admin: isAdmin });
+    } catch (error) {
+      console.error(`Error updating custom claim for ${userId}:`, error);
+    }
+  }
+});
 
 /**
  * 🛰️ GWS Bridge (Neural Connectivity Layer)

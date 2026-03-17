@@ -130,39 +130,75 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
           </motion.div>
         </div>
 
-        {/* Agent Hive Preview - The grid of bots in reference image 2 */}
+        {/* Agent Hive Preview - Enhanced */}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="w-full mt-40 glass-medium border border-white/5 rounded-[3rem] p-12 overflow-hidden relative"
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="w-full mt-40 glass-strong border border-gemigram-neon/10 rounded-[3rem] p-12 overflow-hidden relative shadow-[0_0_40px_rgba(0,0,0,0.5)]"
         >
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gemigram-neon/5 blur-[100px] pointer-events-none" />
+          {/* Enhanced background glow */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gemigram-neon/10 blur-[120px] pointer-events-none mix-blend-screen" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-neon-blue/5 blur-[100px] pointer-events-none mix-blend-screen" />
           
-          <div className="flex justify-between items-center mb-16">
-            <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Agent_Hive</h2>
+          {/* Subtle grid pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8)_1px,transparent_1px)] bg-[length:24px_24px] pointer-events-none" />
+
+          <div className="flex justify-between items-center mb-16 relative z-10">
+            <h2 className="text-4xl font-black uppercase tracking-tighter text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">Agent_Hive</h2>
             <div className="flex gap-4">
-               {[1,2].map(i => <div key={i} className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30">{"< >"[i-1]}</div>)}
+               {[1,2].map(i => (
+                 <motion.button
+                   key={i}
+                   whileHover={{ scale: 1.1, backgroundColor: 'rgba(57,255,20,0.1)' }}
+                   whileTap={{ scale: 0.9 }}
+                   className="w-12 h-12 rounded-full border border-white/20 hover:border-gemigram-neon flex items-center justify-center text-white/50 hover:text-gemigram-neon transition-all bg-black/50 backdrop-blur-md"
+                 >
+                   {i === 1 ? '<' : '>'}
+                 </motion.button>
+               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 relative z-10">
             {[1,2,3,4,5].map(i => (
-              <div key={i} className="sovereign-glass p-6 group hover:border-gemigram-neon/40 transition-all cursor-pointer relative overflow-hidden">
-                <div className="aspect-[4/5] rounded-2xl bg-white/5 mb-6 overflow-hidden relative">
+              <motion.div
+                key={i}
+                whileHover={{ y: -10 }}
+                className="glass-medium p-6 rounded-3xl group hover:border-gemigram-neon/40 transition-all duration-500 cursor-pointer relative overflow-hidden"
+              >
+                {/* Internal card hover effect */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gemigram-neon/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                <div className="aspect-[4/5] rounded-2xl bg-black/40 mb-6 overflow-hidden relative border border-white/5">
+                   {/* Fallback image if actual agent images are missing */}
+                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(57,255,20,0.1)_0%,transparent_70%)] opacity-50" />
+
                    <img 
                     src={`/agents/robot_${(i % 3) + 1}.png`} 
-                    alt="" 
-                    className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110" 
+                    alt={`Neural Entity ${i}`}
+                    className="w-full h-full object-cover mix-blend-screen opacity-50 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
+                    onError={(e) => {
+                      // Fallback for missing images
+                      e.currentTarget.style.display = 'none';
+                    }}
                    />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60" />
+
+                   {/* Scanning line effect on hover */}
+                   <div className="absolute top-0 left-0 w-full h-1 bg-gemigram-neon shadow-[0_0_10px_rgba(57,255,20,0.8)] opacity-0 group-hover:opacity-100 group-hover:animate-[scanline_2s_linear_infinite]" />
+
+                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
                 </div>
-                <h4 className="text-sm font-black text-white/90 mb-2 uppercase tracking-widest group-hover:text-gemigram-neon transition-colors">Neural_Entity_{i}</h4>
-                <div className="flex items-center gap-2">
-                   <span className="w-1 h-1 rounded-full bg-gemigram-neon shadow-[0_0_5px_rgba(57,255,20,0.8)]" />
-                   <p className="text-[9px] text-white/20 font-black leading-relaxed uppercase tracking-[0.2em]">Runtime::Active</p>
+
+                <h4 className="text-sm font-black text-white mb-2 uppercase tracking-widest group-hover:text-gemigram-neon transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Neural_Entity_{i}</h4>
+                <div className="flex items-center gap-3">
+                   <div className="relative flex items-center justify-center w-2 h-2">
+                     <span className="absolute w-full h-full rounded-full bg-gemigram-neon opacity-75 animate-ping" />
+                     <span className="relative w-1.5 h-1.5 rounded-full bg-gemigram-neon" />
+                   </div>
+                   <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em]">Runtime::Active</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div>

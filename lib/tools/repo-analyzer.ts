@@ -10,6 +10,9 @@ const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '
 const MAX_CACHE_SIZE = 20;
 const analysisCache = new Map<string, any>();
 
+// Cache for Gemini Context Caching
+const geminiContextCache = new Map<string, { name: string, expiresAt: number }>();
+
 function shouldIgnore(filename: string): boolean {
   const ignorePatterns = [
     'node_modules/', '.git/', 'dist/', 'build/', '.next/', 'coverage/',
@@ -105,6 +108,48 @@ export async function analyzeRepository(repoUrl: string) {
       throw new Error('No readable code files found in the repository.');
     }
 
+    let cachedContentName: string | undefined;
+
+    if (commitSha) {
+      const cachedData = geminiContextCache.get(commitSha);
+      if (cachedData) {
+        if (Date.now() < cachedData.expiresAt) {
+          cachedContentName = cachedData.name;
+        } else {
+          // Expired, remove from local cache
+          geminiContextCache.delete(commitSha);
+        }
+      }
+    }
+
+    if (!cachedContentName) {
+      try {
+        console.log(`[Gemini Cache] Creating new context cache for ${owner}/${repo} at ${commitSha}`);
+        const cachedContent = await ai.caches.create({
+          model: 'gemini-2.0-flash-exp',
+          config: {
+            contents: [
+              { role: 'user', parts: [{ text: `إليك الكود المصدري للمشروع بالكامل:\n${combinedCode}` }] }
+            ],
+            systemInstruction: { parts: [{ text: "أنت خبير معماريات برمجيات الذكاء الاصطناعي. أجب باللغة العربية دائماً وباحترافية عالية. قدم أكواد وأمثلة دقيقة." }] },
+            ttl: '3600s', // 1 hour cache
+          }
+        });
+        cachedContentName = cachedContent.name;
+        if (commitSha && cachedContentName) {
+          // Store locally with a 55-minute expiration to be safe (remote is 60m)
+          geminiContextCache.set(commitSha, {
+            name: cachedContentName,
+            expiresAt: Date.now() + 55 * 60 * 1000
+          });
+        }
+      } catch (err: any) {
+        console.warn('Failed to create Gemini context cache, falling back to full prompt:', err.message);
+      }
+    } else {
+      console.log(`[Gemini Cache] Reusing context cache ${cachedContentName} for ${owner}/${repo} at ${commitSha}`);
+    }
+
     const prompt = `
 أنت مهندس معماري رئيسي للذكاء الاصطناعي والأمن السيبراني (Principal AI Architecture & Cybersecurity Engineer).
 عقليتك تحليلية، هادئة، وتعتمد على المبادئ الأولى (First Principles).
@@ -112,10 +157,7 @@ export async function analyzeRepository(repoUrl: string) {
 الهدف: تحليل مستودع "Aether-Voice-OS" لبناء نظام تشغيل صوتي (Voice-First OS) متطور للفوز بتحدي Gemini Live Agent.
 يجب أن يكون النظام "Zero-UI" (يعتمد على الصوت كلياً مع واجهة محيطية Ambient)، ويستخدم بيئة Google (Gemini Live API, Firebase, Google Workspace).
 
-إليك الكود المصدري للمشروع بالكامل:
-${combinedCode}
-
-المطلوب منك تقديم تقرير هندسي عميق ومفصل باللغة العربية يغطي النقاط التالية:
+${!cachedContentName ? `إليك الكود المصدري للمشروع بالكامل:\n${combinedCode}\n\n` : ''}المطلوب منك تقديم تقرير هندسي عميق ومفصل باللغة العربية يغطي النقاط التالية:
 1. تحليل الكمون (Latency Analysis): أين توجد عنق الزجاجة في مسار الصوت الحالي؟ وكيف نستبدله بـ Gemini Live API (Bidi WebSockets / PCM Audio) للوصول إلى زمن انتقال شبه معدوم؟
 2. معمارية ClawHub (Dynamic Plugins): كيف نبني نظام إضافات ديناميكي باستخدام Firebase Firestore لتخزين OpenAPI Schemas واستدعائها عبر Function Calling بدون إعادة نشر الكود؟
 3. الذاكرة المستمرة (Continuous Memory): كيف ندمج Firestore لتخزين سياق المستخدم وتفضيلاته وتمريرها كـ System Instructions لـ Gemini؟
@@ -125,13 +167,22 @@ ${combinedCode}
 استخدم أداة البحث (Google Search) إذا احتجت للتأكد من أحدث توثيق لـ Gemini Multimodal Live API أو Firebase.
 `;
 
-    const modelResponse = await ai.models.generateContent({
+    const modelConfig: any = {
       model: 'gemini-2.0-flash-exp',
       contents: [
-        { role: 'user', parts: [{ text: "System Instruction: أنت خبير معماريات برمجيات الذكاء الاصطناعي. أجب باللغة العربية دائماً وباحترافية عالية. قدم أكواد وأمثلة دقيقة." }] },
         { role: 'user', parts: [{ text: prompt }] }
       ],
-    });
+    };
+
+    if (cachedContentName) {
+      modelConfig.config = {
+        cachedContent: cachedContentName
+      };
+    } else {
+      modelConfig.contents.unshift({ role: 'user', parts: [{ text: "System Instruction: أنت خبير معماريات برمجيات الذكاء الاصطناعي. أجب باللغة العربية دائماً وباحترافية عالية. قدم أكواد وأمثلة دقيقة." }] });
+    }
+
+    const modelResponse = await ai.models.generateContent(modelConfig);
 
     const result = {
       success: true,
