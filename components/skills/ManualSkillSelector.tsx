@@ -7,10 +7,11 @@
  * Provides a comprehensive skill selection interface with confirmation.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, Save } from 'lucide-react';
 import SkillSelector from './SkillSelector';
+import { migrateLegacySkillsConfig } from '@/lib/agents/skills-assignment';
 
 interface ManualSkillSelectorProps {
   isOpen: boolean;
@@ -25,8 +26,14 @@ export default function ManualSkillSelector({
   initialSkills,
   onConfirm
 }: ManualSkillSelectorProps) {
-  const [selectedSkills, setSelectedSkills] = useState<Record<string, boolean>>(initialSkills);
+  const [selectedSkills, setSelectedSkills] = useState<Record<string, boolean>>(
+    migrateLegacySkillsConfig(initialSkills)
+  );
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setSelectedSkills(migrateLegacySkillsConfig(initialSkills));
+  }, [initialSkills]);
   
   /**
    * Handle confirmation

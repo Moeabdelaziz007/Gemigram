@@ -328,42 +328,12 @@ const promptForStep = (step: string) => {
 
 ---
 
-### 2. SkillSelector Category Tabs
-**File:** `components/skills/SkillSelector.tsx`
+### 2. SkillSelector + ManualSkillSelector Registry Alignment ✅
+**Files:** `components/skills/SkillSelector.tsx`, `components/skills/ManualSkillSelector.tsx`
 
-**Update CATEGORIES array (around line 28):**
-
-```typescript
-const CATEGORIES: SkillCategory[] = [
-  'productivity',
-  'communication',
-  'analysis',
-  'creative',
-  'social',
-  'data',
-  'utility',
-  'development',      // NEW
-  'engineering',      // NEW
-  'meta_cognition'    // NEW
-];
-```
-
-**Update CATEGORY_LABELS:**
-
-```typescript
-const CATEGORY_LABELS: Record<SkillCategory, string> = {
-  productivity: 'Productivity',
-  communication: 'Communication',
-  analysis: 'Analysis',
-  creative: 'Creative',
-  social: 'Social',
-  data: 'Data',
-  utility: 'Utility',
-  development: 'Development',
-  engineering: 'Engineering',
-  meta_cognition: 'Meta-Cognition'
-};
-```
+- Skill selection UI now consumes IDs and metadata from the centralized `skillRegistry` via `getAllSkills()`.
+- `ManualSkillSelector` normalizes incoming persisted configs through `migrateLegacySkillsConfig()` so legacy workspace booleans keep working.
+- Category headers in `SkillSelector` now derive from registry-backed categories instead of being hardcoded to a fixed list.
 
 ---
 
@@ -419,7 +389,7 @@ const CATEGORY_LABELS: Record<SkillCategory, string> = {
 5. **Test voice integration** in ForgeArchitect
 6. **Generate documentation** using skill-documentation.ts
 7. **Validate all dependencies** and resolve circular references
-8. **Add to UI** with category filtering in SkillSelector
+8. **Add to UI** with category filtering in SkillSelector (registry-driven)
 
 ---
 

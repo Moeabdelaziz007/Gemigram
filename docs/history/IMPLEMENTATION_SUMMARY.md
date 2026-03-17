@@ -178,6 +178,8 @@ Each persona includes:
 
 ### Detection Methods:
 
+> **Architecture update:** Auto-assignment and manual selection now use registry IDs (`Record<string, boolean>`) instead of a hardcoded `SkillsConfig` shape. Validation and dependency expansion are delegated to `skillRegistry.validateConfig()` and `skillRegistry.resolveDependencies()`, with a migration adapter for legacy persisted booleans such as `gmail`, `calendar`, and `drive`.
+
 #### 1. Keyword-Based Detection
 ```typescript
 export function detectSkillsFromDescription(description: string)
