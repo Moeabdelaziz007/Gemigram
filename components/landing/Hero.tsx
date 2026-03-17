@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Shield, Zap, Globe, Users, Cpu, Network, Fingerprint } from 'lucide-react';
+import { Activity, Shield, Zap, Globe, Users, Cpu, Network, Fingerprint, Mic, ArrowRight } from 'lucide-react';
 import { useSystemTelemetry } from '../../hooks/useSystemTelemetry';
 import { useAetherStore } from '../../lib/store/useAetherStore';
 import { BRAND } from '@/lib/constants/branding';
@@ -117,9 +117,11 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
               whileHover={{ scale: 1.05, boxShadow: '0 0 80px rgba(57,255,20,0.5)' }}
               whileTap={{ scale: 0.95 }}
               onClick={onLogin}
-              className="px-20 py-8 bg-gemigram-neon text-black rounded-full text-2xl font-black uppercase tracking-[0.2em] shadow-[0_0_50px_rgba(57,255,20,0.4)] transition-all"
+              className="px-10 md:px-16 py-6 bg-gemigram-neon text-black rounded-full text-lg md:text-2xl font-black uppercase tracking-[0.2em] shadow-[0_0_50px_rgba(57,255,20,0.4)] transition-all inline-flex items-center gap-3"
             >
-              Initialize_System
+              <Mic className="w-5 h-5" />
+              Create with Voice
+              <ArrowRight className="w-5 h-5" />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.05)' }}
@@ -129,6 +131,21 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
               Explore_Mainnet
             </motion.button>
           </motion.div>
+
+          <div className="mt-10 glass-medium border border-white/10 rounded-3xl px-6 py-5 max-w-3xl mx-auto">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-gemigram-neon/80 font-bold mb-3">Voice Flow Preview</p>
+            <div className="grid md:grid-cols-3 gap-4 text-left">
+              {[
+                '1. Tap Create with Voice and grant mic access',
+                '2. Describe your agent naturally in one sentence',
+                '3. Confirm blueprint and launch into workspace'
+              ].map((step) => (
+                <div key={step} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white/80 font-medium">
+                  {step}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Agent Hive Preview - Enhanced */}

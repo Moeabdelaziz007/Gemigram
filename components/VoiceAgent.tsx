@@ -3,13 +3,14 @@
 import { useVoiceAgentLogic } from '@/lib/hooks/useVoiceAgentLogic';
 import { useAetherStore, Agent } from '../lib/store/useAetherStore';
 import { WidgetRenderer } from './WidgetRenderer';
-import { Mic, MicOff, Activity } from 'lucide-react';
+import { Mic, MicOff, Activity, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
-import Image from 'next/image';
+import { useEffect, useMemo } from 'react';
 import { SovereignDashboard } from './SovereignDashboard';
 
 export function VoiceAgent({ activeAgent, googleAccessToken }: { activeAgent: Agent; googleAccessToken?: string }) {
+  const setVoiceSession = useAetherStore(state => state.setVoiceSession);
+  
   const {
     isConnected,
     isRecording,
@@ -24,9 +25,24 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: { activeAgent: Ag
     toggleConnection,
     startRecording,
     stopRecording,
-    setActiveWidget
   } = useVoiceAgentLogic({ activeAgent, googleAccessToken });
 
+  useEffect(() => {
+    setVoiceSession({
+      stage: 'workspace',
+      lastVoiceAction: isConnected
+        ? isRecording
+          ? 'You are live. Keep speaking naturally.'
+          : 'Tap the mic to start your next voice turn.'
+        : 'Use Establish Link to reconnect your voice channel.',
+    });
+  }, [isConnected, isRecording, setVoiceSession]);
+
+  const voiceActionPrompt = useMemo(() => {
+    if (!isConnected) return 'Voice link is offline. Re-establish to continue voice-first flow.';
+    if (isRecording) return 'Listening now. Share your request in one sentence.';
+    return 'Connection is active. Tap mic for your next voice action.';
+  }, [isConnected, isRecording]);
 
   return (
     <div className="relative w-full h-full flex flex-col bg-[#030303] overflow-hidden">
@@ -38,6 +54,24 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: { activeAgent: Ag
         linkType={linkType}
         transcript={transcript}
       />
+
+      <div className="absolute bottom-40 left-1/2 -translate-x-1/2 z-[105] w-[min(92vw,52rem)]">
+        <div className="glass-medium border border-white/15 rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-gemigram-neon/80 font-bold">Voice Link Status · {agentStatus}</p>
+            <p className="text-sm text-white/85">{voiceActionPrompt}</p>
+          </div>
+          {!isConnected && (
+            <button
+              onClick={toggleConnection}
+              className="shrink-0 px-4 py-2 rounded-xl border border-gemigram-neon/30 bg-gemigram-neon/10 text-gemigram-neon text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Re-establish voice link
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Control Actions Overlay (Floating) */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-6">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/Providers';
 import { useRouter } from 'next/navigation';
+import { useAetherStore } from '@/lib/store/useAetherStore';
 import HeroBackground from '@/components/HeroBackground';
 import { EnterpriseHeader } from '@/components/landing/Header';
 import { EnterpriseHero } from '@/components/landing/Hero';
@@ -16,22 +17,42 @@ export default function LandingPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const voiceSession = useAetherStore(state => state.voiceSession);
+  const setVoiceSession = useAetherStore(state => state.setVoiceSession);
+
+  const handleVoiceLogin = () => {
+    setVoiceSession({
+      stage: 'forge',
+      lastVoiceAction: 'Authentication requested from Create with Voice CTA.',
+    });
+    setIsAuthOpen(true);
+  };
+
 
   useEffect(() => {
-    if (user) {
-      router.push('/dashboard');
+    if (!user) return;
+
+    if (voiceSession.stage === 'workspace') {
+      router.push('/workspace');
+      return;
     }
-  }, [user, router]);
+    if (voiceSession.stage === 'forge') {
+      router.push('/forge');
+      return;
+    }
+
+    router.push('/dashboard');
+  }, [user, router, voiceSession.stage]);
 
   if (user) return null;
 
   return (
     <div className="relative min-h-screen selection:bg-gemigram-neon/20 overflow-x-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
       <HeroBackground />
-      <EnterpriseHeader onLogin={() => setIsAuthOpen(true)} />
+      <EnterpriseHeader onLogin={handleVoiceLogin} />
       
       <main className="relative z-10">
-        <EnterpriseHero onLogin={() => setIsAuthOpen(true)} />
+        <EnterpriseHero onLogin={handleVoiceLogin} />
         
         {/* Industry Trust Bar */}
         <section className="py-24 border-y border-gemigram-neon/10 bg-black/50 relative overflow-hidden">
