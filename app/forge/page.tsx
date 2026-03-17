@@ -122,12 +122,12 @@ export default function ForgePage() {
   };
 
   return (
-    <div className="w-full h-full bg-carbon-black relative overflow-hidden">
+    <div className="w-full h-full bg-theme-primary relative overflow-hidden">
       {/* Dynamic unified background layer */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute top-1/4 -left-1/4 w-[50vw] h-[50vw] bg-gemigram-neon/5 rounded-full blur-[150px] mix-blend-screen transition-all duration-1000" />
         <div className="absolute bottom-1/4 -right-1/4 w-[50vw] h-[50vw] bg-neon-blue/5 rounded-full blur-[150px] mix-blend-screen transition-all duration-1000" />
-        <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+        <div className="absolute inset-0 opacity-[0.03] carbon-fiber" />
       </div>
 
       <div className="relative z-10 w-full h-full transition-opacity duration-1000">

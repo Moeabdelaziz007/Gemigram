@@ -54,7 +54,7 @@ export default function WorkspacePage() {
   // Loading State
   if (isLoading) {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-[#030303]">
+      <div className="h-full w-full flex items-center justify-center bg-theme-primary">
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -82,11 +82,11 @@ export default function WorkspacePage() {
   // Error State
   if (hasError) {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-[#030303] p-8">
+      <div className="h-full w-full flex items-center justify-center bg-theme-primary p-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full cyber-panel border-red-500/20 bg-gradient-to-br from-red-500/5 to-transparent rounded-2xl p-8"
+          className="max-w-md w-full glass-medium border-red-500/20 bg-gradient-to-br from-red-500/5 to-transparent rounded-2xl p-8"
         >
           <div className="flex items-center gap-3 mb-6">
             <AlertCircle className="w-6 h-6 text-red-400" />
@@ -107,7 +107,7 @@ export default function WorkspacePage() {
   // No Agents State
   if (!activeAgent) {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-[#030303] p-8">
+      <div className="h-full w-full flex items-center justify-center bg-theme-primary p-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -130,7 +130,7 @@ export default function WorkspacePage() {
   }
 
   return (
-    <div className="relative h-full w-full bg-[#030303] overflow-hidden">
+    <div className="relative h-full w-full bg-theme-primary overflow-hidden">
       {/* Ambient Background Grid */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
       
@@ -141,7 +141,7 @@ export default function WorkspacePage() {
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="absolute top-0 left-0 right-0 z-50 px-6 py-4 border-b border-white/5 bg-[#030303]/80 backdrop-blur-xl"
+        className="absolute top-0 left-0 right-0 z-50 px-6 py-4 border-b border-white/5 glass-medium"
       >
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-4">

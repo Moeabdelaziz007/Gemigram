@@ -59,6 +59,13 @@ const ORBS_CONFIG = [
     color: 'bg-white/20',
     icon: <Settings className="w-5 h-5" />,
     label: 'CONFIG'
+  },
+  {
+    id: 'about',
+    path: '/about',
+    color: 'bg-gemigram-neon',
+    icon: <Users className="w-5 h-5" />,
+    label: 'ABOUT'
   }
 ];
 
@@ -120,7 +127,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
       <motion.aside
         initial={{ x: -80, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className="hidden md:flex flex-col items-center py-8 w-20 xl:w-64 bg-theme-secondary border-r border-white/5 z-[90] shrink-0"
+        className="hidden md:flex flex-col items-center py-8 w-20 xl:w-64 glass-strong border-r border-gemigram-neon/[0.06] z-[90] shrink-0"
       >
         <div className="mb-12">
           <div className="flex items-center gap-3 px-4">
@@ -138,8 +145,8 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
                 onClick={() => handleNavigate(orb.id, orb.path)}
                 className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all group ${
                   isActive 
-                    ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/20 shadow-[0_0_20px_rgba(16,255,135,0.1)]' 
-                    : 'text-white/40 hover:text-white hover:bg-white/5 border border-transparent'
+                    ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/25 shadow-[0_0_25px_rgba(57,255,20,0.15)]' 
+                    : 'text-white/30 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06]'
                 }`}
               >
                 <div className={`${isActive ? 'text-gemigram-neon' : 'group-hover:text-white'}`}>

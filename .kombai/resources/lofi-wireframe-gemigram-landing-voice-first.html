@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemigram Landing Page — Voice-First Reimagine (BotFather-Inspired)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
+      background: #fff;
+      color: #333;
+      line-height: 1.5;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .wireframe-title {
+      background: #f5f5f5;
+      border: 2px dashed #999;
+      padding: 16px 24px;
+      margin-bottom: 32px;
+      border-radius: 8px;
+    }
+    .wireframe-title h1 { font-size: 22px; color: #333; margin-bottom: 4px; }
+    .wireframe-title p { font-size: 13px; color: #666; }
+
+    .section {
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      background: #fafafa;
+      position: relative;
+    }
+    .section-label {
+      position: absolute;
+      top: -10px;
+      left: 16px;
+      background: #fff;
+      padding: 0 8px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* Reuse / New badges */
+    .badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    .badge-reuse { background: #4CAF50; color: white; }
+    .badge-new { background: #FF9800; color: white; }
+
+    .component {
+      position: relative;
+      border: 1px dashed #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 8px 0;
+      background: #fff;
+    }
+
+    /* NAV */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      background: #fafafa;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-logo .logo-box {
+      width: 36px;
+      height: 36px;
+      background: #ddd;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      font-size: 13px;
+      color: #666;
+    }
+    .nav-links span:hover { text-decoration: underline; cursor: pointer; }
+    .nav-cta {
+      padding: 10px 24px;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 80px 24px;
+      position: relative;
+    }
+    .orb-container {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 40px;
+      border-radius: 50%;
+      border: 3px solid #999;
+      background: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .orb-container::after {
+      content: '~ pulsing animation ~';
+      position: absolute;
+      bottom: -24px;
+      font-size: 10px;
+      color: #999;
+      font-style: italic;
+    }
+    .orb-icon { font-size: 48px; margin-bottom: 8px; }
+    .orb-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 2px; }
+
+    .hero h1 { font-size: 42px; color: #000; margin-bottom: 16px; line-height: 1.1; }
+    .hero h1 .highlight { color: #666; border-bottom: 3px solid #999; padding-bottom: 2px; }
+    .hero p { font-size: 16px; color: #666; max-width: 600px; margin: 0 auto 32px; }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary-wire {
+      padding: 16px 40px;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-secondary-wire {
+      padding: 16px 40px;
+      background: #fff;
+      color: #333;
+      border: 2px solid #ccc;
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* HOW IT WORKS */
+    .steps {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .step {
+      flex: 1;
+      min-width: 200px;
+      max-width: 300px;
+      text-align: center;
+      padding: 24px;
+    }
+    .step-number {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #eee;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #666;
+    }
+    .step-icon { font-size: 28px; margin-bottom: 8px; }
+    .step h3 { font-size: 16px; margin-bottom: 8px; color: #333; }
+    .step p { font-size: 13px; color: #999; }
+    .step-arrow {
+      display: flex;
+      align-items: center;
+      font-size: 28px;
+      color: #ccc;
+      padding-top: 20px;
+    }
+
+    /* BENTO GRID */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .bento-card {
+      border: 2px solid #ddd;
+      border-radius: 16px;
+      padding: 24px;
+      background: #fafafa;
+      position: relative;
+    }
+    .bento-card.large { grid-column: span 2; }
+    .bento-card h3 { font-size: 16px; margin-bottom: 8px; color: #333; }
+    .bento-card p { font-size: 12px; color: #999; }
+    .bento-icon {
+      width: 48px;
+      height: 48px;
+      background: #eee;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    /* STATS BAR */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 36px; font-weight: bold; color: #333; }
+    .stat-label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 2px; }
+
+    /* FINAL CTA */
+    .final-cta {
+      text-align: center;
+      padding: 60px 24px;
+      border: 3px solid #ccc;
+      border-radius: 24px;
+      background: #f5f5f5;
+    }
+    .final-cta h2 { font-size: 36px; margin-bottom: 16px; color: #000; }
+    .final-cta p { font-size: 16px; color: #666; margin-bottom: 32px; }
+
+    /* FOOTER */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-top: 2px solid #eee;
+      font-size: 12px;
+      color: #999;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: #666; text-decoration: none; }
+    .footer-links a:hover { text-decoration: underline; }
+
+    @media (max-width: 768px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-card.large { grid-column: span 1; }
+      .hero h1 { font-size: 28px; }
+      .steps { flex-direction: column; align-items: center; }
+      .step-arrow { display: none; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wireframe-title">
+  <h1>🎙️ Gemigram Landing — Voice-First Reimagine</h1>
+  <p>Wireframe Option: BotFather-Inspired Automation · Voice Orb as Visual Center · Minimal text, max action. The core idea: "Create your AI agent by speaking to it."</p>
+</div>
+
+<!-- ============ NAVIGATION ============ -->
+<div class="nav" style="position: relative;">
+  <span class="badge badge-reuse" title="components/landing/Header.tsx">[REUSE] EnterpriseHeader</span>
+  <div class="nav-logo">
+    <div class="logo-box">G</div>
+    <div>
+      <div style="font-size: 14px; font-weight: bold;">GEMIGRAM</div>
+      <div style="font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 3px;">AIOS</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <span>How it Works</span>
+    <span>Features</span>
+    <span>Marketplace</span>
+    <span>About Us</span>
+  </div>
+  <button class="nav-cta">Launch Terminal →</button>
+</div>
+
+<!-- ============ HERO: VOICE ORB ============ -->
+<div class="section hero">
+  <span class="section-label">Hero — Voice-First Entry Point</span>
+  
+  <!-- REUSABLE: VoiceAgent orb concept from components/VoiceAgent.tsx -->
+  <div class="component" style="display: inline-block; position: relative;">
+    <span class="badge badge-new" title="NEW: components/landing/VoiceOrb.tsx">[NEW] VoiceOrb</span>
+    <div class="orb-container">
+      <div class="orb-icon">🎙️</div>
+      <div class="orb-label">Tap to Speak</div>
+    </div>
+  </div>
+
+  <h1>Create Your AI Agent<br>in <span class="highlight">30 Seconds</span></h1>
+  <p>No code. No forms. Just tell Gemigram what you need — and watch your sovereign intelligence materialize in real-time.</p>
+
+  <div class="hero-actions">
+    <!-- REUSABLE: AuthOverlay trigger from components/auth/AuthOverlay.tsx -->
+    <div class="component" style="display: inline-flex; position: relative;">
+      <span class="badge badge-reuse" title="components/auth/AuthOverlay.tsx">[REUSE] AuthOverlay</span>
+      <button class="btn-primary-wire">🎙️ Start Talking</button>
+    </div>
+    <button class="btn-secondary-wire">⌨️ Type Instead</button>
+  </div>
+
+  <div style="margin-top: 24px; font-size: 11px; color: #999;">
+    "Build me a crypto trading bot that monitors BTC and sends Telegram alerts" → Agent ready in 10s
+  </div>
+</div>
+
+<!-- ============ HOW IT WORKS ============ -->
+<div class="section">
+  <span class="section-label">How it Works — 3-Step Flow</span>
+  
+  <div class="component" style="position: relative;">
+    <span class="badge badge-new" title="NEW: components/landing/HowItWorks.tsx">[NEW] HowItWorks</span>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">
+          <div class="step-icon">🎙️</div>
+        </div>
+        <h3>1. Speak Your Intent</h3>
+        <p>Describe your agent's purpose, personality, and capabilities using natural language — voice or text.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-number">
+          <div class="step-icon">⚡</div>
+        </div>
+        <h3>2. AI Materializes</h3>
+        <p>Gemigram's Forge engine auto-configures tools, skills, memory, and system prompts in under 10 seconds.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step">
+        <div class="step-number">
+          <div class="step-icon">🚀</div>
+        </div>
+        <h3>3. Deploy & Converse</h3>
+        <p>Your agent is live. Talk to it, give it tasks, connect APIs — all through voice or the Workspace terminal.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ BENTO FEATURES ============ -->
+<div class="section">
+  <span class="section-label">Features — Bento Grid</span>
+  
+  <!-- REUSABLE: BentoFeatures from components/landing/BentoFeatures.tsx -->
+  <div class="component" style="position: relative;">
+    <span class="badge badge-reuse" title="components/landing/BentoFeatures.tsx">[REUSE] BentoFeatures</span>
+    <div class="bento-grid">
+      <div class="bento-card large">
+        <div class="bento-icon">🧠</div>
+        <h3>Voice-Native Intelligence</h3>
+        <p>Real-time voice conversations with your AI agents. No typing required. Built on Google Live API with sub-200ms latency.</p>
+      </div>
+      <div class="bento-card">
+        <div class="bento-icon">🔌</div>
+        <h3>MCP Protocol</h3>
+        <p>Connect GitHub, Slack, and 20,000+ APIs via Model Context Protocol.</p>
+      </div>
+      <div class="bento-card">
+        <div class="bento-icon">🌌</div>
+        <h3>Galaxy View</h3>
+        <p>Visualize your agent network as an orbital system. See connections and activity in real-time.</p>
+      </div>
+      <div class="bento-card">
+        <div class="bento-icon">💾</div>
+        <h3>Persistent Memory</h3>
+        <p>Semantic + procedural memory. Agents remember context across sessions.</p>
+      </div>
+      <div class="bento-card large">
+        <div class="bento-icon">🏪</div>
+        <h3>Agent Marketplace</h3>
+        <p>Browse, fork, and deploy pre-built agents. Share your creations with the Gemigram community.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STATS / SOCIAL PROOF ============ -->
+<div class="section" style="text-align: center; padding: 48px 24px;">
+  <span class="section-label">Social Proof</span>
+  
+  <div class="component" style="position: relative;">
+    <span class="badge badge-new" title="NEW: components/landing/StatsBar.tsx">[NEW] StatsBar</span>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-value">12,000+</div>
+        <div class="stat-label">Agents Created</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">99.9%</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">&lt;10s</div>
+        <div class="stat-label">Creation Time</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">200ms</div>
+        <div class="stat-label">Voice Latency</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FINAL CTA ============ -->
+<div class="section">
+  <span class="section-label">Final CTA</span>
+  <div class="final-cta" style="position: relative;">
+    <span class="badge badge-new" title="NEW: components/landing/FinalCTA.tsx">[NEW] FinalCTA</span>
+    <h2>No APIs. No Code.<br>Just Your Voice.</h2>
+    <p>Join the mainnet and initialize your first sovereign intelligence in seconds.</p>
+    <div class="hero-actions">
+      <button class="btn-primary-wire">🚀 Launch Terminal</button>
+    </div>
+    <div style="margin-top: 16px;">
+      <a href="/about" style="font-size: 12px; color: #666; text-decoration: underline;">Learn about the team behind Gemigram →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<div class="footer" style="position: relative;">
+  <!-- REUSABLE: EnterpriseFooter from components/landing/Footer.tsx -->
+  <span class="badge badge-reuse" title="components/landing/Footer.tsx">[REUSE] EnterpriseFooter</span>
+  <div>
+    <strong>GEMIGRAM AIOS</strong> · Sovereign Intelligence Platform
+  </div>
+  <div class="footer-links">
+    <a href="/about">About Us</a>
+    <a href="/marketplace">Marketplace</a>
+    <a href="#">Documentation</a>
+    <a href="#">GitHub</a>
+    <a href="#">Privacy</a>
+  </div>
+  <div>© 2025 Gemigram. All rights reserved.</div>
+</div>
+
+<!-- ============ DESIGN NOTES ============ -->
+<div style="margin-top: 48px; padding: 24px; background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; font-family: Arial, sans-serif; font-size: 12px; color: #666;">
+  <h3 style="font-size: 14px; margin-bottom: 12px; color: #333;">📋 Design Notes — Voice-First Redesign</h3>
+  <ul style="line-height: 2; padding-left: 20px;">
+    <li><strong>Key Change:</strong> The Voice Orb replaces the text-heavy hero. It's the first thing users see — tap and speak.</li>
+    <li><strong>BotFather Inspiration:</strong> Like Telegram's BotFather, the creation flow is conversational. User describes → system materializes.</li>
+    <li><strong>Reduced Text:</strong> Marketing copy is cut by ~60%. Focus on action, not explanation.</li>
+    <li><strong>Trust Bar Removed:</strong> Fake brand logos ("ORACLE.NODE", etc.) replaced with real stats bar.</li>
+    <li><strong>About Us Link:</strong> Added in footer and final CTA section for the new /about page.</li>
+    <li><strong>Components to Reuse:</strong> EnterpriseHeader, BentoFeatures, AuthOverlay, EnterpriseFooter</li>
+    <li><strong>New Components:</strong> VoiceOrb, HowItWorks, StatsBar, FinalCTA</li>
+    <li><strong>Theme:</strong> All cards use unified glass-subtle/glass-medium tiers. No more sovereign-glass vs glass-strong confusion.</li>
+  </ul>
+</div>
+
+</body>
+</html>

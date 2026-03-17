@@ -34,7 +34,7 @@ export default function LandingPage() {
         
         {/* Industry Trust Bar */}
         <section className="py-24 border-y border-gemigram-neon/10 bg-black/50 relative overflow-hidden">
-           <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+           <div className="absolute inset-0 opacity-[0.02] pointer-events-none carbon-fiber" />
            <div className="container mx-auto px-6 flex flex-wrap justify-between items-center gap-12 opacity-40 grayscale hover:grayscale-0 transition-all duration-700">
              <div className="text-2xl font-black tracking-[0.6em] text-white uppercase italic hover:text-gemigram-neon transition-colors cursor-default">ORACLE.NODE</div>
              <div className="text-2xl font-black tracking-[0.6em] text-white uppercase italic hover:text-gemigram-neon transition-colors cursor-default">NEXUS.SPINE</div>
@@ -152,7 +152,7 @@ export default function LandingPage() {
 
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-5xl mx-auto glass-strong p-20 text-center relative overflow-hidden group rounded-[3rem] border-gemigram-neon/20 hover:border-gemigram-neon/40 transition-colors duration-500">
-              <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+              <div className="absolute inset-0 opacity-[0.03] pointer-events-none carbon-fiber" />
 
               {/* Dynamic glowing core */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gemigram-neon/5 blur-[120px] rounded-full group-hover:bg-gemigram-neon/10 transition-all duration-1000 pointer-events-none" />

@@ -27,7 +27,7 @@ export default function AnalyzerPage() {
     if (isAnalyzing) {
       interval = setInterval(() => {
         setLoadingStep((prev) => (prev < LOADING_STEPS.length - 1 ? prev + 1 : prev));
-      }, 4000); // Change step every 4 seconds to simulate deep analysis
+      }, 4000);
     } else {
       setLoadingStep(0);
     }
@@ -57,29 +57,29 @@ export default function AnalyzerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-50 p-6 md:p-12 font-sans selection:bg-emerald-500/30">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="p-6 md:p-12 max-w-6xl mx-auto h-full overflow-y-auto selection:bg-gemigram-neon/20">
+      <div className="space-y-12">
         
-        {/* Header - Editorial / Technical Vibe */}
+        {/* Header - Sovereign / Editorial Vibe */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6 text-center md:text-right"
           dir="rtl"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono font-medium border border-emerald-500/20 uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gemigram-neon/10 text-gemigram-neon text-xs font-mono font-medium border border-gemigram-neon/20 uppercase tracking-widest">
             <Cpu className="w-4 h-4" />
-            <span>Aether OS Architecture Analyzer</span>
+            <span>Sovereign Architecture Analyzer</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white">
-            مُحلل النواة <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">العميق</span>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white">
+            مُحلل النواة <span className="text-transparent bg-clip-text bg-gradient-to-r from-gemigram-neon to-neon-blue">العميق</span>
           </h1>
-          <p className="text-neutral-400 max-w-2xl mx-auto md:mx-0 text-lg md:text-xl leading-relaxed font-light">
-            أداة هندسية متقدمة تستخدم <strong>Gemini 3.1 Pro</strong> مع مستوى تفكير عالٍ (High Thinking) وأدوات بحث حية لتحليل مستودعك، واكتشاف ثغرات الكمون، وتصميم بنية ClawHub الديناميكية.
+          <p className="text-white/50 max-w-2xl mx-auto md:mx-0 text-lg md:text-xl leading-relaxed font-light">
+            أداة هندسية متقدمة تستخدم <strong className="text-white/70">Gemini 3.1 Pro</strong> مع مستوى تفكير عالٍ (High Thinking) وأدوات بحث حية لتحليل مستودعك، واكتشاف ثغرات الكمون، وتصميم بنية ClawHub الديناميكية.
           </p>
         </motion.div>
 
-        {/* Input Form - Hardware / Specialist Tool Vibe */}
+        {/* Input Form - Sovereign Glass */}
         <motion.form 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -88,23 +88,23 @@ export default function AnalyzerPage() {
           className="relative group"
           dir="ltr"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-2xl blur-xl transition-all duration-500 group-hover:blur-2xl opacity-50"></div>
-          <div className="relative flex flex-col md:flex-row gap-4 bg-[#111111] p-4 rounded-2xl border border-neutral-800 shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-gemigram-neon/10 to-neon-blue/10 rounded-2xl blur-xl transition-all duration-500 group-hover:blur-2xl opacity-50" />
+          <div className="relative flex flex-col md:flex-row gap-4 glass-medium p-4 rounded-2xl border border-white/10 shadow-2xl">
             <div className="relative flex-1 flex items-center">
-              <Github className="absolute left-4 w-5 h-5 text-neutral-500" />
+              <Github className="absolute left-4 w-5 h-5 text-white/30" />
               <input
                 type="url"
                 value={repoUrl}
                 onChange={(e) => setRepoUrl(e.target.value)}
                 placeholder="https://github.com/username/repo"
-                className="w-full bg-[#0a0a0a] border border-neutral-800 rounded-xl py-4 pl-12 pr-4 text-neutral-200 placeholder:text-neutral-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all font-mono text-sm"
+                className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white/90 placeholder:text-white/30 focus:outline-none focus:border-gemigram-neon/50 focus:ring-1 focus:ring-gemigram-neon/50 transition-all font-mono text-sm"
                 required
               />
             </div>
             <button
               type="submit"
               disabled={isAnalyzing}
-              className="flex items-center justify-center gap-3 bg-white text-black px-8 py-4 rounded-xl font-bold hover:bg-neutral-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-sm"
+              className="flex items-center justify-center gap-3 bg-gemigram-neon text-black px-8 py-4 rounded-xl font-black hover:shadow-[0_0_30px_rgba(57,255,20,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-sm"
             >
               {isAnalyzing ? (
                 <>
@@ -114,7 +114,7 @@ export default function AnalyzerPage() {
               ) : (
                 <>
                   <Search className="w-5 h-5" />
-                  <span>Initialize Scan</span>
+                  <span>Initialize_Scan</span>
                 </>
               )}
             </button>
@@ -131,8 +131,8 @@ export default function AnalyzerPage() {
               className="overflow-hidden"
               dir="rtl"
             >
-              <div className="bg-[#111111] border border-neutral-800 rounded-2xl p-6 md:p-8 space-y-6">
-                <div className="flex items-center gap-4 text-emerald-400 mb-6">
+              <div className="glass-medium border border-white/10 rounded-2xl p-6 md:p-8 space-y-6">
+                <div className="flex items-center gap-4 text-gemigram-neon mb-6">
                   <Terminal className="w-6 h-6 animate-pulse" />
                   <span className="font-mono text-sm tracking-widest uppercase">System Processing</span>
                 </div>
@@ -140,14 +140,14 @@ export default function AnalyzerPage() {
                   {LOADING_STEPS.map((step, index) => (
                     <div 
                       key={index} 
-                      className={`flex items-center gap-4 transition-all duration-500 ${index === loadingStep ? 'text-white opacity-100' : index < loadingStep ? 'text-emerald-500 opacity-70' : 'text-neutral-700 opacity-30'}`}
+                      className={`flex items-center gap-4 transition-all duration-500 ${index === loadingStep ? 'text-white opacity-100' : index < loadingStep ? 'text-gemigram-neon opacity-70' : 'text-white/20 opacity-30'}`}
                     >
                       {index < loadingStep ? (
                         <CheckCircle2 className="w-5 h-5 shrink-0" />
                       ) : index === loadingStep ? (
-                        <Loader2 className="w-5 h-5 shrink-0 animate-spin text-emerald-400" />
+                        <Loader2 className="w-5 h-5 shrink-0 animate-spin text-gemigram-neon" />
                       ) : (
-                        <div className="w-5 h-5 shrink-0 rounded-full border-2 border-neutral-800" />
+                        <div className="w-5 h-5 shrink-0 rounded-full border-2 border-white/10" />
                       )}
                       <span className="font-mono text-sm md:text-base">{step}</span>
                     </div>
@@ -168,7 +168,7 @@ export default function AnalyzerPage() {
               dir="rtl"
             >
               {result.error ? (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-red-400 flex items-start gap-4">
+                <div className="glass-medium border border-red-500/20 rounded-2xl p-6 text-red-400 flex items-start gap-4">
                   <Zap className="w-6 h-6 shrink-0 mt-1" />
                   <div>
                     <h3 className="font-semibold text-lg mb-1">فشل التحليل</h3>
@@ -177,18 +177,18 @@ export default function AnalyzerPage() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  <div className="flex items-center justify-between bg-[#111111] p-4 rounded-xl border border-neutral-800">
-                    <div className="flex items-center gap-3 text-emerald-400">
+                  <div className="flex items-center justify-between glass-subtle p-4 rounded-xl border border-white/10">
+                    <div className="flex items-center gap-3 text-gemigram-neon">
                       <Code2 className="w-5 h-5" />
                       <span className="font-mono text-sm">تم تحليل {result.fileCount} ملف بنجاح</span>
                     </div>
-                    <div className="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                    <div className="text-xs font-mono text-white/40 uppercase tracking-widest">
                       Gemini 3.1 Pro • High Thinking
                     </div>
                   </div>
                   
-                  <div className="bg-[#111111] border border-neutral-800 rounded-2xl p-6 md:p-10 shadow-2xl">
-                    <div className="prose prose-invert prose-emerald max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-a:text-cyan-400 prose-pre:bg-[#0a0a0a] prose-pre:border prose-pre:border-neutral-800 prose-pre:shadow-inner prose-code:text-emerald-300">
+                  <div className="glass-medium border border-white/10 rounded-2xl p-6 md:p-10 shadow-2xl">
+                    <div className="prose prose-invert max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-a:text-neon-blue prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-pre:shadow-inner prose-code:text-gemigram-neon">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {result.analysis || ''}
                       </ReactMarkdown>
@@ -203,4 +203,3 @@ export default function AnalyzerPage() {
     </div>
   );
 }
-

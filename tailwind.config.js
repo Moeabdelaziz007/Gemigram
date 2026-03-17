@@ -8,29 +8,32 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary Brand Colors - Gemigram
+        // ============================================
+        // UNIFIED BRAND PALETTE — Single Source of Truth
+        // Brand Green: #39FF14 (High-Punch Neon)
+        // ============================================
         'gemigram': {
-          'neon': '#10ff87',
-          'green': '#00ff41',
-          'mint': '#00ffa3',
-          'lime': '#ccff00',
+          'neon': '#39FF14',
+          'green': '#39FF14',
+          'mint': '#00FFA3',
+          'lime': '#DFFF00',
         },
-        
+
         // Core Theme Colors
-        'carbon-black': '#050505',
-        'carbon-surface': '#0a0a0a',
-        'carbon-fiber': '#111111',
+        'carbon-black': '#050B14',
+        'carbon-surface': '#0F1724',
+        'carbon-fiber': '#1a2332',
         'carbon-gray': '#4a4a4a',
-        'aether-neon': '#00ff41',
-        'neon-green': '#10ff87',
-        'neon-dim': 'rgba(16,255,135,0.1)',
-        'mint-chip': '#00ffa3',
-        'cyber-lime': '#ccff00',
+        'aether-neon': '#39FF14',
+        'neon-green': '#39FF14',
+        'neon-dim': 'rgba(57, 255, 20, 0.1)',
+        'mint-chip': '#00FFA3',
+        'cyber-lime': '#DFFF00',
         'neon-blue': '#00f0ff',
         'electric-purple': '#b026ff',
         'glass-border': 'rgba(255, 255, 255, 0.08)',
-        'glass-bg': 'rgba(5, 5, 5, 0.6)',
-        
+        'glass-bg': 'rgba(5, 11, 20, 0.6)',
+
         // Additional Accent Colors
         'neon': {
           'blue': '#00f0ff',
@@ -60,10 +63,11 @@ module.exports = {
         'black': 900,
       },
       fontFamily: {
-        heading: ['var(--font-inter)', 'sans-serif'],
-        body: ['var(--font-inter)', 'sans-serif'],
-        mono: ['var(--font-mono)', 'monospace'],
-        display: ['var(--font-inter)', 'sans-serif'],
+        sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        heading: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        body: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       animation: {
         float: 'float 6s ease-in-out infinite',
@@ -75,8 +79,8 @@ module.exports = {
           '50%': { transform: 'translateY(-10px)' },
         },
         'pulse-neon': {
-          '0%, 100%': { boxShadow: '0 0 10px rgba(0, 255, 65, 0.1)' },
-          '50%': { boxShadow: '0 0 20px rgba(0, 255, 65, 0.3)' },
+          '0%, 100%': { boxShadow: '0 0 10px rgba(57, 255, 20, 0.1)' },
+          '50%': { boxShadow: '0 0 20px rgba(57, 255, 20, 0.3)' },
         },
         shimmer: {
           '0%': { transform: 'translateX(-100%)' },

@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield, Database, ChevronRight, Mic, Bell, Palette, Key, Search, Save, RotateCcw } from 'lucide-react';
+import { Shield, Database, ChevronRight, Mic, Bell, Palette, Key, Search, Save, RotateCcw, Brain, Package } from 'lucide-react';
 import { useAuth } from '@/components/Providers';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';

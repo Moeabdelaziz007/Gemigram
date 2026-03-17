@@ -36,6 +36,7 @@ export default function AppShell({ children }: AppShellProps) {
     if (path.includes('/settings')) return 'settings';
     if (path.includes('/forge')) return 'forge';
     if (path.includes('/galaxy')) return 'galaxy';
+    if (path.includes('/about')) return 'about';
     return 'home';
   };
 
@@ -48,7 +49,8 @@ export default function AppShell({ children }: AppShellProps) {
     hub: 'Neural Hub',
     settings: 'Config Matrix',
     forge: 'Gemi Forge',
-    galaxy: 'Gemigalaxy'
+    galaxy: 'Gemigalaxy',
+    about: 'About_Gemigram',
   };
 
   // For landing page, we want a clean full-screen experience without the app sidebar/header
@@ -72,7 +74,7 @@ export default function AppShell({ children }: AppShellProps) {
 
       <div className="flex-1 flex flex-col min-w-0 relative">
         {/* Sovereign Intelligence Header */}
-        <header className="h-14 md:h-16 px-4 md:px-8 flex items-center justify-between glass-medium border-b border-white/[0.05] z-[80] shrink-0">
+        <header className="h-14 md:h-16 px-4 md:px-8 flex items-center justify-between glass-strong border-b border-gemigram-neon/[0.06] z-[80] shrink-0">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gemigram-neon/10 border border-gemigram-neon/30 flex items-center justify-center">
@@ -209,7 +211,7 @@ export default function AppShell({ children }: AppShellProps) {
 
         {/* Footer HUD (Desktop Only) */}
         <footer className="hidden xl:flex absolute bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-          <div className="px-6 py-2.5 rounded-full glass-medium border border-white/5 flex items-center gap-5 pointer-events-auto">
+          <div className="px-6 py-2.5 rounded-full glass-strong border border-gemigram-neon/[0.08] flex items-center gap-5 pointer-events-auto">
             <div className="flex items-center gap-2 pr-5 border-r border-white/10">
               <span className="text-hud">INFRA::</span>
               <div className="flex items-center gap-3">
