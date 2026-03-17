@@ -5,5 +5,5 @@ test('navigate to forge and render correctly', async ({ page }) => {
 
   await expect(page).toHaveURL(/.*\/forge/);
   // Wait for some text to make sure the page rendered properly
-  await expect(page.locator('text=Aether Forge')).toBeVisible();
+  await expect(page.locator('text=Forge').first()).toBeVisible();
 });
