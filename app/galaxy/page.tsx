@@ -12,6 +12,8 @@ export default function GalaxyPage() {
   const [zoom, setZoom] = useState(1);
   const [showConnections, setShowConnections] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
+  const galaxySceneRef = useRef<HTMLDivElement>(null);
+  const [sceneSize, setSceneSize] = useState({ width: 0, height: 0 });
   
   // Mouse position for parallax effect
   const mouseX = useMotionValue(0);
@@ -28,6 +30,44 @@ export default function GalaxyPage() {
 
   const parallaxX = useTransform(mouseX, [-0.5, 0.5], [-20, 20]);
   const parallaxY = useTransform(mouseY, [-0.5, 0.5], [-20, 20]);
+
+  useEffect(() => {
+    if (!galaxySceneRef.current) return;
+
+    const updateSceneSize = () => {
+      if (!galaxySceneRef.current) return;
+      const { width, height } = galaxySceneRef.current.getBoundingClientRect();
+      setSceneSize({ width, height });
+    };
+
+    updateSceneSize();
+    const observer = new ResizeObserver(updateSceneSize);
+    observer.observe(galaxySceneRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const getOrbitConfig = (index: number) => {
+    const radius = 220 + index * 45;
+    const duration = 25 + index * 6;
+    const delay = index * -4;
+
+    return { radius, duration, delay };
+  };
+
+  const getAgentProjectedPosition = (index: number) => {
+    const { radius, duration, delay } = getOrbitConfig(index);
+    const centerX = sceneSize.width / 2;
+    const centerY = sceneSize.height / 2;
+    const initialOffsetProgress = (-delay / duration) % 1;
+    const angle = Math.PI + initialOffsetProgress * Math.PI * 2;
+    const scaledRadius = radius * zoom;
+
+    return {
+      x: centerX + Math.cos(angle) * scaledRadius,
+      y: centerY + Math.sin(angle) * scaledRadius,
+    };
+  };
 
   return (
     <div 
@@ -76,7 +116,7 @@ export default function GalaxyPage() {
         </motion.div>
       </div>
       
-      <div className="flex-1 relative flex items-center justify-center overflow-hidden">
+      <div ref={galaxySceneRef} className="flex-1 relative flex items-center justify-center overflow-hidden">
         {/* Enhanced Dark Matter Background with Nebula */}
         <div className="absolute inset-0">
           {/* Base gradient */}
@@ -155,7 +195,7 @@ export default function GalaxyPage() {
 
         {/* Agent Connection Lines (Synaptic Web) */}
         {showConnections && agents.length > 1 && (
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ scale: zoom }}>
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox={`0 0 ${sceneSize.width} ${sceneSize.height}`}>
             <defs>
               <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="rgba(16,255,135,0)" />
@@ -165,13 +205,22 @@ export default function GalaxyPage() {
             </defs>
             {agents.map((agent, i) => {
               const nextIndex = (i + 1) % agents.length;
+              const centerX = sceneSize.width / 2;
+              const centerY = sceneSize.height / 2;
+              const currentPosition = getAgentProjectedPosition(i);
+              const nextPosition = getAgentProjectedPosition(nextIndex);
+              const connectToCore = i % 2 === 0;
+
+              const lineStart = connectToCore ? { x: centerX, y: centerY } : currentPosition;
+              const lineEnd = connectToCore ? currentPosition : nextPosition;
+
               return (
                 <motion.line
                   key={`connection-${i}`}
-                  x1="50%"
-                  y1="50%"
-                  x2="50%"
-                  y2="50%"
+                  x1={lineStart.x}
+                  y1={lineStart.y}
+                  x2={lineEnd.x}
+                  y2={lineEnd.y}
                   stroke="url(#connectionGradient)"
                   strokeWidth="1"
                   initial={{ pathLength: 0, opacity: 0 }}
@@ -185,9 +234,7 @@ export default function GalaxyPage() {
 
         {/* Orbiting Agent Planets - Enhanced */}
         {agents.map((agent, i) => {
-          const radius = 220 + (i * 45); // Spread them out slightly more
-          const duration = 25 + (i * 6); // Slightly slower for smoother tracking
-          const delay = i * -4;
+          const { radius, duration, delay } = getOrbitConfig(i);
           
           return (
             <motion.div
@@ -347,4 +394,3 @@ function ActivityItem({ time, text }: { time: string; text: string }) {
     </div>
   );
 }
-
