@@ -3,35 +3,36 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Lock, Terminal, BarChart, Layers } from 'lucide-react';
+import { BRAND } from '@/lib/constants/branding';
 
 export function BentoFeatures() {
   const features = [
     {
-      title: 'Carbon Core',
+      title: `${BRAND.product.name} Core`,
       description: 'Ultra-secure L1 synapse processing for industrial applications.',
       icon: Cpu,
       className: 'md:col-span-2 md:row-span-2',
     },
     {
-      title: 'Neural Lock',
+      title: `${BRAND.product.name} Lock`,
       description: 'Quantum-safe cryptographic identity management.',
       icon: Lock,
       className: 'md:col-span-1 md:row-span-1 border-gemigram-neon/20',
     },
     {
-      title: 'Neon CLI',
+      title: `${BRAND.product.name} CLI`,
       description: 'Advanced command execution with sub-ms feedback.',
       icon: Terminal,
       className: 'md:col-span-1 md:row-span-1',
     },
     {
-      title: 'Carbon Logic',
+      title: `${BRAND.product.name} Logic`,
       description: 'Deterministic AI logic gates for complex workflows.',
       icon: BarChart,
       className: 'md:col-span-1 md:row-span-2 border-gemigram-neon/10',
     },
     {
-      title: 'Neural Spine',
+      title: `${BRAND.product.name} Spine`,
       description: 'Zero-latency Bi-Directional PCM streaming for sub-millisecond AI response.',
       icon: Layers,
       className: 'md:col-span-2 md:row-span-1',
@@ -49,7 +50,7 @@ export function BentoFeatures() {
             whileInView={{ opacity: 1 }}
             className="text-4xl md:text-6xl font-black mb-6 tracking-tighter uppercase"
           >
-            The <span className="text-gemigram-neon">Gemigram</span> Spine
+            The <span className="text-gemigram-neon">{BRAND.product.name}</span> Spine
           </motion.h2>
           <p className="text-white/30 max-w-2xl mx-auto text-lg font-medium">
             Next-generation infrastructure architected for neural sovereignty.

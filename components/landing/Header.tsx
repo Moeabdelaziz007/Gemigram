@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Fingerprint, Menu, X, Cloud, Activity, Bell, History } from 'lucide-react';
+import { Fingerprint, Menu, X, Cloud, Bell, History } from 'lucide-react';
 import Link from 'next/link';
+import { BRAND } from '@/lib/constants/branding';
 
 export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,7 +57,7 @@ export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
             />
           </div>
           <span className="text-2xl font-black tracking-[-0.05em] text-white uppercase group-hover:tracking-wider transition-all duration-500">
-            GEMIGRAM<span className="text-gemigram-neon animate-pulse">_</span>
+            {BRAND.product.name.toUpperCase()}<span className="text-gemigram-neon animate-pulse">_</span>
           </span>
         </Link>
 
@@ -98,7 +99,7 @@ export function EnterpriseHeader({ onLogin }: { onLogin: () => void }) {
 
            <div className="flex items-center gap-2 bg-gemigram-neon/5 border border-gemigram-neon/20 px-4 py-1.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-gemigram-neon animate-pulse shadow-[0_0_8px_rgba(57,255,20,0.5)]" />
-              <span className="text-[9px] font-black text-gemigram-neon uppercase tracking-[0.2em]">Neural_Pulse_Active</span>
+              <span className="text-[9px] font-black text-gemigram-neon uppercase tracking-[0.2em]">{`${BRAND.product.name}_Pulse_Active`}</span>
            </div>
         </div>
 

@@ -11,6 +11,7 @@ import { usePathname } from 'next/navigation';
 import { useAetherStore } from '../lib/store/useAetherStore';
 import { ThemeToggle } from './ThemeToggle';
 import { useSystemTelemetry } from '../hooks/useSystemTelemetry';
+import { BRAND } from '@/lib/constants/branding';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -43,15 +44,7 @@ export default function AppShell({ children }: AppShellProps) {
   const isLandingPage = pathname === '/';
   const currentView = getCurrentView();
 
-  const viewLabels: Record<string, string> = {
-    home: 'Sovereign Core',
-    workspace: 'Neural Workspace',
-    hub: 'Neural Hub',
-    settings: 'Config Matrix',
-    forge: 'Gemi Forge',
-    galaxy: 'Gemigalaxy',
-    about: 'About_Gemigram',
-  };
+  const viewLabels: Record<string, string> = BRAND.labels.views;
 
   // For landing page, we want a clean full-screen experience without the app sidebar/header
   if (isLandingPage) {
@@ -81,8 +74,8 @@ export default function AppShell({ children }: AppShellProps) {
                 <AetherLogo size={14} />
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gemigram-neon leading-none">Gemigram</span>
-                <span className="text-[8px] font-mono text-white/30 uppercase tracking-[0.1em]">OS_Sovereign.v3.0</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gemigram-neon leading-none">{BRAND.product.name}</span>
+                <span className="text-[8px] font-mono text-white/30 uppercase tracking-[0.1em]">{BRAND.product.systemVersion}</span>
               </div>
             </div>
 

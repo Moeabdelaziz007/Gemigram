@@ -5,6 +5,7 @@ import { Brain, Globe, ZoomIn, ZoomOut, Move, Network, Radio } from 'lucide-reac
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
+import { BRAND } from '@/lib/constants/branding';
 
 export default function GalaxyPage() {
   const { agents, setActiveAgentId, activeAgentId } = useAetherStore();
@@ -70,7 +71,7 @@ export default function GalaxyPage() {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-2 uppercase bg-clip-text text-transparent bg-gradient-to-r from-gemigram-neon via-white to-gemigram-neon drop-shadow-[0_0_30px_rgba(16,255,135,0.3)]">
-            Gemigalaxy
+            {BRAND.subProducts.galaxy}
           </h2>
           <p className="text-slate-500 font-mono text-[10px] uppercase tracking-[0.2em]">Sovereign Planet Architecture // Live Orchestration</p>
         </motion.div>
