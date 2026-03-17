@@ -6,9 +6,8 @@ import { useAetherStore, Agent } from '../lib/store/useAetherStore';
 import { useAudioProcessor } from '../hooks/useAudioProcessor';
 import { WidgetRenderer } from './WidgetRenderer';
 import { ToolResult, Tool, FunctionDeclaration } from '../lib/types/live-api';
-import { Mic, MicOff, Zap, Activity, Settings, Maximize2, User, Terminal, Eye, EyeOff } from 'lucide-react';
+import { Mic, MicOff, Activity, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { SovereignDashboard } from './SovereignDashboard';
 
 export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) {
@@ -20,6 +19,7 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
   const contextUsage = useAetherStore(state => state.contextUsage);
   const linkType = useAetherStore(state => state.linkType);
   const setLinkType = useAetherStore(state => state.setLinkType);
+  const setVoiceSession = useAetherStore(state => state.setVoiceSession);
 
   useEffect(() => {
     const checkBridge = async () => {
@@ -33,7 +33,6 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
     };
     checkBridge();
   }, [setLinkType]);
-
   const { 
     isConnected, 
     isRecording, 
@@ -51,6 +50,17 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
     setIsThinking(false);
   }, googleAccessToken);
 
+  useEffect(() => {
+    setVoiceSession({
+      stage: 'workspace',
+      lastVoiceAction: isConnected
+        ? isRecording
+          ? 'You are live. Keep speaking naturally.'
+          : 'Tap the mic to start your next voice turn.'
+        : 'Use Establish Link to reconnect your voice channel.',
+    });
+  }, [isConnected, isRecording, setVoiceSession]);
+
   const { processStream, getVolume, isWasmLoaded, isSpeaking } = useAudioProcessor();
 
   // Optimized volume selection: WASM/AL (Local) > Cloud Direct
@@ -64,6 +74,12 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
     if (isRecording || isSpeaking) return 'Listening';
     return 'Speaking';
   }, [isConnected, isThinking, isRecording, isSpeaking, activeWidget, linkType]);
+
+  const voiceActionPrompt = isConnected
+    ? isRecording
+      ? 'Listening now. Share your request in one sentence.'
+      : 'Connection is active. Tap mic for your next voice action.'
+    : 'Voice link is offline. Re-establish to continue voice-first flow.';
 
   const toggleConnection = () => {
     if (isConnected) {
@@ -179,6 +195,24 @@ export function VoiceAgent({ activeAgent, googleAccessToken }: VoiceAgentProps) 
         linkType={linkType}
         transcript={transcript}
       />
+
+      <div className="absolute bottom-40 left-1/2 -translate-x-1/2 z-[105] w-[min(92vw,52rem)]">
+        <div className="glass-medium border border-white/15 rounded-2xl px-5 py-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-gemigram-neon/80 font-bold">Voice Link Status · {agentStatus}</p>
+            <p className="text-sm text-white/85">{voiceActionPrompt}</p>
+          </div>
+          {!isConnected && (
+            <button
+              onClick={toggleConnection}
+              className="shrink-0 px-4 py-2 rounded-xl border border-gemigram-neon/30 bg-gemigram-neon/10 text-gemigram-neon text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Re-establish voice link
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Control Actions Overlay (Floating) */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-6">

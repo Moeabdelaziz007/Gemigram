@@ -1,20 +1,21 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useAetherStore } from '@/lib/store/useAetherStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Mic, MicOff, Send, SkipForward, ChevronLeft, Sparkles,
   Brain, Zap, CheckCircle, Clock, Activity
 } from 'lucide-react';
-import { useVoiceInteraction } from '../../hooks/useVoiceInteraction';
-import { useTextToSpeech } from '../../lib/agents/ttsService';
+import { useVoiceInteraction } from '../hooks/useVoiceInteraction';
+import { useTextToSpeech } from '../lib/agents/ttsService';
 import { 
   CONVERSATION_FLOW, 
   ConversationStep, 
   getNextStep, 
   getPreviousStep 
-} from '../../lib/agents/conversationFlow';
-import { Button } from '../ui/Button';
+} from '../lib/agents/conversationFlow';
+import { Button } from './ui/Button';
 
 interface AgentFormData {
   name: string;
@@ -46,6 +47,9 @@ export default function ConversationalAgentCreator({
   }>>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [agentData, setAgentData] = useState<Partial<AgentFormData>>({});
+  const [micPermission, setMicPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown');
+  const [permissionChecked, setPermissionChecked] = useState(false);
+  const setVoiceSession = useAetherStore(state => state.setVoiceSession);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -71,6 +75,39 @@ export default function ConversationalAgentCreator({
       setUserInput(transcript);
     }
   }, [transcript, isListening]);
+
+  useEffect(() => {
+    setVoiceSession({ stage: 'forge', lastVoiceAction: 'Conversational forge opened. Checking microphone permission.' });
+
+    const checkMicPermission = async () => {
+      if (!navigator?.mediaDevices?.getUserMedia) {
+        setMicPermission('denied');
+        setPermissionChecked(true);
+        setVoiceSession({ micPermission: 'denied', lastVoiceAction: 'Microphone API not available. Use text fallback to continue.' });
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        setMicPermission('granted');
+        setPermissionChecked(true);
+        setVoiceSession({ micPermission: 'granted', lastVoiceAction: 'Mic ready. Voice onboarding is active.' });
+      } catch (error) {
+        setMicPermission('denied');
+        setPermissionChecked(true);
+        setVoiceSession({ micPermission: 'denied', lastVoiceAction: 'Mic blocked. Continue with text prompts or retry permissions.' });
+      }
+    };
+
+    checkMicPermission();
+  }, [setVoiceSession]);
+
+  useEffect(() => {
+    if (permissionChecked && micPermission === 'granted' && speechRecognitionSupported && !isListening && !isProcessing) {
+      startListening();
+    }
+  }, [permissionChecked, micPermission, speechRecognitionSupported, isListening, isProcessing, startListening]);
 
   // Speak Astraeus lines
   useEffect(() => {
@@ -331,7 +368,7 @@ export default function ConversationalAgentCreator({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`flex ${msg.speaker === 'USER' ? 'justify-end' : 'justify-start'}`}
-                >
+              >
                   <div className={`max-w-[80%] rounded-3xl px-6 py-4 ${
                     msg.speaker === 'USER' 
                       ? 'bg-aether-neon/20 border border-aether-neon/30 text-white' 
@@ -395,7 +432,7 @@ export default function ConversationalAgentCreator({
               </div>
               <div className={`flex items-center gap-2 ${speechRecognitionSupported ? 'text-aether-neon' : 'text-red-400'}`}>
                 <Mic className="w-3 h-3" />
-                <span>Voice: {speechRecognitionSupported ? 'READY' : 'UNSUPPORTED'}</span>
+                <span>Voice: {!speechRecognitionSupported ? 'UNSUPPORTED' : micPermission === 'granted' ? 'READY' : micPermission === 'denied' ? 'DENIED' : 'CHECKING'}</span>
               </div>
               <div className={`flex items-center gap-2 ${isSpeaking() ? 'text-fuchsia-400' : 'text-white/40'}`}>
                 <Activity className="w-3 h-3" />
@@ -403,13 +440,22 @@ export default function ConversationalAgentCreator({
               </div>
             </div>
 
+            {permissionChecked && micPermission === 'denied' && (
+              <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+                Microphone permission is denied. You can continue typing every answer below, or enable mic permissions in your browser and press the mic button to retry.
+              </div>
+            )}
+
             {/* Input Controls */}
             <div className="flex items-center gap-4">
               <button
                 onClick={isListening ? stopListening : startListening}
+                disabled={!speechRecognitionSupported || micPermission === 'denied'}
                 className={`w-14 h-14 rounded-full flex items-center justify-center transition-all ${
                   isListening 
                     ? 'bg-red-500/20 border-2 border-red-500 animate-pulse' 
+                    : micPermission === 'denied' || !speechRecognitionSupported
+                    ? 'bg-white/5 border-2 border-white/10 text-white/30 cursor-not-allowed'
                     : 'bg-aether-neon/10 border-2 border-aether-neon/30 hover:bg-aether-neon/20'
                 }`}
               >

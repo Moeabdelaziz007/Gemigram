@@ -60,6 +60,12 @@ export interface WorkingBufferState {
     cloneId?: string;
   };
   pendingManifest: Partial<Agent> | null;
+  voiceSession: {
+    stage: 'landing' | 'forge' | 'workspace';
+    micPermission: 'unknown' | 'granted' | 'denied';
+    lastVoiceAction: string;
+    updatedAt: number | null;
+  };
 }
 
 export interface WorkingBufferActions {
@@ -76,6 +82,7 @@ export interface WorkingBufferActions {
   setLinkType: (type: 'stateless' | 'bridge' | 'hibernating') => void;
   setVoiceProfile: (profile: Partial<WorkingBufferState['voiceProfile']>) => void;
   setPendingManifest: (manifest: Partial<Agent> | null) => void;
+  setVoiceSession: (session: Partial<WorkingBufferState['voiceSession']>) => void;
 }
 
 export type AetherState = WorkingBufferState & WorkingBufferActions;
@@ -97,6 +104,12 @@ export const useAetherStore = create<AetherState>()(
         sampleStatus: 'none',
       },
       pendingManifest: null,
+      voiceSession: {
+        stage: 'landing',
+        micPermission: 'unknown',
+        lastVoiceAction: 'Tap Create with Voice to start your onboarding.',
+        updatedAt: null,
+      },
 
       // Actions
       addTranscriptMessage: (role, content) =>
@@ -129,6 +142,13 @@ export const useAetherStore = create<AetherState>()(
         voiceProfile: { ...state.voiceProfile, ...profile } 
       })),
       setPendingManifest: (manifest) => set({ pendingManifest: manifest }),
+      setVoiceSession: (session) => set((state) => ({
+        voiceSession: {
+          ...state.voiceSession,
+          ...session,
+          updatedAt: Date.now(),
+        }
+      })),
     }),
     {
       name: 'aether-storage',

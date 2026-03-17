@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/Providers';
 import { useAetherStore, Agent } from '@/lib/store/useAetherStore';
-import ForgeArchitect from '@/components/ForgeArchitect';
+import ConversationalAgentCreator from '@/components/ConversationalAgentCreator';
 import ForgeChamber from '@/components/ForgeChamber';
 import { useRouter } from 'next/navigation';
 import { nanoid } from 'nanoid';
@@ -14,10 +14,26 @@ import { startAgentHeartbeat } from '@/lib/agents/heartbeat';
 
 export default function ForgePage() {
   const { user } = useAuth();
-  const { setActiveAgentId, pendingManifest, setPendingManifest } = useAetherStore();
+  const { setActiveAgentId, pendingManifest, setPendingManifest, voiceSession, setVoiceSession } = useAetherStore();
   const [isForging, setIsForging] = useState(false);
   const [pendingAgentData, setPendingAgentData] = useState<any>(null);
   const router = useRouter();
+
+
+  useEffect(() => {
+    setVoiceSession({
+      stage: 'forge',
+      lastVoiceAction: isForging
+        ? 'Finalizing your agent blueprint...'
+        : 'Forge is ready. Start voice onboarding when you are ready.',
+    });
+  }, [isForging, setVoiceSession]);
+
+  useEffect(() => {
+    if (voiceSession.stage === 'workspace') {
+      router.push('/workspace');
+    }
+  }, [voiceSession.stage, router]);
 
   // 🧬 Genesis Protocol: Handle automated forging from Voice Prompt
   useEffect(() => {
@@ -113,6 +129,10 @@ export default function ForgePage() {
       setPendingManifest(null);
       setIsForging(false);
       setActiveAgentId(agentId);
+      setVoiceSession({
+        stage: 'workspace',
+        lastVoiceAction: `Agent ${data.name} is active. Continue by establishing voice link.`,
+      });
       router.push('/workspace');
     } catch (err) {
       handleFirestoreError(err, OperationType.WRITE, 'agents');
@@ -132,7 +152,7 @@ export default function ForgePage() {
 
       <div className="relative z-10 w-full h-[100dvh] transition-opacity duration-1000 overflow-y-auto no-scrollbar">
         {!isForging ? (
-          <ForgeArchitect onCancel={() => router.push('/dashboard')} onComplete={handleCreateAgent} />
+          <ConversationalAgentCreator onClose={() => router.push('/dashboard')} onSubmit={handleCreateAgent} />
         ) : (
           <ForgeChamber onComplete={handleForgeComplete} />
         )}
