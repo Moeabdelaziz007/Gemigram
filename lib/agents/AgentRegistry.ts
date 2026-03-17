@@ -1,5 +1,5 @@
 import { db } from '@/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, Unsubscribe } from 'firebase/firestore';
 
 export interface AgentManifest {
   id: string;
@@ -14,6 +14,8 @@ export interface AgentManifest {
 export class AgentRegistry {
   private static instance: AgentRegistry;
   private agents: Map<string, AgentManifest> = new Map();
+  private unsubscribeSnapshot: Unsubscribe | null = null;
+  private syncPromise: Promise<void> | null = null;
 
   private constructor() {}
 
@@ -25,15 +27,49 @@ export class AgentRegistry {
   }
 
   async syncWithFirestore(): Promise<void> {
-    try {
-      const q = query(collection(db, 'agents'), orderBy('name', 'asc'));
-      const snapshot = await getDocs(q);
-      snapshot.docs.forEach(doc => {
-        const data = doc.data() as AgentManifest;
-        this.agents.set(doc.id, { ...data, id: doc.id });
-      });
-    } catch (error) {
-      console.error("Failed to sync AgentRegistry:", error);
+    if (this.syncPromise) {
+      return this.syncPromise;
+    }
+
+    this.syncPromise = new Promise((resolve) => {
+      try {
+        const q = query(collection(db, 'agents'), orderBy('name', 'asc'));
+        let isFirstSnapshot = true;
+
+        this.unsubscribeSnapshot = onSnapshot(
+          q,
+          (snapshot) => {
+            snapshot.docs.forEach(doc => {
+              const data = doc.data() as AgentManifest;
+              this.agents.set(doc.id, { ...data, id: doc.id });
+            });
+
+            if (isFirstSnapshot) {
+              isFirstSnapshot = false;
+              resolve();
+            }
+          },
+          (error) => {
+            console.error("Failed to sync AgentRegistry:", error);
+            if (isFirstSnapshot) {
+              resolve(); // Resolve even on error to unblock caller, though error is logged
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Failed to setup sync AgentRegistry:", error);
+        resolve();
+      }
+    });
+
+    return this.syncPromise;
+  }
+
+  unsubscribe(): void {
+    if (this.unsubscribeSnapshot) {
+      this.unsubscribeSnapshot();
+      this.unsubscribeSnapshot = null;
+      this.syncPromise = null;
     }
   }
 
