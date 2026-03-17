@@ -3,6 +3,7 @@
 import React from 'react';
 import { Fingerprint, Github, Twitter, Linkedin } from 'lucide-react';
 import Link from 'next/link';
+import { BRAND } from '@/lib/constants/branding';
 
 export function EnterpriseFooter() {
   return (
@@ -19,11 +20,11 @@ export function EnterpriseFooter() {
                 <Fingerprint className="w-7 h-7" />
               </div>
               <span className="text-3xl font-black tracking-tighter text-white uppercase">
-                Gemi<span className="text-gemigram-neon">gram</span>
+                {BRAND.product.name.slice(0, 4)}<span className="text-gemigram-neon">{BRAND.product.name.slice(4)}</span>
               </span>
             </Link>
             <p className="text-white/40 text-[11px] font-black leading-relaxed mb-10 uppercase tracking-[0.3em]">
-              Sovereign neural intelligence. <br />
+              {BRAND.product.tagline}. <br />
               Carbon secure. Neon powered.
             </p>
             <div className="flex gap-4">
@@ -59,7 +60,7 @@ export function EnterpriseFooter() {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="flex flex-col gap-2">
               <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20">
-                © 2026 Gemigram AIOS. Developed by Moe_Abdelaziz.
+                © 2026 {BRAND.product.platformName}. Developed by Moe_Abdelaziz.
               </p>
               <p className="text-[8px] font-mono text-white/10 uppercase tracking-[0.2em]">Architecture_v3.2_Omega_Core</p>
             </div>

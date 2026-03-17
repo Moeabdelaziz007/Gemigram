@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Activity, Shield, Zap, Globe, Users, Cpu, Network, Fingerprint } from 'lucide-react';
 import { useSystemTelemetry } from '../../hooks/useSystemTelemetry';
 import { useAetherStore } from '../../lib/store/useAetherStore';
+import { BRAND } from '@/lib/constants/branding';
 
 export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
   const [mounted, setMounted] = useState(false);
@@ -97,14 +98,14 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
             animate={{ opacity: 1, scale: 1 }}
             className="text-8xl md:text-[12rem] font-black tracking-[-0.05em] leading-[0.8] mb-6 neon-shimmer uppercase"
           >
-            Gemigram
+            {BRAND.product.name}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-xl md:text-2xl text-white/40 font-bold uppercase tracking-[0.4em] mb-12"
           >
-            The Voice-Native AI Social Nexus
+            {BRAND.product.tagline}
           </motion.p>
 
           <motion.div 

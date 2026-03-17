@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { AetherLogo } from '@/components/AetherLogo';
 import { useRouter } from 'next/navigation';
 import { Notification } from '@/lib/types/models';
+import { BRAND } from '@/lib/constants/branding';
 
 const ORBS_CONFIG = [
   {
@@ -16,56 +17,56 @@ const ORBS_CONFIG = [
     path: '/dashboard',
     color: 'bg-gemigram-neon',
     icon: <Home className="w-5 h-5" />,
-    label: 'SOVEREIGN_CORE'
+    label: BRAND.labels.nav.home
   },
   {
     id: 'galaxy',
     path: '/galaxy',
     color: 'bg-gemigram-neon',
     icon: <Globe className="w-5 h-5" />,
-    label: 'GEMIGALAXY'
+    label: BRAND.labels.nav.galaxy
   },
   {
     id: 'hub',
     path: '/hub',
     color: 'bg-gemigram-neon',
     icon: <Users className="w-5 h-5" />,
-    label: 'NEURAL_HUB'
+    label: BRAND.labels.nav.hub
   },
   {
     id: 'forge',
     path: '/forge',
     color: 'bg-gemigram-neon',
     icon: <Plus className="w-5 h-5" />,
-    label: 'GEMI_FORGE'
+    label: BRAND.labels.nav.forge
   },
   {
     id: 'workspace',
     path: '/workspace',
     color: 'bg-gemigram-neon',
     icon: <LayoutDashboard className="w-5 h-5" />,
-    label: 'WORKSPACE'
+    label: BRAND.labels.nav.workspace
   },
   {
     id: 'marketplace',
     path: '/marketplace',
     color: 'bg-gemigram-neon',
     icon: <Globe className="w-5 h-5" />,
-    label: 'GEMIGRAM_MARKET'
+    label: BRAND.labels.nav.marketplace
   },
   {
     id: 'settings',
     path: '/settings',
     color: 'bg-white/20',
     icon: <Settings className="w-5 h-5" />,
-    label: 'CONFIG'
+    label: BRAND.labels.nav.settings
   },
   {
     id: 'about',
     path: '/about',
     color: 'bg-gemigram-neon',
     icon: <Users className="w-5 h-5" />,
-    label: 'ABOUT'
+    label: BRAND.labels.nav.about
   }
 ];
 
@@ -132,7 +133,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
         <div className="mb-12">
           <div className="flex items-center gap-3 px-4">
             <AetherLogo size={28} />
-            <span className="hidden xl:block text-sm font-black uppercase tracking-[0.2em] text-white">Gemigram AIOS</span>
+            <span className="hidden xl:block text-sm font-black uppercase tracking-[0.2em] text-white">{BRAND.product.platformName}</span>
           </div>
         </div>
 

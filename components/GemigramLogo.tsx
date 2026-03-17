@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { BRAND } from '@/lib/constants/branding';
 
 export default function GemigramLogo({ className = "w-10 h-10" }: { className?: string }) {
   return (
@@ -26,8 +27,8 @@ export default function GemigramLogo({ className = "w-10 h-10" }: { className?: 
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       >
         <Image
-          src="/assets/branding/logo.png"
-          alt="Gemigram Logo"
+          src={BRAND.assets.icon.path}
+          alt={`${BRAND.product.name} icon`}
           width={120}
           height={120}
           className="w-full h-full object-contain"
