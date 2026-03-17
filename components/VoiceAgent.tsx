@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useLiveAPI } from '../hooks/useLiveAPI';
-import { useAetherStore } from '../lib/store/useAetherStore';
+import { useAetherStore, Agent } from '../lib/store/useAetherStore';
 import { useAudioProcessor } from '../hooks/useAudioProcessor';
 import { WidgetRenderer } from './WidgetRenderer';
 import { ToolResult, Tool, FunctionDeclaration } from '../lib/types/live-api';
