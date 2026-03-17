@@ -6,7 +6,7 @@
  */
 
 import { mcpClient, mcpConfigManager, MCPServer } from './index';
-import { SkillDefinition } from '../../agents/skill-types';
+import { SkillDefinition } from '../agents/skill-types';
 
 /**
  * Official MCP Registry URL
