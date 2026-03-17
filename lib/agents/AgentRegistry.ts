@@ -37,6 +37,14 @@ export class AgentRegistry {
     }
   }
 
+  registerAgent(agent: AgentManifest): void {
+    this.agents.set(agent.id, agent);
+  }
+
+  unregisterAgent(id: string): boolean {
+    return this.agents.delete(id);
+  }
+
   getAgent(id: string): AgentManifest | undefined {
     return this.agents.get(id);
   }
