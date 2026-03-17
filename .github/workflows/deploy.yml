@@ -30,7 +30,7 @@ jobs:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
         channelId: live
-        projectId: aetheros-project
+        projectId: notional-armor-456623-e8
 
   deploy_functions:
     runs-on: ubuntu-latest
@@ -55,4 +55,4 @@ jobs:
         args: deploy --only functions
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        PROJECT_ID: aetheros-project
+        PROJECT_ID: notional-armor-456623-e8
