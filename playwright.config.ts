@@ -18,8 +18,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? 'npx serve@latest out -p 3000' : 'npm run dev',
+    // Ensuring `npm run build` is executed before serving in CI
+    command: process.env.CI ? 'npm run build && npx serve@latest out -p 3000' : 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
+    timeout: 120000,
   },
 });
