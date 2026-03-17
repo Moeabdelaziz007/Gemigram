@@ -17,11 +17,19 @@ let db: any;
 let auth: any;
 let storage: any;
 
-if (typeof window !== 'undefined') {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  auth = getAuth(app);
-  storage = getStorage(app);
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+  try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    storage = getStorage(app);
+  } catch (e) {
+    console.error("Firebase init failed", e);
+    app = {} as any;
+    db = {} as any;
+    auth = { currentUser: null } as any;
+    storage = {} as any;
+  }
 } else {
   // Mock implementations for server-side/build-time
   app = {} as any;
@@ -38,7 +46,7 @@ googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform.read-onl
 googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform');
 
 // Connection test - only run in browser
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
   const testConnection = async () => {
     try {
       await getDocFromServer(doc(db, 'test', 'connection'));

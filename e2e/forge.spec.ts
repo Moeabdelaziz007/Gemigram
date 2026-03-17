@@ -4,5 +4,6 @@ test('navigate to forge and render correctly', async ({ page }) => {
   await page.goto('/forge');
 
   await expect(page).toHaveURL(/.*\/forge/);
-  // Relaxing this to not fail CI.
+  // Wait for some text to make sure the page rendered properly
+  await expect(page.locator('body')).toContainText(/Forge|Entity/, { timeout: 10000 });
 });

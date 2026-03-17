@@ -9,7 +9,7 @@
   "theme_color": "#050B14",
   "icons": [
     {
-      "src": "/assets/branding/logo.png",
+      "src": "/aether-entity.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

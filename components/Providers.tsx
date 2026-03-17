@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { setAgents, setUserProjects, setActiveProjectId } = useAetherStore();
 
   useEffect(() => {
+    if (!auth || !auth.currentUser && !auth.app) { setLoading(false); return; }
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
