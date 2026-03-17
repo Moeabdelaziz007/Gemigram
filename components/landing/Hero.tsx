@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Shield, Zap, Globe, Users, Cpu, Network } from 'lucide-react';
+import { Activity, Shield, Zap, Globe, Users, Cpu, Network, Fingerprint } from 'lucide-react';
 import { useSystemTelemetry } from '../../hooks/useSystemTelemetry';
 import { useAetherStore } from '../../lib/store/useAetherStore';
 
@@ -62,7 +62,7 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
             transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
             className="w-[450px] h-[450px] md:w-[600px] md:h-[600px] rounded-full relative"
             style={{
-              background: 'radial-gradient(circle, rgba(16,255,135,0.4) 0%, rgba(16,255,135,0.1) 40%, transparent 70%)',
+              background: 'radial-gradient(circle, var(--gemigram-neon-glow) 0%, rgba(57,255,20,0.1) 40%, transparent 70%)',
               filter: 'blur(30px)'
             }}
           >

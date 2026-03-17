@@ -27,6 +27,7 @@ export default function LandingPage() {
 
   return (
     <div className="relative min-h-screen selection:bg-gemigram-neon/20 overflow-x-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <HeroBackground />
       <EnterpriseHeader onLogin={() => setIsAuthOpen(true)} />
       
       <main className="relative z-10">

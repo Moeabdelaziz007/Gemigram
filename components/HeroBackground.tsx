@@ -26,8 +26,8 @@ function ParticleField({ count = 50 }: { count?: number }) {
               height: size,
               left: `${x}%`,
               top: `${y}%`,
-              background: 'radial-gradient(circle, rgba(16,255,135,0.8) 0%, transparent 70%)',
-              boxShadow: '0 0 10px rgba(16,255,135,0.5)',
+              background: 'radial-gradient(circle, var(--gemigram-neon) 0%, transparent 70%)',
+              boxShadow: '0 0 10px var(--gemigram-neon-glow)',
             }}
             animate={{
               y: [0, -100, 0],
@@ -162,7 +162,7 @@ export default function HeroBackground() {
         <div 
           className="absolute inset-[-50%] hud-grid"
           style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, rgba(16, 255, 135, 0.2) 1px, transparent 0)`,
+            backgroundImage: `radial-gradient(circle at 2px 2px, var(--gemigram-neon-glow) 1px, transparent 0)`,
             backgroundSize: '40px 40px',
             maskImage: 'radial-gradient(ellipse at center, black, transparent 80%)'
           }}

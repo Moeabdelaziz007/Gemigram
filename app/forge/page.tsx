@@ -130,7 +130,7 @@ export default function ForgePage() {
         <div className="absolute inset-0 opacity-[0.03] carbon-fiber" />
       </div>
 
-      <div className="relative z-10 w-full h-full transition-opacity duration-1000">
+      <div className="relative z-10 w-full h-[100dvh] transition-opacity duration-1000 overflow-y-auto no-scrollbar">
         {!isForging ? (
           <ForgeArchitect onCancel={() => router.push('/dashboard')} onComplete={handleCreateAgent} />
         ) : (

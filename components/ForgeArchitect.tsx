@@ -100,6 +100,7 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
 
   const startListening = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      if (voiceState.isSpeaking) return; // Prevent listening while speaking
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
 

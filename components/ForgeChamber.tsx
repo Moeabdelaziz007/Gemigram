@@ -46,10 +46,10 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
   }, [pendingManifest]);
 
   const colorClasses = {
-    cyan: 'bg-gemigram-neon text-gemigram-neon border-gemigram-neon/50 shadow-gemigram-neon/50',
-    fuchsia: 'bg-fuchsia-400 text-fuchsia-400 border-fuchsia-500 shadow-fuchsia-500',
-    red: 'bg-rose-500 text-rose-500 border-rose-600 shadow-rose-600',
-    purple: 'bg-violet-500 text-violet-500 border-violet-600 shadow-violet-600'
+    cyan: 'bg-gemigram-neon text-gemigram-neon border-gemigram-neon/50 shadow-[0_0_20px_var(--gemigram-neon-glow)]',
+    fuchsia: 'bg-fuchsia-500 text-fuchsia-500 border-fuchsia-600 shadow-[0_0_20px_rgba(217,70,239,0.5)]',
+    red: 'bg-rose-500 text-rose-500 border-rose-600 shadow-[0_0_20px_rgba(244,63,94,0.5)]',
+    purple: 'bg-violet-500 text-violet-500 border-violet-600 shadow-[0_0_20px_rgba(139,92,246,0.5)]'
   }[soulColor];
 
   useEffect(() => {
