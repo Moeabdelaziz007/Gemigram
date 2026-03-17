@@ -24,12 +24,20 @@ jobs:
 
     - name: Build Next.js Application
       run: npm run build
+      env:
+        NEXT_PUBLIC_FIREBASE_API_KEY: "dummy-key"
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "dummy-domain"
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: "dummy-project"
 
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
 
     - name: Run Playwright Tests
       run: npx playwright test
+      env:
+        NEXT_PUBLIC_FIREBASE_API_KEY: "dummy-key"
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "dummy-domain"
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: "dummy-project"
 
     - name: Upload Playwright Report
       if: always()
