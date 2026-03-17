@@ -5,8 +5,9 @@
  * Provides server metadata, compatibility checking, and one-click installation.
  */
 
-import { mcpClient, mcpConfigManager, MCPServer } from '../../mcp';
-import { SkillDefinition } from '../../agents/skill-types';
+import { mcpClient, mcpConfigManager } from './index';
+import type { MCPServer } from './index';
+import { SkillDefinition } from '../agents/skill-types';
 
 /**
  * Official MCP Registry URL
