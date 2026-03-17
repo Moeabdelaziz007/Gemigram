@@ -20,7 +20,7 @@ function ParticleField({ count = 50 }: { count?: number }) {
         return (
           <motion.div
             key={i}
-            className="absolute rounded-full"
+            className="absolute rounded-full will-change-transform"
             style={{
               width: size,
               height: size,
@@ -32,7 +32,7 @@ function ParticleField({ count = 50 }: { count?: number }) {
             animate={{
               y: [0, -100, 0],
               opacity: [opacity, opacity * 2, opacity],
-              scale: [1, 1.5, 1],
+              scale: [1, 1.2, 1],
             }}
             transition={{
               duration,
@@ -141,8 +141,8 @@ export default function HeroBackground() {
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-[#050505] select-none pointer-events-none">
-      {/* Layer 1: Particle Field with Neon Green */}
-      <ParticleField count={80} />
+      {/* Layer 1: Particle Field with Neon Green - Optimized count */}
+      <ParticleField count={30} />
       
       {/* Layer 2: Flowing Grid Lines */}
       <FlowGrid />
@@ -169,13 +169,13 @@ export default function HeroBackground() {
         />
       </motion.div>
 
-      {/* Layer 5: Dynamic Glow Blobs with Neon Green */}
+      {/* Layer 5: Dynamic Glow Blobs with Neon Green - Optimized with will-change */}
       <motion.div 
         style={{ x: x1, y: y1 }}
-        className="absolute inset-[-10%] opacity-40 mix-blend-screen"
+        className="absolute inset-[-10%] opacity-40 mix-blend-screen will-change-transform"
       >
-        <div className="absolute top-[10%] left-[10%] w-[50vw] h-[50vw] bg-gemigram-neon/10 rounded-full blur-[160px] animate-pulse" />
-        <div className="absolute bottom-[10%] right-[10%] w-[45vw] h-[45vw] bg-emerald-500/10 rounded-full blur-[140px]" />
+        <div className="absolute top-[10%] left-[10%] w-[50vw] h-[50vw] bg-gemigram-neon/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[10%] right-[10%] w-[45vw] h-[45vw] bg-emerald-500/10 rounded-full blur-[100px]" />
         <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-gemigram-neon/5 rounded-full blur-[180px]" />
       </motion.div>
 

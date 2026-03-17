@@ -17,28 +17,30 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
     setMode('scanning');
     setAuthStatus('Initializing Biometric Uplink...');
     
-    // Fake scanning delay for immersion
+    // Start login immediately to avoid popup blocking and friction
+    const loginPromise = login();
+    
+    // Immersion animation runs in parallel
     let progress = 0;
     const interval = setInterval(() => {
-      progress += 2;
-      setScanProgress(progress);
+      progress += 5; // Faster progress
+      setScanProgress(Math.min(progress, 99));
       if (progress === 30) setAuthStatus('Analyzing Neural Signature...');
       if (progress === 60) setAuthStatus('Verifying Genesis Credentials...');
       if (progress === 90) setAuthStatus('Sovereign Link Established.');
-      
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(async () => {
-          try {
-            await login();
-            onClose();
-          } catch (err) {
-            setMode('login');
-            setAuthStatus('Authentication Failed');
-          }
-        }, 500);
-      }
-    }, 40);
+    }, 30);
+
+    try {
+      await loginPromise;
+      setScanProgress(100);
+      setAuthStatus('Sovereign Link Established.');
+      clearInterval(interval);
+      setTimeout(() => onClose(), 300);
+    } catch (err) {
+      clearInterval(interval);
+      setMode('login');
+      setAuthStatus('Authentication Failed');
+    }
   };
 
   return (

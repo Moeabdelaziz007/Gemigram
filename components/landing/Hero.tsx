@@ -61,32 +61,32 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
               opacity: [0.6, 0.8, 0.6]
             }}
             transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="w-[450px] h-[450px] md:w-[600px] md:h-[600px] rounded-full relative"
+            className="w-[280px] h-[280px] sm:w-[450px] sm:h-[450px] lg:w-[600px] lg:h-[600px] rounded-full relative"
             style={{
               background: 'radial-gradient(circle, var(--gemigram-neon-glow) 0%, rgba(57,255,20,0.1) 40%, transparent 70%)',
-              filter: 'blur(30px)'
+              filter: 'blur(20px)'
             }}
           >
             {/* Spinning Energy Rings */}
-            <div className="absolute inset-0 border-4 border-gemigram-neon/10 rounded-full animate-spin [animation-duration:8s]" />
-            <div className="absolute inset-10 border-2 border-gemigram-neon/20 rounded-full animate-spin [animation-duration:12s] direction-reverse" />
+            <div className="absolute inset-0 border-2 border-gemigram-neon/10 rounded-full animate-spin [animation-duration:8s]" />
+            <div className="absolute inset-8 border border-gemigram-neon/20 rounded-full animate-spin [animation-duration:12s] direction-reverse" />
           </motion.div>
           
           {/* Internal Neural Hub (Glassy Center) */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-64 h-64 md:w-80 md:h-80 rounded-full glass-strong border border-gemigram-neon/40 flex items-center justify-center p-8 overflow-hidden relative group">
+            <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-full glass-strong border border-gemigram-neon/40 flex items-center justify-center p-6 lg:p-8 overflow-hidden relative group">
                <motion.div 
                  animate={{ 
-                    scale: [0.9, 1.1, 0.9],
-                    filter: ['hue-rotate(0deg)', 'hue-rotate(90deg)', 'hue-rotate(0deg)'],
-                    boxShadow: ['0 0 50px rgba(57,255,20,0.5)', '0 0 150px rgba(57,255,20,0.8)', '0 0 50px rgba(57,255,20,0.5)']
+                    scale: [0.95, 1.05, 0.95],
+                    filter: ['hue-rotate(0deg)', 'hue-rotate(30deg)', 'hue-rotate(0deg)'],
+                    boxShadow: ['0 0 30px rgba(57,255,20,0.3)', '0 0 80px rgba(57,255,20,0.5)', '0 0 30px rgba(57,255,20,0.3)']
                  }}
-                 transition={{ duration: 3, repeat: Infinity }}
+                 transition={{ duration: 4, repeat: Infinity }}
                  className="w-full h-full rounded-full bg-gradient-to-br from-gemigram-neon to-gemigram-mint mix-blend-screen opacity-90 shadow-[0_0_100px_rgba(57,255,20,0.4)]" 
                />
-               <div className="absolute inset-0 bg-black/40 backdrop-blur-3xl rounded-full" />
+               <div className="absolute inset-0 bg-black/40 backdrop-blur-2xl rounded-full" />
                {/* Mascot Silhouette - Sharpened */}
-               <Fingerprint className="absolute w-40 h-40 text-white/10 group-hover:text-gemigram-neon transition-colors duration-1000 z-10" />
+               <Fingerprint className="absolute w-24 h-24 sm:w-40 sm:h-40 text-white/10 group-hover:text-gemigram-neon transition-colors duration-1000 z-10" />
             </div>
           </div>
         </div>
@@ -94,9 +94,9 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
         {/* Brand Typography - Matching reference image 2 */}
         <div className="text-center z-20">
           <motion.h1 
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-8xl md:text-[12rem] font-black tracking-[-0.05em] leading-[0.8] mb-6 neon-shimmer uppercase"
+            className="text-6xl sm:text-8xl lg:text-[12rem] font-black tracking-[-0.05em] leading-[0.8] mb-6 neon-shimmer uppercase"
           >
             {BRAND.product.name}
           </motion.h1>

@@ -36,4 +36,4 @@ class AudioProcessor extends AudioWorkletProcessor {
   }
 }
 
-registerProcessor('audio-processor', AudioProcessor);
+registerProcessor('neural-spine-processor', AudioProcessor);
