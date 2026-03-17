@@ -4,13 +4,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Cpu, HardDrive, Network, Zap, Settings, Volume2 } from 'lucide-react';
 import { DigitalEntity } from './DigitalEntity';
+import type { Agent, TranscriptMessage } from '../lib/store/useAetherStore';
 
 interface SovereignDashboardProps {
-  activeAgent: any;
+  activeAgent: Agent | null;
   volume: number;
   status: string;
   linkType: string;
-  transcript: any[];
+  transcript: TranscriptMessage[];
 }
 
 export function SovereignDashboard({ 
