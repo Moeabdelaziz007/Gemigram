@@ -141,12 +141,51 @@ export default function AppShell({ children }: AppShellProps) {
                 </span>
               </div>
               
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-gemigram-neon/20 to-transparent border border-gemigram-neon/30 p-0.5 relative cursor-pointer hover:border-gemigram-neon transition-colors group">
-                <div className="w-full h-full rounded-[10px] overflow-hidden bg-black/40">
-                  <img src={user?.photoURL || "/avatars/default.png"} alt="User" className="w-full h-full object-cover" />
+              <div className="relative group">
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  className="h-10 w-10 rounded-xl bg-gradient-to-br from-gemigram-neon/20 to-transparent border border-gemigram-neon/30 p-0.5 relative cursor-pointer hover:border-gemigram-neon transition-colors overflow-hidden"
+                >
+                  <div className="w-full h-full rounded-[10px] overflow-hidden bg-black/40">
+                    <img src={user?.photoURL || "/avatars/default.png"} alt="User" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gemigram-neon rounded-full border-2 border-bg-primary" />
+                </motion.div>
+
+                {/* Sovereign Profile HUD Overlay */}
+                <div className="absolute top-full right-0 mt-4 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+                  <div className="w-64 sovereign-glass border border-white/10 rounded-2xl p-6 shadow-2xl backdrop-blur-3xl">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-full border border-gemigram-neon/30 overflow-hidden bg-black p-0.5">
+                        <img src={user?.photoURL || "/avatars/default.png"} alt="" className="w-full h-full rounded-full object-cover" />
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-xs font-black text-white truncate max-w-full">{user?.displayName || 'Anonymous Architect'}</span>
+                        <span className="text-[9px] font-mono text-gemigram-neon/60 truncate uppercase">{user?.email || 'OFFLINE'}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <button className="w-full py-2.5 rounded-xl bg-white/5 border border-white/5 text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+                        Nexus_Profile
+                      </button>
+                      <button 
+                        onClick={async () => {
+                          // Cinematic Terminate Sequence
+                          document.body.style.filter = 'grayscale(1) brightness(0.5)';
+                          document.body.style.transition = 'all 1s ease';
+                          setTimeout(async () => {
+                            await logout();
+                            document.body.style.filter = '';
+                          }, 1000);
+                        }}
+                        className="w-full py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500 hover:text-black transition-all flex items-center justify-center gap-2"
+                      >
+                        Terminate_Session
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                {/* Online status indicator */}
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gemigram-neon rounded-full border-2 border-bg-primary" />
               </div>
             </div>
           </div>
