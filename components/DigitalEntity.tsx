@@ -8,7 +8,7 @@ interface DigitalEntityProps {
   state: 'Disconnected' | 'Listening' | 'Thinking' | 'Speaking' | 'Executing';
   volume: number;
   agentName: string;
-  linkType?: 'stateless' | 'bridge' | 'hibernating';
+  linkType?: string;
 }
 
 export function DigitalEntity({ state, volume, agentName, linkType = 'stateless' }: DigitalEntityProps) {

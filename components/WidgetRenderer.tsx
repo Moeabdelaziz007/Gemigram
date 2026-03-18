@@ -2,10 +2,10 @@
 
 import { Code2, Cloud, Bitcoin, Mail, Calendar, ExternalLink, Clock } from 'lucide-react';
 import { EphemeralWidget } from './ui/EphemeralWidget';
-import { ToolResult, WeatherResult, CryptoResult } from '../lib/types/live-api';
+import { WeatherResult, CryptoResult } from '../lib/types/live-api';
 import { motion } from 'framer-motion';
 
-export function WidgetRenderer({ data }: { data: ToolResult }) {
+export function WidgetRenderer({ data }: { data: any }) {
   if (!data) return null;
 
   // Gmail Triage Widget

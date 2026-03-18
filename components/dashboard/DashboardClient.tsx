@@ -1,21 +1,20 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/Providers';
 import { useAetherStore } from '@/lib/store/useAetherStore';
-import { SovereignDashboard } from '@/components/SovereignDashboard';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
-export default function DashboardPage() {
+export function DashboardClient() {
   const { user } = useAuth();
-  const { agents, setActiveAgentId } = useAetherStore();
+  const agents = useAetherStore((state) => state.agents);
   const router = useRouter();
 
   useEffect(() => {
     if (!user) {
       router.push('/');
     }
-  }, [user, router]);
+  }, [router, user]);
 
   if (!user) return null;
 
@@ -26,10 +25,7 @@ export default function DashboardPage() {
           <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Sovereign_OS</h1>
           <p className="text-xs font-mono text-white/30 uppercase tracking-[0.3em]">Neural_Entity_Manager</p>
         </div>
-        <button 
-          onClick={() => router.push('/hub')}
-          className="btn-primary"
-        >
+        <button onClick={() => router.push('/hub')} className="btn-primary">
           Access_Hub
         </button>
       </div>
@@ -43,10 +39,10 @@ export default function DashboardPage() {
           <h3 className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Session_Uptime</h3>
           <p className="text-4xl font-black text-white">100%</p>
         </div>
-        <div className="sovereign-glass p-8 space-y-4 cursor-pointer hover:border-gemigram-neon/30 transition-all" onClick={() => router.push('/forge')}>
+        <button onClick={() => router.push('/forge')} className="sovereign-glass p-8 space-y-4 text-left cursor-pointer hover:border-gemigram-neon/30 transition-all">
           <h3 className="text-[10px] font-black text-fuchsia-400 uppercase tracking-widest">Forge_Stability</h3>
           <p className="text-4xl font-black text-white">Nominal</p>
-        </div>
+        </button>
       </div>
     </div>
   );

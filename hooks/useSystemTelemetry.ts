@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface SystemTelemetry {
   weather: {
@@ -9,7 +9,7 @@ export interface SystemTelemetry {
     city: string;
   };
   latency: number;
-  uptime: number; // seconds since session start
+  uptime: number;
   activeAgents: number;
 }
 
@@ -21,40 +21,36 @@ export function useSystemTelemetry() {
     activeAgents: 0,
   });
 
-  const startTime = useEffect(() => {
+  useEffect(() => {
     const start = Date.now();
-    
-    // 1. Weather fetching (Simple public API)
+
     const fetchWeather = async () => {
       try {
-        // wttr.in is a common public weather tool
         const res = await fetch('https://wttr.in/?format=j1');
         const data = await res.json();
         const current = data.current_condition[0];
         const area = data.nearest_area[0];
-        setTelemetry(prev => ({
+        setTelemetry((prev) => ({
           ...prev,
           weather: {
-            temp: parseInt(current.temp_C),
+            temp: parseInt(current.temp_C, 10),
             condition: current.weatherDesc[0].value,
             city: area.areaName[0].value,
-          }
+          },
         }));
-      } catch (err) {
-        console.error('Weather fetch failed:', err);
+      } catch (error) {
+        console.error('Weather fetch failed:', error);
       }
     };
 
-    // 2. Latency measurement (Ping)
     const measureLatency = async () => {
       try {
-        const start = performance.now();
+        const requestStart = performance.now();
         await fetch('https://www.google.com/generate_204', { mode: 'no-cors', cache: 'no-cache' });
-        const end = performance.now();
-        setTelemetry(prev => ({ ...prev, latency: Math.round(end - start) }));
-      } catch (err) {
-        // Fallback for offline or blocked
-        setTelemetry(prev => ({ ...prev, latency: Math.floor(Math.random() * 5) + 1 }));
+        const requestEnd = performance.now();
+        setTelemetry((prev) => ({ ...prev, latency: Math.round(requestEnd - requestStart) }));
+      } catch {
+        setTelemetry((prev) => ({ ...prev, latency: Math.floor(Math.random() * 5) + 1 }));
       }
     };
 
@@ -62,7 +58,7 @@ export function useSystemTelemetry() {
     measureLatency();
 
     const telemetryInterval = setInterval(() => {
-      setTelemetry(prev => ({
+      setTelemetry((prev) => ({
         ...prev,
         uptime: Math.floor((Date.now() - start) / 1000),
       }));
