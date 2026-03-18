@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Zap, Globe, Fingerprint, Mic, ArrowRight } from 'lucide-react';
 import { useSystemTelemetry } from '../../hooks/useSystemTelemetry';
@@ -8,113 +8,77 @@ import { useAetherStore } from '../../lib/store/useAetherStore';
 import { BRAND } from '@/lib/constants/branding';
 
 export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
+  const telemetry = useSystemTelemetry();
+  const totalAgents = useAetherStore((state) => state.agents.length);
+
   useEffect(() => {
     // Stats are currently static or powered by telemetry hook
   }, []);
+
   return (
-    <section className="relative min-h-[95vh] flex items-center justify-center pt-24 md:pt-32 pb-12 md:pb-20 overflow-hidden bg-carbon-black">
-      {/* Subtle Carbon Fiber Background Pattern */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-      
-      {/* Ambient Depth Background - Fixed with Cinematic Asset */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden bg-carbon-black pb-14 pt-28 sm:pb-16 sm:pt-32 md:pt-36 lg:pb-20">
+      <div className="pointer-events-none absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03]" />
+
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-screen" style={{ backgroundImage: "url('/hero_bg.png')" }} />
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
-        <div className="absolute top-[10%] left-[15%] w-[40vw] h-[40vw] bg-gradient-to-br from-gemigram-neon/20 to-gemigram-neon/5 rounded-full blur-[180px] animate-pulse" />
-        <div className="absolute bottom-[10%] right-[15%] w-[35vw] h-[35vw] bg-gradient-to-tl from-gemigram-neon/10 to-transparent rounded-full blur-[130px]" />
-        <div className="absolute top-[50%] left-[50%] w-[30vw] h-[30vw] bg-gemigram-neon/10 rounded-full blur-[100px]" />
+        <div className="absolute left-[12%] top-[10%] h-[48vw] w-[48vw] rounded-full bg-gradient-to-br from-gemigram-neon/20 to-gemigram-neon/5 blur-[160px] animate-pulse" />
+        <div className="absolute bottom-[10%] right-[12%] h-[42vw] w-[42vw] rounded-full bg-gradient-to-tl from-gemigram-neon/10 to-transparent blur-[120px]" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10 flex flex-col items-center">
-        {/* Animated Central Core (Orb/Brain) - Matching reference image 2 */}
-        <div className="relative mb-20">
+      <div className="page-shell relative z-10 flex flex-col items-center gap-12 lg:gap-16">
+        <div className="relative mb-2">
           <motion.div
-            animate={{ 
-              scale: [1, 1.1, 1],
-              rotate: [0, 90, 180, 270, 360],
-              opacity: [0.6, 0.8, 0.6]
-            }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="w-[180px] h-[180px] sm:w-[350px] sm:h-[350px] lg:w-[500px] lg:h-[500px] rounded-full relative"
-            style={{
-              background: 'radial-gradient(circle, var(--gemigram-neon-glow) 0%, rgba(57,255,20,0.1) 40%, transparent 70%)',
-              filter: 'blur(20px)'
-            }}
+            animate={{ scale: [1, 1.08, 1], rotate: [0, 90, 180, 270, 360], opacity: [0.6, 0.8, 0.6] }}
+            transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+            className="relative h-[180px] w-[180px] rounded-full sm:h-[260px] sm:w-[260px] lg:h-[340px] lg:w-[340px] xl:h-[420px] xl:w-[420px]"
+            style={{ background: 'radial-gradient(circle, var(--gemigram-neon-glow) 0%, rgba(57,255,20,0.1) 40%, transparent 70%)', filter: 'blur(20px)' }}
           >
-            {/* Spinning Energy Rings */}
-            <div className="absolute inset-0 border-2 border-gemigram-neon/10 rounded-full animate-spin [animation-duration:8s]" />
-            <div className="absolute inset-8 border border-gemigram-neon/20 rounded-full animate-spin [animation-duration:12s] direction-reverse" />
+            <div className="absolute inset-0 animate-spin rounded-full border-2 border-gemigram-neon/10 [animation-duration:8s]" />
+            <div className="absolute inset-6 rounded-full border border-gemigram-neon/20 animate-spin [animation-duration:12s]" style={{ animationDirection: 'reverse' }} />
           </motion.div>
-          
-          {/* Internal Neural Hub (Glassy Center) */}
+
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-full glass-strong border border-gemigram-neon/40 flex items-center justify-center p-6 lg:p-8 overflow-hidden relative group">
-               <motion.div 
-                 animate={{ 
-                    scale: [0.95, 1.05, 0.95],
-                    filter: ['hue-rotate(0deg)', 'hue-rotate(30deg)', 'hue-rotate(0deg)'],
-                    boxShadow: ['0 0 30px rgba(57,255,20,0.3)', '0 0 80px rgba(57,255,20,0.5)', '0 0 30px rgba(57,255,20,0.3)']
-                 }}
-                 transition={{ duration: 4, repeat: Infinity }}
-                 className="w-full h-full rounded-full bg-gradient-to-br from-gemigram-neon to-gemigram-mint mix-blend-screen opacity-90 shadow-[0_0_100px_rgba(57,255,20,0.4)]" 
-               />
-               <div className="absolute inset-0 bg-black/40 backdrop-blur-2xl rounded-full" />
-               {/* Mascot Silhouette - Sharpened */}
-               <Fingerprint className="absolute w-24 h-24 sm:w-40 sm:h-40 text-white/10 group-hover:text-gemigram-neon transition-colors duration-1000 z-10" />
+            <div className="group relative flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border border-gemigram-neon/40 p-5 glass-strong sm:h-52 sm:w-52 lg:h-64 lg:w-64 lg:p-8">
+              <motion.div
+                animate={{ scale: [0.95, 1.05, 0.95], filter: ['hue-rotate(0deg)', 'hue-rotate(30deg)', 'hue-rotate(0deg)'], boxShadow: ['0 0 30px rgba(57,255,20,0.3)', '0 0 80px rgba(57,255,20,0.5)', '0 0 30px rgba(57,255,20,0.3)'] }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="h-full w-full rounded-full bg-gradient-to-br from-gemigram-neon to-gemigram-mint opacity-90 mix-blend-screen shadow-[0_0_100px_rgba(57,255,20,0.4)]"
+              />
+              <div className="absolute inset-0 rounded-full bg-black/40 backdrop-blur-2xl" />
+              <Fingerprint className="absolute z-10 h-20 w-20 text-white/10 transition-colors duration-1000 group-hover:text-gemigram-neon sm:h-28 sm:w-28 lg:h-36 lg:w-36" />
             </div>
           </div>
         </div>
 
-        {/* Brand Typography - Matching reference image 2 */}
-        <div className="text-center z-20">
-          <motion.h1 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-4xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black tracking-[-0.05em] leading-[0.8] mb-6 neon-shimmer uppercase"
-          >
+        <div className="z-20 w-full text-center">
+          <motion.h1 initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="page-hero-title neon-shimmer mb-5">
             {BRAND.product.name}
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-sm md:text-xl lg:text-2xl text-white/40 font-bold uppercase tracking-[0.4em] mb-12"
-          >
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto mb-8 max-w-3xl text-xs font-bold uppercase tracking-[0.28em] text-white/40 sm:text-sm md:text-lg lg:text-xl lg:tracking-[0.35em]">
             {BRAND.product.tagline}
           </motion.p>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 w-full max-w-sm sm:max-w-none mx-auto"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05, boxShadow: '0 0 80px rgba(57,255,20,0.5)' }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onLogin}
-              className="w-full sm:w-auto px-10 md:px-16 py-6 bg-gemigram-neon text-black rounded-full text-lg md:text-2xl font-black uppercase tracking-[0.2em] shadow-[0_0_50px_rgba(57,255,20,0.4)] transition-all inline-flex items-center justify-center gap-3"
-            >
-              <Mic className="w-5 h-5" />
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto flex w-full max-w-xs flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:gap-4">
+            <motion.button whileHover={{ scale: 1.05, boxShadow: '0 0 80px rgba(57,255,20,0.5)' }} whileTap={{ scale: 0.95 }} onClick={onLogin} className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-gemigram-neon px-6 py-4 text-base font-black uppercase tracking-[0.16em] text-black shadow-[0_0_50px_rgba(57,255,20,0.4)] transition-all sm:w-auto sm:px-10 sm:text-lg md:px-12 md:py-5">
+              <Mic className="h-5 w-5" />
               Create with Voice
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="h-5 w-5" />
             </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.05)' }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full sm:w-auto px-10 md:px-16 py-6 border border-white/10 text-white rounded-full text-lg md:text-2xl font-black uppercase tracking-[0.2em] transition-all backdrop-blur-xl bg-white/5"
-            >
+            <motion.button whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.05)' }} whileTap={{ scale: 0.95 }} className="w-full rounded-full border border-white/10 bg-white/5 px-6 py-4 text-base font-black uppercase tracking-[0.16em] text-white backdrop-blur-xl transition-all sm:w-auto sm:px-10 sm:text-lg md:px-12 md:py-5">
               Explore_Mainnet
             </motion.button>
           </motion.div>
 
-          <div className="mt-10 glass-medium border border-white/10 rounded-3xl px-6 py-5 max-w-3xl mx-auto">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-gemigram-neon/80 font-bold mb-3">Voice Flow Preview</p>
-            <div className="grid md:grid-cols-3 gap-4 text-left">
+          <div className="mx-auto mt-8 max-w-3xl rounded-[1.75rem] border border-white/10 px-4 py-4 glass-medium sm:px-6 sm:py-5">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.3em] text-gemigram-neon/80">Voice Flow Preview</p>
+            <div className="grid grid-cols-1 gap-3 text-left md:grid-cols-3">
               {[
                 '1. Tap Create with Voice and grant mic access',
                 '2. Describe your agent naturally in one sentence',
-                '3. Confirm blueprint and launch into workspace'
+                '3. Confirm blueprint and launch into workspace',
               ].map((step) => (
-                <div key={step} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white/80 font-medium">
+                <div key={step} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-medium text-white/80">
                   {step}
                 </div>
               ))}
@@ -122,101 +86,66 @@ export function EnterpriseHero({ onLogin }: { onLogin: () => void }) {
           </div>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="w-full mt-20 md:mt-40 glass-strong border border-gemigram-neon/10 rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 overflow-hidden relative shadow-[0_0_40px_rgba(0,0,0,0.5)]"
-        >
-          {/* Enhanced background glow */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gemigram-neon/10 blur-[120px] pointer-events-none mix-blend-screen" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-neon-blue/5 blur-[100px] pointer-events-none mix-blend-screen" />
-          
-          {/* Subtle grid pattern overlay */}
-          <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8)_1px,transparent_1px)] bg-[length:24px_24px] pointer-events-none" />
+        <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8 }} className="relative w-full overflow-hidden rounded-[2rem] border border-gemigram-neon/10 p-4 shadow-[0_0_40px_rgba(0,0,0,0.5)] glass-strong sm:p-6 md:p-8 lg:p-10 xl:p-12">
+          <div className="pointer-events-none absolute right-0 top-0 h-[320px] w-[320px] bg-gemigram-neon/10 blur-[120px] mix-blend-screen sm:h-[500px] sm:w-[500px]" />
+          <div className="pointer-events-none absolute bottom-0 left-0 h-[260px] w-[260px] bg-neon-blue/5 blur-[100px] mix-blend-screen sm:h-[400px] sm:w-[400px]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8)_1px,transparent_1px)] bg-[length:24px_24px] opacity-[0.02]" />
 
-          <div className="flex justify-between items-center mb-16 relative z-10">
-            <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">Agent_Hive</h2>
-            <div className="flex gap-4">
-               {[1,2].map(i => (
-                 <motion.button
-                   key={i}
-                   whileHover={{ scale: 1.1, backgroundColor: 'rgba(57,255,20,0.1)' }}
-                   whileTap={{ scale: 0.9 }}
-                   className="w-12 h-12 rounded-full border border-white/20 hover:border-gemigram-neon flex items-center justify-center text-white/50 hover:text-gemigram-neon transition-all bg-black/50 backdrop-blur-md"
-                 >
-                   {i === 1 ? '<' : '>'}
-                 </motion.button>
-               ))}
+          <div className="relative z-10 mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between md:mb-10 lg:mb-12">
+            <h2 className="text-2xl font-black uppercase tracking-tighter text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] sm:text-3xl md:text-4xl">Agent_Hive</h2>
+            <div className="flex gap-3 self-start sm:self-auto">
+              {[1, 2].map((i) => (
+                <motion.button key={i} whileHover={{ scale: 1.08, backgroundColor: 'rgba(57,255,20,0.1)' }} whileTap={{ scale: 0.92 }} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white/50 backdrop-blur-md transition-all hover:border-gemigram-neon hover:text-gemigram-neon">
+                  {i === 1 ? '<' : '>'}
+                </motion.button>
+              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 relative z-10">
-            {[1,2,3,4,5].map(i => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -10 }}
-                className="glass-medium p-6 rounded-3xl group hover:border-gemigram-neon/40 transition-all duration-500 cursor-pointer relative overflow-hidden"
-              >
-                {/* Internal card hover effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gemigram-neon/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <motion.div key={i} whileHover={{ y: -8 }} className="group relative cursor-pointer overflow-hidden rounded-[1.75rem] p-4 transition-all duration-500 glass-medium hover:border-gemigram-neon/40 sm:p-5 md:p-6">
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-gemigram-neon/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
-                <div className="aspect-[4/5] rounded-2xl bg-black/40 mb-6 overflow-hidden relative border border-white/5">
-                   {/* Fallback image if actual agent images are missing */}
-                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(57,255,20,0.1)_0%,transparent_70%)] opacity-50" />
-
-                   <img 
-                    src={`/agents/robot_${(i % 3) + 1}.png`} 
+                <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-2xl border border-white/5 bg-black/40">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(57,255,20,0.1)_0%,transparent_70%)] opacity-50" />
+                  <img
+                    src={`/agents/robot_${(i % 3) + 1}.png`}
                     alt={`Neural Entity ${i}`}
-                    className="w-full h-full object-cover mix-blend-screen opacity-50 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
+                    className="h-full w-full object-cover opacity-50 mix-blend-screen transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"
                     onError={(e) => {
-                      // Fallback for missing images
                       e.currentTarget.style.display = 'none';
                     }}
-                   />
-
-                   {/* Scanning line effect on hover */}
-                   <div className="absolute top-0 left-0 w-full h-1 bg-gemigram-neon shadow-[0_0_10px_rgba(57,255,20,0.8)] opacity-0 group-hover:opacity-100 group-hover:animate-[scanline_2s_linear_infinite]" />
-
-                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+                  />
+                  <div className="absolute left-0 top-0 h-1 w-full bg-gemigram-neon opacity-0 shadow-[0_0_10px_rgba(57,255,20,0.8)] group-hover:animate-[scanline_2s_linear_infinite] group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
                 </div>
 
-                <h4 className="text-sm font-black text-white mb-2 uppercase tracking-widest group-hover:text-gemigram-neon transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Neural_Entity_{i}</h4>
+                <h4 className="mb-2 text-sm font-black uppercase tracking-widest text-white transition-colors group-hover:text-gemigram-neon">Neural_Entity_{i}</h4>
                 <div className="flex items-center gap-3">
-                   <div className="relative flex items-center justify-center w-2 h-2">
-                     <span className="absolute w-full h-full rounded-full bg-gemigram-neon opacity-75 animate-ping" />
-                     <span className="relative w-1.5 h-1.5 rounded-full bg-gemigram-neon" />
-                   </div>
-                   <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em]">Runtime::Active</p>
+                  <div className="relative flex h-2 w-2 items-center justify-center">
+                    <span className="absolute h-full w-full animate-ping rounded-full bg-gemigram-neon opacity-75" />
+                    <span className="relative h-1.5 w-1.5 rounded-full bg-gemigram-neon" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Runtime::Active</p>
                 </div>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 mt-20 md:mt-32 max-w-6xl mx-auto border-t border-white/[0.03] pt-12 md:pt-16"
-        >
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.8 }} className="grid w-full max-w-6xl grid-cols-1 gap-5 border-t border-white/[0.03] pt-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 lg:pt-12">
           {[
             { icon: Shield, label: 'Carbon Secure', value: 'AES-256', color: 'text-neon-green' },
-            { icon: Zap, label: 'Neon Active', value: `${useAetherStore.getState().agents.length} Agents`, color: 'text-cyber-lime' },
-            { icon: Globe, label: 'Session Uptime', value: `${useSystemTelemetry().uptime}s`, color: 'text-electric-purple' },
+            { icon: Zap, label: 'Neon Active', value: `${totalAgents} Agents`, color: 'text-cyber-lime' },
+            { icon: Globe, label: 'Session Uptime', value: `${telemetry.uptime}s`, color: 'text-electric-purple' },
           ].map((item, idx) => (
-            <motion.div 
-              key={idx} 
-              className="flex flex-col items-center gap-3 group cursor-default"
-              whileHover={{ scale: 1.05, y: -5 }}
-            >
-              <div className={`p-3 rounded-xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 group-hover:border-gemigram-neon/50 transition-all`}>
-                <item.icon className={`w-5 h-5 ${item.color} opacity-60 group-hover:opacity-100 transition-opacity`} />
+            <motion.div key={idx} className="group flex flex-col items-center gap-3 text-center" whileHover={{ scale: 1.03, y: -4 }}>
+              <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-3 transition-all group-hover:border-gemigram-neon/50">
+                <item.icon className={`h-5 w-5 ${item.color} opacity-60 transition-opacity group-hover:opacity-100`} />
               </div>
-              <span className="text-sm font-bold text-white uppercase">{item.value}</span>
-              <span className="text-[8px] font-black uppercase tracking-[0.25em] text-white/20 group-hover:text-white/50 transition-colors">
-                {item.label}
-              </span>
+              <span className="text-sm font-bold uppercase text-white">{item.value}</span>
+              <span className="text-[8px] font-black uppercase tracking-[0.25em] text-white/20 transition-colors group-hover:text-white/50">{item.label}</span>
             </motion.div>
           ))}
         </motion.div>

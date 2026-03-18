@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Users, Settings, Plus, User, LogOut, Bell, Globe, Home, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, Plus, User, LogOut, Globe, Home } from 'lucide-react';
 import { db } from '@/firebase';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import Image from 'next/image';
@@ -16,58 +16,58 @@ const ORBS_CONFIG = [
     id: 'home',
     path: '/dashboard',
     color: 'bg-gemigram-neon',
-    icon: <Home aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.home
+    icon: <Home aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.home,
   },
   {
     id: 'galaxy',
     path: '/galaxy',
     color: 'bg-gemigram-neon',
-    icon: <Globe aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.galaxy
+    icon: <Globe aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.galaxy,
   },
   {
     id: 'hub',
     path: '/hub',
     color: 'bg-gemigram-neon',
-    icon: <Users aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.hub
+    icon: <Users aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.hub,
   },
   {
     id: 'forge',
     path: '/forge',
     color: 'bg-gemigram-neon',
-    icon: <Plus aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.forge
+    icon: <Plus aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.forge,
   },
   {
     id: 'workspace',
     path: '/workspace',
     color: 'bg-gemigram-neon',
-    icon: <LayoutDashboard aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.workspace
+    icon: <LayoutDashboard aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.workspace,
   },
   {
     id: 'marketplace',
     path: '/marketplace',
     color: 'bg-gemigram-neon',
-    icon: <Globe aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.marketplace
+    icon: <Globe aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.marketplace,
   },
   {
     id: 'settings',
     path: '/settings',
     color: 'bg-white/20',
-    icon: <Settings aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.settings
+    icon: <Settings aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.settings,
   },
   {
     id: 'about',
     path: '/about',
     color: 'bg-gemigram-neon',
-    icon: <Users aria-hidden="true" className="w-5 h-5" />,
-    label: BRAND.labels.nav.about
-  }
+    icon: <Users aria-hidden="true" className="h-5 w-5" />,
+    label: BRAND.labels.nav.about,
+  },
 ];
 
 interface FloatingNavProps {
@@ -89,11 +89,11 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
     const q = query(
       collection(db, 'notifications'),
       where('userId', '==', user.uid),
-      where('read', '==', false)
+      where('read', '==', false),
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       try {
-        const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+        const notifs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Notification));
         setUnreadNotifications(notifs);
       } catch (err) {
         console.warn('Notifications error:', err);
@@ -115,18 +115,21 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     hintTimerRef.current = setTimeout(() => setActiveHint(id), 450);
   };
+
   const hideHint = () => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
     setActiveHint(null);
   };
 
-  useEffect(() => () => {
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    },
+    [],
+  );
 
   return (
     <>
-      {/* Page Transition Overlay */}
       <AnimatePresence>
         {expandingOrb && (
           <motion.div
@@ -134,45 +137,42 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
             animate={{ opacity: 1, scale: 200 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed z-[100] w-10 h-10 rounded-full bg-theme-primary opacity-90 backdrop-blur-2xl pointer-events-none left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            className="pointer-events-none fixed left-1/2 top-1/2 z-[100] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-theme-primary opacity-90 backdrop-blur-2xl"
           />
         )}
       </AnimatePresence>
 
-      {/* Sovereign Sidebar (Desktop) */}
       <motion.aside
         initial={{ x: -80, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className="hidden md:flex flex-col items-center py-8 w-20 xl:w-64 glass-strong border-r border-gemigram-neon/[0.06] z-[90] shrink-0"
+        className="safe-top hidden w-20 shrink-0 flex-col border-r border-gemigram-neon/[0.06] glass-strong py-6 md:flex xl:w-64"
       >
-        <div className="mb-12">
-          <div className="flex items-center gap-3 px-4">
+        <div className="mb-8 px-4 xl:mb-10">
+          <div className="flex items-center gap-3">
             <AetherLogo size={28} />
-            <span className="hidden xl:block text-sm font-black uppercase tracking-[0.2em] text-white">{BRAND.product.platformName}</span>
+            <span className="hidden text-sm font-black uppercase tracking-[0.2em] text-white xl:block">{BRAND.product.platformName}</span>
           </div>
         </div>
 
-        <nav className="flex-1 flex flex-col gap-3 w-full px-3">
+        <nav className="flex flex-1 flex-col gap-2 px-3">
           {ORBS_CONFIG.map((orb) => {
             const isActive = currentView === orb.id;
             return (
-              <div key={orb.id} className="relative group">
+              <div key={orb.id} className="group relative">
                 <button
                   onClick={() => handleNavigate(orb.id, orb.path)}
                   title={`Navigate to ${orb.label}`}
                   aria-label={`Navigate to ${orb.label}`}
-                  className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
-                    isActive 
-                      ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/25 shadow-[0_0_25px_rgba(57,255,20,0.15)]' 
-                      : 'text-white/30 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06]'
+                  className={`flex w-full items-center gap-4 rounded-2xl px-4 py-3.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
+                    isActive
+                      ? 'border border-gemigram-neon/25 bg-gemigram-neon/10 text-gemigram-neon shadow-[0_0_25px_rgba(57,255,20,0.15)]'
+                      : 'border border-transparent text-white/30 hover:border-white/[0.06] hover:bg-white/[0.04] hover:text-white'
                   }`}
                 >
-                  <div className={`${isActive ? 'text-gemigram-neon' : 'group-hover:text-white'}`}>
-                    {orb.icon}
-                  </div>
-                  <span className="hidden xl:block text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap">{orb.label}</span>
+                  <div className={isActive ? 'text-gemigram-neon' : 'group-hover:text-white'}>{orb.icon}</div>
+                  <span className="hidden whitespace-nowrap text-[10px] font-black uppercase tracking-[0.15em] xl:block">{orb.label}</span>
                 </button>
-                <span className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 opacity-0 invisible transition-opacity duration-200 group-hover:opacity-100 group-hover:visible xl:hidden">
+                <span className="invisible pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 opacity-0 transition-opacity duration-200 group-hover:visible group-hover:opacity-100 xl:hidden">
                   {orb.label}
                 </span>
               </div>
@@ -180,38 +180,43 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
           })}
         </nav>
 
-        <div className="mt-auto px-3 w-full space-y-4">
+        <div className="safe-bottom mt-auto w-full space-y-4 px-3 pt-4">
           {user ? (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/5">
-                <div className="w-8 h-8 rounded-full overflow-hidden border border-gemigram-neon/30">
+              <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 px-4 py-3">
+                <div className="relative h-8 w-8 overflow-hidden rounded-full border border-gemigram-neon/30">
                   {user.photoURL ? (
-                    <Image src={user.photoURL} alt="User" width={32} height={32} className="w-full h-full object-cover" />
+                    <Image src={user.photoURL} alt="User" fill className="object-cover" />
                   ) : (
-                    <div className="w-full h-full bg-gemigram-neon/20 flex items-center justify-center">
-                      <User aria-hidden="true" className="w-4 h-4 text-gemigram-neon" />
+                    <div className="flex h-full w-full items-center justify-center bg-gemigram-neon/20">
+                      <User aria-hidden="true" className="h-4 w-4 text-gemigram-neon" />
                     </div>
                   )}
+                  {unreadNotifications.length > 0 && (
+                    <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-gemigram-neon px-1 text-[8px] font-black text-black">
+                      {Math.min(unreadNotifications.length, 9)}
+                    </span>
+                  )}
                 </div>
-                <div className="hidden xl:flex flex-col truncate">
-                  <span className="text-xs font-bold text-white truncate">{user.displayName || 'Architect'}</span>
-                  <span className="text-[8px] text-white/40 uppercase tracking-widest leading-none mt-1">Sovereign_Active</span>
+                <div className="hidden min-w-0 flex-col truncate xl:flex">
+                  <span className="truncate text-xs font-bold text-white">{user.displayName || 'Architect'}</span>
+                  <span className="mt-1 text-[8px] uppercase tracking-widest text-white/40">Sovereign_Active</span>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={onLogout}
                 title="Terminate session"
                 aria-label="Terminate session"
-                className="flex items-center gap-4 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-400/10 transition-colors border border-transparent hover:border-red-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
+                className="flex items-center gap-4 rounded-2xl border border-transparent px-4 py-3 text-red-400 transition-colors hover:border-red-400/20 hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
               >
-                <LogOut aria-hidden="true" className="w-5 h-5 flex-shrink-0" />
-                <span className="hidden xl:block text-[10px] font-black uppercase tracking-widest">Terminate_Session</span>
+                <LogOut aria-hidden="true" className="h-5 w-5 shrink-0" />
+                <span className="hidden text-[10px] font-black uppercase tracking-widest xl:block">Terminate_Session</span>
               </button>
             </div>
           ) : (
-            <button 
+            <button
               onClick={onLogin}
-              className="w-full py-4 rounded-2xl bg-gemigram-neon text-black font-black uppercase text-[10px] tracking-widest shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:scale-[1.02] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
+              className="w-full rounded-2xl bg-gemigram-neon px-4 py-4 text-[10px] font-black uppercase tracking-widest text-black shadow-[0_0_30px_rgba(16,255,135,0.3)] transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
             >
               Access_System
             </button>
@@ -219,16 +224,15 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
         </div>
       </motion.aside>
 
-      {/* Mobile Dock (Bottom) */}
       <motion.nav
         initial={{ y: 80 }}
         animate={{ y: 0 }}
-        className="md:hidden fixed bottom-6 left-6 right-6 h-16 aether-glass border border-white/10 rounded-2xl z-[100] flex items-center justify-around px-2"
+        className="fixed-safe-bottom safe-x fixed left-3 right-3 z-[100] flex h-auto min-h-16 items-center justify-around gap-1 rounded-[1.25rem] border border-white/10 aether-glass px-2 py-2 md:hidden"
       >
         {ORBS_CONFIG.slice(0, 5).map((orb) => {
           const isActive = currentView === orb.id;
           return (
-            <div key={orb.id} className="relative group flex items-center justify-center">
+            <div key={orb.id} className="group relative flex min-w-0 flex-1 items-center justify-center">
               <button
                 onClick={() => handleNavigate(orb.id, orb.path)}
                 title={`Navigate to ${orb.label}`}
@@ -236,13 +240,16 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
                 onTouchStart={() => showHint(orb.id)}
                 onTouchEnd={hideHint}
                 onTouchCancel={hideHint}
-                className={`p-3 rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
-                  isActive ? 'text-gemigram-neon bg-gemigram-neon/10' : 'text-white/40'
+                className={`flex min-h-[52px] w-full flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[9px] font-black uppercase tracking-[0.12em] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
+                  isActive ? 'bg-gemigram-neon/10 text-gemigram-neon' : 'text-white/40'
                 }`}
               >
                 {orb.icon}
+                <span className="truncate text-[8px] leading-none">{orb.label}</span>
               </button>
-              <span className={`pointer-events-none absolute bottom-full mb-2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 transition-opacity duration-200 md:group-hover:opacity-100 md:group-hover:visible ${activeHint === orb.id ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+              <span
+                className={`invisible pointer-events-none absolute bottom-full mb-2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 opacity-0 transition-opacity duration-200 md:group-hover:visible md:group-hover:opacity-100 ${activeHint === orb.id ? 'visible opacity-100' : ''}`}
+              >
                 {orb.label}
               </span>
             </div>

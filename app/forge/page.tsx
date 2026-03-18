@@ -19,13 +19,10 @@ export default function ForgePage() {
   const [pendingAgentData, setPendingAgentData] = useState<any>(null);
   const router = useRouter();
 
-
   useEffect(() => {
     setVoiceSession({
       stage: 'forge',
-      lastVoiceAction: isForging
-        ? 'Finalizing your agent blueprint...'
-        : 'Forge is ready. Start voice onboarding when you are ready.',
+      lastVoiceAction: isForging ? 'Finalizing your agent blueprint...' : 'Forge is ready. Start voice onboarding when you are ready.',
     });
   }, [isForging, setVoiceSession]);
 
@@ -35,10 +32,8 @@ export default function ForgePage() {
     }
   }, [voiceSession.stage, router]);
 
-  // 🧬 Genesis Protocol: Handle automated forging from Voice Prompt
   useEffect(() => {
     if (pendingManifest && !isForging) {
-      // console.log("[ForgePage] Genesis Intent Detected. Materializing...");
       setPendingAgentData(pendingManifest);
       setIsForging(true);
     }
@@ -79,52 +74,45 @@ export default function ForgePage() {
     try {
       await setDoc(doc(db, 'agents', agentId), {
         ...newAgent,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
       });
-      
-      // Initialize agent's memory system with core memories
-      // console.log('[ForgePage] Initializing memory system for agent:', agentId);
+
       await createMemory({
-        agentId: agentId,
+        agentId,
         userId: user.uid,
         type: 'semantic',
         content: `Agent ${data.name} created with purpose: ${data.description}`,
         importance: 1.0,
-        decay: data.memoryDecay || 0.01, // Default slow decay
+        decay: data.memoryDecay || 0.01,
         accessCount: 0,
         tags: ['creation', 'origin', 'core_directive', 'identity'],
         metadata: {
           source: 'agent_learning',
           context: 'Initial memory imprint during forging',
           soulType: data.soul,
-          personaType: data.persona || 'default'
-        }
+          personaType: data.persona || 'default',
+        },
       });
-      
-      // Create second core memory for skills/purpose
+
       await createMemory({
-        agentId: agentId,
+        agentId,
         userId: user.uid,
         type: 'procedural',
         content: `Primary operational directive: ${data.description}. Configured with tools and skills as specified.`,
         importance: 0.95,
-        decay: 0.005, // Very slow decay for procedural knowledge
+        decay: 0.005,
         accessCount: 0,
         tags: ['skills', 'directives', 'operational'],
         metadata: {
           source: 'agent_learning',
           context: 'Skill and tool configuration during creation',
           configuredTools: data.tools,
-          configuredSkills: data.skills
-        }
+          configuredSkills: data.skills,
+        },
       });
-      
-      // console.log('[ForgePage] Memory system initialized successfully');
-      
-      // Start heartbeat monitoring for this agent
-      // console.log('[ForgePage] Starting heartbeat monitor for:', agentId);
+
       startAgentHeartbeat(agentId);
-      
+
       setPendingAgentData(null);
       setPendingManifest(null);
       setIsForging(false);
@@ -142,15 +130,14 @@ export default function ForgePage() {
   };
 
   return (
-    <div className="w-full h-full bg-theme-primary relative overflow-hidden">
-      {/* Dynamic unified background layer */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-1/4 -left-1/4 w-[50vw] h-[50vw] bg-gemigram-neon/5 rounded-full blur-[150px] mix-blend-screen transition-all duration-1000" />
-        <div className="absolute bottom-1/4 -right-1/4 w-[50vw] h-[50vw] bg-neon-blue/5 rounded-full blur-[150px] mix-blend-screen transition-all duration-1000" />
+    <div className="relative h-full w-full overflow-hidden bg-theme-primary">
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute -left-1/4 top-1/4 h-[50vw] w-[50vw] rounded-full bg-gemigram-neon/5 blur-[150px] mix-blend-screen transition-all duration-1000" />
+        <div className="absolute -right-1/4 bottom-1/4 h-[50vw] w-[50vw] rounded-full bg-neon-blue/5 blur-[150px] mix-blend-screen transition-all duration-1000" />
         <div className="absolute inset-0 opacity-[0.03] carbon-fiber" />
       </div>
 
-      <div className="relative z-10 w-full h-[100dvh] transition-opacity duration-1000 overflow-y-auto no-scrollbar">
+      <div className="relative z-10 h-full w-full overflow-y-auto pb-nav-safe transition-opacity duration-1000">
         {!isForging ? (
           <ConversationalAgentCreator onClose={() => router.push('/dashboard')} onSubmit={handleCreateAgent} />
         ) : (

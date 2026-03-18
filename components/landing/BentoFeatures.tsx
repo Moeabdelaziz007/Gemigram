@@ -40,24 +40,18 @@ export function BentoFeatures() {
   ];
 
   return (
-    <section id="features" className="py-32 bg-carbon-black relative">
-       <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+    <section id="features" className="relative bg-carbon-black py-16 sm:py-20 lg:py-24 xl:py-28">
+      <div className="pointer-events-none absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.02]" />
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="mb-24 text-center">
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="text-4xl md:text-6xl font-black mb-6 tracking-tighter uppercase"
-          >
+      <div className="page-shell relative z-10 page-stack">
+        <div className="mx-auto max-w-2xl text-center">
+          <motion.h2 initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} className="page-title mb-4">
             The <span className="text-gemigram-neon">{BRAND.product.name}</span> Spine
           </motion.h2>
-          <p className="text-white/30 max-w-2xl mx-auto text-lg font-medium">
-            Next-generation infrastructure architected for neural sovereignty.
-          </p>
+          <p className="page-copy">Next-generation infrastructure architected for neural sovereignty.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 grid-rows-auto gap-8 max-w-6xl mx-auto">
+        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-auto md:gap-6 lg:gap-8">
           {features.map((feature, idx) => (
             <motion.div
               key={idx}
@@ -65,23 +59,23 @@ export function BentoFeatures() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: idx * 0.1 }}
-              className={`sovereign-glass p-8 md:p-12 flex flex-col justify-between group hover:border-gemigram-neon/40 transition-all duration-700 ${feature.className}`}
+              className={`flex flex-col justify-between rounded-[1.75rem] p-5 transition-all duration-700 sovereign-glass hover:border-gemigram-neon/40 sm:p-6 md:p-8 ${feature.className}`}
             >
               <div>
-                <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center mb-10 group-hover:bg-gemigram-neon group-hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(57,255,20,0)] group-hover:shadow-[0_0_30px_rgba(57,255,20,0.4)]">
-                  <feature.icon className="w-7 h-7" />
+                <div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/5 bg-white/5 transition-all duration-500 group-hover:bg-gemigram-neon group-hover:text-black group-hover:shadow-[0_0_30px_rgba(57,255,20,0.4)] sm:h-16 sm:w-16">
+                  <feature.icon className="h-7 w-7" />
                 </div>
-                <h3 className="text-3xl font-black mb-4 text-white uppercase tracking-tighter group-hover:text-gemigram-neon transition-colors duration-500">
+                <h3 className="mb-4 text-2xl font-black uppercase tracking-tighter text-white transition-colors duration-500 group-hover:text-gemigram-neon sm:text-3xl">
                   {feature.title}
                 </h3>
-                <p className="text-white/40 leading-relaxed font-bold uppercase text-xs tracking-widest group-hover:text-white/60 transition-colors">
+                <p className="text-xs font-bold uppercase leading-relaxed tracking-widest text-white/40 transition-colors group-hover:text-white/60">
                   {feature.description}
                 </p>
               </div>
-              
-              <div className="mt-12 flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-white/5 group-hover:text-gemigram-neon/40 transition-colors">
+
+              <div className="mt-8 flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.3em] text-white/10 transition-colors group-hover:text-gemigram-neon/40 sm:mt-12">
                 <span>Access_Status::Enabled</span>
-                <div className="h-px flex-1 bg-white/5 group-hover:bg-gemigram-neon/10 transition-colors" />
+                <div className="h-px flex-1 bg-white/5 transition-colors group-hover:bg-gemigram-neon/10" />
               </div>
             </motion.div>
           ))}

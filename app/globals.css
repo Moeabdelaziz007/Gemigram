@@ -40,23 +40,32 @@
   --gemigram-mint: #00FFA3;
   --gemigram-lime: #DFFF00;
   --gemigram-neon-glow: rgba(57, 255, 20, 0.6);
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --space-mobile-xs: 0.75rem;
+  --space-mobile-sm: 1rem;
+  --space-mobile-md: 1.25rem;
+  --space-mobile-lg: 1.5rem;
+  --space-mobile-xl: 2rem;
+  --space-mobile-2xl: 2.5rem;
+  --text-mobile-label: 0.7rem;
+  --text-mobile-body: 0.95rem;
+  --text-mobile-title: clamp(1.75rem, 7vw, 2.5rem);
+  --text-mobile-hero: clamp(2.25rem, 10vw, 4rem);
 }
 
 /* Dark Mode Variables — THE SOVEREIGN PALETTE */
 [data-theme='dark'] {
-  /* Carbon Fiber Black Backgrounds */
   --bg-primary: #030508;
   --bg-secondary: #070c14;
   --bg-tertiary: #0f1620;
   --bg-surface: #0a1018;
-
-  /* Text: White + Medium Gray Hierarchy */
   --text-primary: rgba(255, 255, 255, 0.95);
   --text-secondary: rgba(255, 255, 255, 0.60);
   --text-tertiary: rgba(255, 255, 255, 0.40);
   --text-disabled: rgba(255, 255, 255, 0.25);
-
-  /* Glass Effects — Neon-Tinted */
   --border-color: rgba(57, 255, 20, 0.08);
   --glass-border: rgba(57, 255, 20, 0.06);
   --glass-bg-subtle: rgba(5, 11, 20, 0.5);
@@ -67,11 +76,10 @@
   --glass-blur-sm: 16px;
   --glass-blur-md: 28px;
   --glass-blur-lg: 40px;
+
   --glass-border-light: rgba(255, 255, 255, 0.04);
   --glass-border-medium: rgba(255, 255, 255, 0.06);
   --glass-border-strong: rgba(57, 255, 20, 0.10);
-
-  /* Neon Green Brand — Single Source */
   --color-neon-green: #39FF14;
   --color-mint-chip: #00FFA3;
   --color-neon-blue: #00f0ff;
@@ -85,7 +93,6 @@
   --gemigram-neon-glow: rgba(57, 255, 20, 0.7);
 }
 
-/* Legacy variable mapping */
 :root {
   --color-carbon-black: var(--bg-primary);
   --color-carbon-surface: var(--bg-surface);
@@ -93,6 +100,10 @@
 }
 
 @layer base {
+  html {
+    scroll-padding-top: calc(var(--safe-area-top) + 5rem);
+  }
+
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
@@ -101,9 +112,9 @@
     -webkit-font-smoothing: antialiased;
     font-size: 15px;
     letter-spacing: -0.01em;
+    min-height: 100dvh;
   }
 
-  /* Carbon Fiber Texture on dark mode body */
   [data-theme='dark'] body {
     background-image:
       radial-gradient(ellipse at 50% 0%, rgba(57, 255, 20, 0.03) 0%, transparent 60%),
@@ -124,12 +135,6 @@
 }
 
 @layer utilities {
-
-  /* ============================================
-     SOVEREIGN GLASSMORPHISM — The Core Identity
-     ============================================ */
-
-  /* Flagship Glass: Curved, Neon-Bordered, Deep */
   .sovereign-glass {
     background: linear-gradient(135deg, rgba(57, 255, 20, 0.04) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(57, 255, 20, 0.02) 100%);
     backdrop-filter: blur(48px);
@@ -153,11 +158,6 @@
     pointer-events: none;
   }
 
-  /* ============================================
-     THREE-TIER GLASS SYSTEM
-     ============================================ */
-
-  /* Tier 1: Subtle Glass — cards, widgets */
   .glass-subtle {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(57, 255, 20, 0.01) 100%);
     -webkit-backdrop-filter: blur(var(--glass-blur-sm));
@@ -168,7 +168,6 @@
       0 4px 20px rgba(0, 0, 0, 0.6);
   }
 
-  /* Tier 2: Medium Glass — panels, modals */
   .glass-medium {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(57, 255, 20, 0.02) 100%);
     -webkit-backdrop-filter: blur(var(--glass-blur-md));
@@ -180,7 +179,6 @@
       0 8px 40px rgba(0, 0, 0, 0.7);
   }
 
-  /* Tier 3: Strong Glass — overlays, sidebars */
   .glass-strong {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(57, 255, 20, 0.03) 100%);
     -webkit-backdrop-filter: blur(var(--glass-blur-lg));
@@ -192,7 +190,6 @@
       0 12px 48px rgba(0, 0, 0, 0.8);
   }
 
-  /* Performance Glass — fixed 48px for GPU optimization */
   .glass-performance {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(57, 255, 20, 0.02) 100%);
     -webkit-backdrop-filter: blur(48px);
@@ -204,7 +201,6 @@
     will-change: transform;
   }
 
-  /* Legacy Aliases */
   .aether-glass { @apply glass-medium; }
   .quantum-glass { @apply glass-medium; }
   .cyber-glass { @apply glass-medium; }
@@ -220,25 +216,13 @@
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2339FF14' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   }
 
-  /* ============================================
-     NEON ACCENT SYSTEM — Eye-Catching Green
-     ============================================ */
-
   .text-neon {
     color: var(--gemigram-neon);
     text-shadow: 0 0 10px rgba(57, 255, 20, 0.5), 0 0 40px rgba(57, 255, 20, 0.2);
   }
 
-  /* Animated shimmer text */
   .neon-shimmer {
-    background: linear-gradient(
-      90deg,
-      #fff 0%,
-      var(--gemigram-neon) 25%,
-      #fff 50%,
-      var(--gemigram-neon) 75%,
-      #fff 100%
-    );
+    background: linear-gradient(90deg, #fff 0%, var(--gemigram-neon) 25%, #fff 50%, var(--gemigram-neon) 75%, #fff 100%);
     background-size: 200% auto;
     color: transparent;
     -webkit-background-clip: text;
@@ -251,10 +235,10 @@
     to { background-position: 200% center; }
   }
 
-  /* Neon glow box for cards on hover */
   .neon-glow-hover {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
   .neon-glow-hover:hover {
     border-color: rgba(57, 255, 20, 0.3);
     box-shadow:
@@ -262,10 +246,6 @@
       0 0 20px rgba(57, 255, 20, 0.1),
       0 8px 40px rgba(0, 0, 0, 0.6);
   }
-
-  /* ============================================
-     TELEMETRY BARS — HUD Data Visualization
-     ============================================ */
 
   .telemetry-bar {
     height: 6px;
@@ -284,10 +264,6 @@
     border-radius: 3px;
   }
 
-  /* ============================================
-     NEURAL ORB — Pulsing Background Element
-     ============================================ */
-
   .neural-orb {
     width: 300px;
     height: 300px;
@@ -301,10 +277,6 @@
     0%, 100% { transform: scale(1); opacity: 0.3; }
     50% { transform: scale(1.3); opacity: 0.5; }
   }
-
-  /* ============================================
-     INDUSTRIAL BACKGROUNDS
-     ============================================ */
 
   .bg-industrial {
     background-color: #020408;
@@ -325,17 +297,12 @@
   }
 
   .hud-grid {
-    background-image:
-      radial-gradient(rgba(57, 255, 20, 0.06) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(57, 255, 20, 0.06) 1px, transparent 1px);
     background-size: 30px 30px;
   }
 
-  /* ============================================
-     BUTTON SYSTEM — Neon-Powered Actions
-     ============================================ */
-
   .btn-primary {
-    @apply px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-sm;
+    @apply px-6 py-3 rounded-2xl font-black uppercase tracking-[0.18em] text-xs md:px-8 md:py-4 md:text-sm;
     background: linear-gradient(135deg, var(--gemigram-neon) 0%, var(--color-mint-chip) 100%);
     border: 1px solid var(--gemigram-neon);
     color: #000;
@@ -367,7 +334,7 @@
   }
 
   .btn-secondary {
-    @apply px-8 py-4 rounded-2xl font-bold uppercase tracking-wider text-sm;
+    @apply px-6 py-3 rounded-2xl font-bold uppercase tracking-[0.16em] text-xs md:px-8 md:py-4 md:text-sm;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: white;
@@ -383,7 +350,7 @@
   }
 
   .btn-danger {
-    @apply px-8 py-4 rounded-2xl font-bold uppercase tracking-wider text-sm;
+    @apply px-6 py-3 rounded-2xl font-bold uppercase tracking-[0.16em] text-xs md:px-8 md:py-4 md:text-sm;
     background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%);
     border: 1px solid rgba(239, 68, 68, 0.25);
     color: #f87171;
@@ -393,13 +360,6 @@
     background: rgba(239, 68, 68, 0.25);
     box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
   }
-
-  .btn-sm { @apply px-4 py-2 text-xs rounded-xl; }
-  .btn-lg { @apply px-12 py-6 text-base rounded-3xl; }
-
-  /* ============================================
-     NOTIFICATION BADGE — Neon Pill
-     ============================================ */
 
   .badge-neon {
     padding: 2px 8px;
@@ -412,59 +372,6 @@
     box-shadow: 0 0 12px var(--gemigram-neon), 0 0 4px var(--gemigram-neon);
   }
 
-  /* ============================================
-     TEXT HIERARCHY — White · Gray · Neon
-     ============================================ */
-
-  .text-primary { color: var(--text-primary); }
-  .text-secondary { color: var(--text-secondary); }
-  .text-tertiary { color: var(--text-tertiary); }
-  .text-disabled { color: var(--text-disabled); }
-
-  .text-white\/90 { @apply text-primary; }
-  .text-white\/60 { @apply text-tertiary; }
-  .text-white\/40 { @apply text-disabled; }
-
-  /* HUD Label Style */
-  .text-hud {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: rgba(255, 255, 255, 0.30);
-  }
-
-  /* ============================================
-     THEME-AWARE BACKGROUNDS & BORDERS
-     ============================================ */
-
-  .bg-theme-primary { background-color: var(--bg-primary); }
-  .bg-theme-secondary { background-color: var(--bg-secondary); }
-  .bg-theme-tertiary { background-color: var(--bg-tertiary); }
-  .bg-theme-surface { background-color: var(--bg-surface); }
-  .text-theme-primary { color: var(--text-primary); }
-  .text-theme-secondary { color: var(--text-secondary); }
-  .text-theme-tertiary { color: var(--text-tertiary); }
-  .text-theme-disabled { color: var(--text-disabled); }
-  .border-theme { border-color: var(--border-color); }
-  .border-glass { border-color: var(--glass-border); }
-
-  /* ============================================
-     SCROLLBAR — Minimal Neon
-     ============================================ */
-
-  ::-webkit-scrollbar { width: 3px; height: 3px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb {
-    background: var(--gemigram-neon);
-    border-radius: 10px;
-    box-shadow: 0 0 10px var(--gemigram-neon);
-  }
-
-  /* ============================================
-     RESPONSIVE TEXT & SPACING
-     ============================================ */
-
   .text-responsive-xs { font-size: clamp(0.65rem, 2vw, 0.75rem); }
   .text-responsive-sm { font-size: clamp(0.75rem, 2.5vw, 0.875rem); }
   .text-responsive-base { font-size: clamp(0.875rem, 3vw, 1rem); }
@@ -473,17 +380,60 @@
   .text-responsive-2xl { font-size: clamp(1.25rem, 5vw, 1.5rem); }
   .text-responsive-3xl { font-size: clamp(1.5rem, 6vw, 2rem); }
 
-  .touch-target-min { min-height: 44px; min-width: 44px; }
-  .touch-target-comfortable { min-height: 48px; min-width: 48px; }
-  .touch-target-large { min-height: 56px; min-width: 56px; }
+  .page-shell {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
 
-  .container-mobile { width: min(100%, 100vw - 2rem); max-width: 100%; }
-  @media (min-width: 640px) { .container-mobile { width: min(100%, 600px); max-width: 600px; } }
-  @media (min-width: 768px) { .container-mobile { width: min(100%, 700px); max-width: 700px; } }
+  .page-stack {
+    @apply flex flex-col gap-6 md:gap-8;
+  }
 
-  /* ============================================
-     ANIMATION SYSTEM
-     ============================================ */
+  .page-section {
+    @apply rounded-[1.5rem] border border-white/10 glass-medium p-4 sm:p-5 md:p-6 lg:p-8;
+  }
+
+  .page-title {
+    font-size: var(--text-mobile-title);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    @apply font-black uppercase text-white;
+  }
+
+  .page-hero-title {
+    font-size: var(--text-mobile-hero);
+    line-height: 0.86;
+    letter-spacing: -0.06em;
+    @apply font-black uppercase text-white;
+  }
+
+  .safe-top {
+    padding-top: max(var(--safe-area-top), 0px);
+  }
+
+  .safe-bottom {
+    padding-bottom: max(var(--safe-area-bottom), 0px);
+  }
+
+  .safe-x {
+    padding-left: max(var(--safe-area-left), 0px);
+    padding-right: max(var(--safe-area-right), 0px);
+  }
+
+  .fixed-safe-top {
+    top: max(0.75rem, calc(var(--safe-area-top) + 0.5rem));
+  }
+
+  .fixed-safe-bottom {
+    bottom: max(0.75rem, calc(var(--safe-area-bottom) + 0.75rem));
+  }
+
+  .pb-nav-safe {
+    padding-bottom: calc(5.5rem + var(--safe-area-bottom));
+  }
+
+  .mobile-card-padding {
+    @apply p-4 sm:p-5 md:p-6;
+  }
 
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
@@ -505,8 +455,14 @@
     100% { top: 100%; }
   }
 
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
   .animate-float { animation: float 6s ease-in-out infinite; will-change: transform; }
   .animate-pulse-neon { animation: pulse-neon 2s ease-in-out infinite; will-change: box-shadow; }
+  .animate-spin-slow { animation: spin 4s linear infinite; }
 
   .scanline {
     width: 100%;
@@ -517,25 +473,23 @@
     pointer-events: none;
   }
 
-  .skeleton {
-    background-color: rgba(57, 255, 20, 0.03);
-    border-radius: 6px;
-    position: relative;
-    overflow: hidden;
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
+  @media (max-width: 767px) {
+    :root,
+    [data-theme='dark'] {
+      --glass-blur-sm: 12px;
+      --glass-blur-md: 18px;
+      --glass-blur-lg: 24px;
+    }
 
-  .skeleton::after {
-    @apply absolute inset-0;
-    content: "";
-    background: linear-gradient(90deg, transparent, rgba(57, 255, 20, 0.04), transparent);
-    transform: translateX(-100%);
-    animation: shimmer 2s infinite;
+    .sovereign-glass,
+    .glass-strong,
+    .glass-medium,
+    .glass-performance {
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    }
   }
-
-  /* ============================================
-     ACCESSIBILITY — Reduced Motion & Focus
-     ============================================ */
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -543,35 +497,22 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+
+    .scanline {
+      display: none;
+    }
+
+    .sovereign-glass,
+    .glass-strong,
+    .glass-medium,
+    .glass-performance {
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
   }
 
-  /* Visible focus ring for keyboard navigation */
-  :focus-visible {
-    outline: 2px solid var(--gemigram-neon);
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-
-  /* ============================================
-     MOTION BUDGET — Landing & HUD Performance Guardrails
-     Static: gradients, grid, vignette, local noise texture
-     Accent-only motion: one scanline, core pulse, subtle telemetry
-     Desktop-only motion: parallax, orbit rotation, layered blobs, blend effects
-     ============================================ */
-
-  .motion-budget-static {
-    animation: none !important;
-    transition: none !important;
-  }
-
-  .motion-budget-accent {
-    will-change: transform, opacity;
-  }
-
-  .motion-budget-heavy {
-    will-change: transform;
-  }
-
+  /* GPU Optimized Surface */
   .gpu-lite-surface {
     -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
@@ -582,83 +523,6 @@
     filter: blur(72px);
   }
 
-  .animate-spin-slow {
-    animation: spin 2.6s linear infinite;
-  }
-
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-}
-
-/* Global keyframes (outside layer for broader support) */
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes pulse-neon {
-  0%, 100% { box-shadow: 0 0 10px rgba(57, 255, 20, 0.1); }
-  50% { box-shadow: 0 0 30px rgba(57, 255, 20, 0.4); }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes scanline {
-  0% { top: -100px; }
-  100% { top: 100%; }
-}
-
-@media (max-width: 767px) {
-  :root,
-  [data-theme='dark'],
-  [data-theme='light'] {
-    --glass-blur-sm: 12px;
-    --glass-blur-md: 18px;
-    --glass-blur-lg: 24px;
-  }
-
-  .sovereign-glass,
-  .glass-strong,
-  .glass-medium,
-  .glass-performance {
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
-  }
-
-  .motion-budget-heavy,
-  [data-visual-tier='mobile'] .motion-budget-heavy {
-    animation: none !important;
-    transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .motion-budget-accent,
-  .motion-budget-heavy,
-  [data-visual-tier='reduced'] * {
-    animation: none !important;
-    transition: none !important;
-  }
-
-  .scanline {
-    display: none;
-  }
-
-  .sovereign-glass,
-  .glass-strong,
-  .glass-medium,
-  .glass-performance {
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  }
 }
