@@ -63,10 +63,10 @@
   --glass-bg-medium: rgba(5, 11, 20, 0.6);
   --glass-bg-strong: rgba(5, 11, 20, 0.7);
 
-  /* Glass Blur — Heavy for Premium Feel */
-  --glass-blur-sm: 20px;
-  --glass-blur-md: 40px;
-  --glass-blur-lg: 60px;
+  /* Glass Blur — tuned down for steadier GPU cost */
+  --glass-blur-sm: 16px;
+  --glass-blur-md: 28px;
+  --glass-blur-lg: 40px;
   --glass-border-light: rgba(255, 255, 255, 0.04);
   --glass-border-medium: rgba(255, 255, 255, 0.06);
   --glass-border-strong: rgba(57, 255, 20, 0.10);
@@ -552,6 +552,40 @@
     border-radius: 4px;
   }
 
+  /* ============================================
+     MOTION BUDGET — Landing & HUD Performance Guardrails
+     Static: gradients, grid, vignette, local noise texture
+     Accent-only motion: one scanline, core pulse, subtle telemetry
+     Desktop-only motion: parallax, orbit rotation, layered blobs, blend effects
+     ============================================ */
+
+  .motion-budget-static {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .motion-budget-accent {
+    will-change: transform, opacity;
+  }
+
+  .motion-budget-heavy {
+    will-change: transform;
+  }
+
+  .gpu-lite-surface {
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    mix-blend-mode: normal;
+  }
+
+  .fx-blur-hero {
+    filter: blur(72px);
+  }
+
+  .animate-spin-slow {
+    animation: spin 2.6s linear infinite;
+  }
+
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
@@ -572,7 +606,59 @@
   100% { transform: translateX(100%); }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 @keyframes scanline {
   0% { top: -100px; }
   100% { top: 100%; }
+}
+
+@media (max-width: 767px) {
+  :root,
+  [data-theme='dark'],
+  [data-theme='light'] {
+    --glass-blur-sm: 12px;
+    --glass-blur-md: 18px;
+    --glass-blur-lg: 24px;
+  }
+
+  .sovereign-glass,
+  .glass-strong,
+  .glass-medium,
+  .glass-performance {
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  }
+
+  .motion-budget-heavy,
+  [data-visual-tier='mobile'] .motion-budget-heavy {
+    animation: none !important;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-budget-accent,
+  .motion-budget-heavy,
+  [data-visual-tier='reduced'] * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .scanline {
+    display: none;
+  }
+
+  .sovereign-glass,
+  .glass-strong,
+  .glass-medium,
+  .glass-performance {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
 }

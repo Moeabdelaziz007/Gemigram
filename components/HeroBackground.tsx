@@ -1,112 +1,122 @@
 'use client';
 
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { useVisualTier } from '@/lib/hooks/useVisualTier';
 
-// Particle System Component
-function ParticleField({ count = 50 }: { count?: number }) {
-  const particles = useMemo(() => Array.from({ length: count }), [count]);
-  
+interface ParticleConfig {
+  id: number;
+  size: number;
+  x: number;
+  y: number;
+  duration: number;
+  delay: number;
+  opacity: number;
+}
+
+function buildParticles(count: number): ParticleConfig[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    size: 1 + (i % 3),
+    x: (i * 17) % 100,
+    y: (i * 29) % 100,
+    duration: 16 + (i % 4) * 4,
+    delay: (i % 5) * 0.8,
+    opacity: 0.08 + (i % 4) * 0.04,
+  }));
+}
+
+function ParticleField({ particles, animated }: { particles: ParticleConfig[]; animated: boolean }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {particles.map((_, i) => {
-        const size = Math.random() * 3 + 1;
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const duration = Math.random() * 20 + 10;
-        const delay = Math.random() * 5;
-        const opacity = Math.random() * 0.3 + 0.1;
-        
-        return (
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          className="absolute rounded-full will-change-transform motion-budget-accent"
+          style={{
+            width: particle.size,
+            height: particle.size,
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            background: 'radial-gradient(circle, var(--gemigram-neon) 0%, transparent 70%)',
+            boxShadow: '0 0 8px var(--gemigram-neon-glow)',
+          }}
+          animate={animated ? {
+            y: [0, -42, 0],
+            opacity: [particle.opacity, particle.opacity * 1.4, particle.opacity],
+            scale: [1, 1.08, 1],
+          } : { opacity: particle.opacity }}
+          transition={animated ? {
+            duration: particle.duration,
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: 'linear',
+          } : { duration: 0 }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function FlowGrid({ animated }: { animated: boolean }) {
+  return (
+    <div
+      className="absolute inset-0"
+      style={{
+        perspective: 900,
+        transform: 'rotateX(60deg)',
+      }}
+    >
+      <div className="absolute inset-0 grid grid-cols-8 gap-8 opacity-20 md:grid-cols-12">
+        {Array.from({ length: 8 }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full will-change-transform"
+            className="h-[1px] bg-gradient-to-r from-transparent via-gemigram-neon/20 to-transparent"
+            initial={animated ? { scaleX: 0.7, opacity: 0.08 } : false}
+            animate={animated ? { scaleX: [0.7, 1, 0.7], opacity: [0.08, 0.25, 0.08] } : { scaleX: 1, opacity: 0.14 }}
+            transition={animated ? {
+              duration: 4.5,
+              repeat: Infinity,
+              delay: i * 0.24,
+              ease: 'easeInOut',
+            } : { duration: 0 }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FloatingShapes({ enabled }: { enabled: boolean }) {
+  const shapes = ['circle', 'square'];
+
+  if (!enabled) return null;
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {shapes.map((shape, i) => {
+        const size = 52 + i * 20;
+        const x = 18 + i * 34;
+        const y = 24 + i * 22;
+
+        return (
+          <motion.div
+            key={shape}
+            className="absolute border border-gemigram-neon/15 motion-budget-heavy"
             style={{
               width: size,
               height: size,
               left: `${x}%`,
               top: `${y}%`,
-              background: 'radial-gradient(circle, var(--gemigram-neon) 0%, transparent 70%)',
-              boxShadow: '0 0 10px var(--gemigram-neon-glow)',
+              borderRadius: shape === 'circle' ? '50%' : '18px',
             }}
             animate={{
-              y: [0, -100, 0],
-              opacity: [opacity, opacity * 2, opacity],
-              scale: [1, 1.2, 1],
+              y: [0, -18, 0],
+              rotate: [0, 10, 0],
+              scale: [1, 1.04, 1],
             }}
             transition={{
-              duration,
-              repeat: Infinity,
-              delay,
-              ease: 'linear',
-            }}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-// Flowing Grid Lines Component
-function FlowGrid() {
-  return (
-    <motion.div
-      className="absolute inset-0"
-      style={{
-        perspective: 1000,
-        rotateX: 60,
-      }}
-    >
-      <div className="absolute inset-0 grid grid-cols-12 gap-8 opacity-20">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="h-[1px] bg-gradient-to-r from-transparent via-gemigram-neon/30 to-transparent"
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 0.3 }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              delay: i * 0.2,
-              ease: 'easeInOut',
-            }}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-// Floating Geometric Shapes
-function FloatingShapes() {
-  const shapes = ['circle', 'square', 'triangle'];
-  
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      {shapes.map((shape, i) => {
-        const size = 60 + i * 20;
-        const x = 20 + i * 30;
-        const y = 30 + i * 20;
-        
-        return (
-          <motion.div
-            key={shape}
-            className="absolute border border-gemigram-neon/20"
-            style={{
-              width: size,
-              height: shape === 'triangle' ? size : size,
-              left: `${x}%`,
-              top: `${y}%`,
-              borderRadius: shape === 'circle' ? '50%' : shape === 'square' ? '0' : '0',
-              transform: shape === 'triangle' ? 'rotate(45deg)' : 'none',
-            }}
-            animate={{
-              y: [0, -30, 0],
-              rotate: [0, 180, 360],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 8 + i * 2,
+              duration: 10 + i * 2,
               repeat: Infinity,
               ease: 'easeInOut',
             }}
@@ -120,89 +130,85 @@ function FloatingShapes() {
 export default function HeroBackground() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const { tier, allowAmbientMotion, allowHeavyEffects } = useVisualTier();
+  const [windowSize, setWindowSize] = useState({ width: 1, height: 1 });
 
   useEffect(() => {
+    if (!allowAmbientMotion) return;
+
     setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
 
-  // Gentle Ambient Movement
-  const x1 = useSpring(useTransform(mouseX, [0, windowSize.width], [30, -30]));
-  const y1 = useSpring(useTransform(mouseY, [0, windowSize.height], [30, -30]));
-  const rotateX = useSpring(useTransform(mouseY, [0, windowSize.height], [5, -5]));
-  const rotateY = useSpring(useTransform(mouseX, [0, windowSize.width], [-5, 5]));
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [allowAmbientMotion, mouseX, mouseY]);
+
+  const particles = useMemo(() => {
+    if (tier === 'reduced') return buildParticles(0);
+    if (tier === 'mobile') return buildParticles(8);
+    return buildParticles(16);
+  }, [tier]);
+
+  const x1 = useSpring(useTransform(mouseX, [0, windowSize.width], [18, -18]), { stiffness: 40, damping: 18 });
+  const y1 = useSpring(useTransform(mouseY, [0, windowSize.height], [18, -18]), { stiffness: 40, damping: 18 });
+  const rotateX = useSpring(useTransform(mouseY, [0, windowSize.height], [3, -3]), { stiffness: 40, damping: 18 });
+  const rotateY = useSpring(useTransform(mouseX, [0, windowSize.width], [-3, 3]), { stiffness: 40, damping: 18 });
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-[#050505] select-none pointer-events-none">
-      {/* Layer 1: Particle Field with Neon Green - Optimized count */}
-      <ParticleField count={30} />
-      
-      {/* Layer 2: Flowing Grid Lines */}
-      <FlowGrid />
-      
-      {/* Layer 3: Floating Geometric Shapes */}
-      <FloatingShapes />
-      
-      {/* Layer 4: HUD Grid Layer - Enhanced */}
-      <motion.div 
-        style={{ 
-          perspective: 1000,
-          rotateX,
-          rotateY,
-        }}
-        className="absolute inset-0 flex items-center justify-center opacity-20"
+    <div className="absolute inset-0 z-0 overflow-hidden bg-[#050505] select-none pointer-events-none" data-visual-tier={tier}>
+      <ParticleField particles={particles} animated={allowAmbientMotion} />
+      <FlowGrid animated={allowAmbientMotion} />
+      <FloatingShapes enabled={allowHeavyEffects} />
+
+      <motion.div
+        style={allowAmbientMotion ? { perspective: 900, rotateX, rotateY } : undefined}
+        className="absolute inset-0 flex items-center justify-center opacity-15 md:opacity-20"
       >
-        <div 
-          className="absolute inset-[-50%] hud-grid"
+        <div
+          className="absolute inset-[-30%] hud-grid"
           style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, var(--gemigram-neon-glow) 1px, transparent 0)`,
-            backgroundSize: '40px 40px',
-            maskImage: 'radial-gradient(ellipse at center, black, transparent 80%)'
+            backgroundImage: 'radial-gradient(circle at 2px 2px, var(--gemigram-neon-glow) 1px, transparent 0)',
+            backgroundSize: tier === 'mobile' ? '48px 48px' : '40px 40px',
+            maskImage: 'radial-gradient(ellipse at center, black, transparent 78%)',
           }}
         />
       </motion.div>
 
-      {/* Layer 5: Dynamic Glow Blobs with Neon Green - Optimized with will-change */}
-      <motion.div 
-        style={{ x: x1, y: y1 }}
-        className="absolute inset-[-10%] opacity-40 mix-blend-screen will-change-transform"
+      <motion.div
+        style={allowAmbientMotion ? { x: x1, y: y1 } : undefined}
+        className={`absolute inset-[-5%] opacity-30 ${allowHeavyEffects ? 'mix-blend-screen' : ''}`}
       >
-        <div className="absolute top-[10%] left-[10%] w-[50vw] h-[50vw] bg-gemigram-neon/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[10%] right-[10%] w-[45vw] h-[45vw] bg-emerald-500/10 rounded-full blur-[100px]" />
-        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] bg-gemigram-neon/5 rounded-full blur-[180px]" />
+        <div className="absolute top-[10%] left-[8%] h-[38vw] w-[38vw] rounded-full bg-gemigram-neon/8 blur-[72px] md:h-[34vw] md:w-[34vw] md:blur-[88px]" />
+        <div className="absolute bottom-[8%] right-[8%] h-[32vw] w-[32vw] rounded-full bg-emerald-400/8 blur-[64px] md:h-[28vw] md:w-[28vw] md:blur-[80px]" />
+        {allowHeavyEffects && (
+          <div className="absolute left-1/2 top-1/2 h-[42vw] w-[42vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gemigram-neon/5 blur-[96px]" />
+        )}
       </motion.div>
 
-      {/* Layer 6: Digital Rain / Scanlines Area */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-        <div className="absolute inset-0 scanline" />
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none">
+        {allowAmbientMotion && <div className="absolute inset-0 scanline" />}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black" />
       </div>
 
-      {/* Layer 7: Interactive Flash Overlay - Neon Green */}
-      <motion.div
-        animate={{ 
-          opacity: [0.02, 0.08, 0.02],
-        }}
-        transition={{ 
-          duration: 10, 
-          repeat: Infinity,
-          times: [0, 0.5, 1] 
-        }}
-        className="absolute inset-0 bg-gemigram-neon/5 pointer-events-none"
-      />
+      {allowAmbientMotion && (
+        <motion.div
+          animate={{ opacity: [0.015, 0.05, 0.015] }}
+          transition={{ duration: 12, repeat: Infinity, times: [0, 0.5, 1] }}
+          className="absolute inset-0 bg-gemigram-neon/[0.035] pointer-events-none motion-budget-accent"
+        />
+      )}
 
-      {/* Layer 8: Surface Noise */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.04] mix-blend-overlay" />
-      
-      {/* Layer 9: Vignette - Industrial Strong */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]" />
+      <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.03]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.82)_100%)]" />
     </div>
   );
 }
