@@ -1,11 +1,11 @@
-![AetherOS Branding](public/aetheros_branding.png)
+![GemigramOS Branding](public/aetheros_branding.png)
 
-# 🌌 Gemigram: AetherOS (V2.5 - Voice-First Sovereign Intelligence // ذكاء سيادي بالصوت أولاً)
+# 🌌 Gemigram: GemigramOS (V2.5 - Voice-First Sovereign Intelligence // ذكاء سيادي بالصوت أولاً)
 ## *Mission: Winning the Gemini Live Agent Challenge 2026 // الفوز بتحدي العميل الحي 2026*
 
-**Gemigram** (Powered by **AetherOS**) is a Sovereign Intelligence Orchestration System with **100% Voice-Only Interface**. It transcends traditional AI interfaces by functioning as a decentralized "Neural Operating System" designed for high-fidelity agent manifestation through pure voice interaction.
+**Gemigram** (Powered by **GemigramOS**) is a Sovereign Intelligence Orchestration System with **100% Voice-Only Interface**. It transcends traditional AI interfaces by functioning as a decentralized "Neural Operating System" designed for high-fidelity agent manifestation through pure voice interaction.
 
-**Gemigram** (المدعوم بـ **AetherOS**) هو نظام أوركسترا للذكاء السيادي مع **واجهة صوتية 100%**. إنه يتجاوز واجهات الذكاء الاصطناعي التقليدية من خلال العمل كـ "نظام تشغيل عصبي" لا مركزي مصمم لتجسيد الوكلاء بدقة عالية من خلال التفاعل الصوتي النقي.
+**Gemigram** (المدعوم بـ **GemigramOS**) هو نظام أوركسترا للذكاء السيادي مع **واجهة صوتية 100%**. إنه يتجاوز واجهات الذكاء الاصطناعي التقليدية من خلال العمل كـ "نظام تشغيل عصبي" لا مركزي مصمم لتجسيد الوكلاء بدقة عالية من خلال التفاعل الصوتي النقي.
 
 ---
 
@@ -20,7 +20,7 @@
 - **Real-time Feedback**: Audio prompts guide users through each step
 - **Confidence Scoring**: Visual indicators show recognition accuracy
 
-**Aether Forge - Voice-Only Agent Creation:**
+**Gemigram Forge - Voice-Only Agent Creation:**
 ```
 User Speaks → Speech Recognition → Auto-Fill Form → Voice Confirmation → Next Question
 ```
@@ -54,7 +54,7 @@ Each sector operates as a standalone consciousness:
 - Automatic validation (dimensions, file size, format)
 - Firebase Storage upload with retry logic
 
-### 5. Persistent Consciousness (useAetherStore) // الوعي المستمر
+### 5. Persistent Consciousness (useGemigramStore) // الوعي المستمر
 
 Using **Zustand + Firestore**, the system maintains "Perception Continuity":
 باستخدام **Zustand + Firestore**، يحافظ النظام على "استمرارية الإدراك":
@@ -151,7 +151,7 @@ GitHub Actions workflows handle automatic deployment:
 
 ## 🎤 VOICE-ONLY INTERFACE GUIDE // دليل الواجهة الصوتية
 
-### How to Use Aether Forge // كيفية استخدام غار الصياغة
+### How to Use Gemigram Forge // كيفية استخدام غار الصياغة
 
 **Step-by-Step Voice Flow:**
 
@@ -191,8 +191,8 @@ GitHub Actions workflows handle automatic deployment:
 
 ## 🎨 DARK MODE & THEME SYSTEM // نظام الثيم والوضع الداكن
 
-AetherOS features a sophisticated dual-theme system with automatic adaptation.
-يتميز AetherOS بنظام ثيم مزدوج متطور مع تكيف تلقائي.
+GemigramOS features a sophisticated dual-theme system with automatic adaptation.
+يتميز GemigramOS بنظام ثيم مزدوج متطور مع تكيف تلقائي.
 
 ### Features // الميزات
 
@@ -415,11 +415,11 @@ npm run test         # Run tests
 
 We do not build tools. We build **Digital Peers**. 
 
-**AetherOS** is the bridge between human intent and autonomous execution through **pure voice interaction**.
+**GemigramOS** is the bridge between human intent and autonomous execution through **pure voice interaction**.
 
 نحن لا نبني أدوات. نحن نبني **أقرانًا رقميين**.
 
-**AetherOS** هو الجسر بين القصد البشري والتنفيذ الذاتي من خلال **التفاعل الصوتي النقي**.
+**GemigramOS** هو الجسر بين القصد البشري والتنفيذ الذاتي من خلال **التفاعل الصوتي النقي**.
 
 ---
 
@@ -444,5 +444,5 @@ We do not build tools. We build **Digital Peers**.
 
 ---
 
-*Forged in the Aether by **The Aether Architect (Antigravity AI)**.*
+*Forged in the Gemigram by **The Gemigram Architect (Antigravity AI)**.*
 *Voice-First Sovereign Intelligence © 2026*

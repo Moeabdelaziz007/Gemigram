@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { BRAND } from '@/lib/constants/branding';
 
-export default function GemigramLogo({ className = "w-10 h-10" }: { className?: string }) {
+export function GemigramLogo({ size = 28, className = "" }: { size?: number, className?: string }) {
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
       {/* Outer Hexagon/Gem Frame (Glass Overlay) */}
@@ -29,9 +29,9 @@ export default function GemigramLogo({ className = "w-10 h-10" }: { className?: 
         <Image
           src={BRAND.assets.icon.path}
           alt={`${BRAND.product.name} icon`}
-          width={120}
-          height={120}
-          className="w-full h-full object-contain"
+          width={size}
+          height={size}
+          className="object-contain"
           priority
         />
       </motion.div>

@@ -20,7 +20,7 @@ export const GemigramLogo = ({ variant = 'icon', size = 48, className = '' }: Ge
       <div className={`relative flex items-center justify-center ${className}`} style={{ width: size, height: size }}>
         {/* Neural Core Glow */}
         <motion.div
-          className="absolute inset-0 bg-orange-500/10 rounded-full blur-2xl"
+          className="absolute inset-0 bg-gemigram-neon/10 rounded-full blur-2xl"
           animate={{ scale: [1, 1.4, 1], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 4, repeat: Infinity }}
         />
@@ -29,9 +29,9 @@ export const GemigramLogo = ({ variant = 'icon', size = 48, className = '' }: Ge
           className="relative z-10 w-full h-full"
           animate={{ 
             filter: [
-              "drop-shadow(0 0 5px rgba(255, 165, 0, 0.3))",
-              "drop-shadow(0 0 12px rgba(255, 165, 0, 0.5))",
-              "drop-shadow(0 0 5px rgba(255, 165, 0, 0.3))"
+              "drop-shadow(0 0 5px rgba(16, 255, 135, 0.3))",
+              "drop-shadow(0 0 12px rgba(16, 255, 135, 0.5))",
+              "drop-shadow(0 0 5px rgba(16, 255, 135, 0.3))"
             ]
           }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -59,10 +59,10 @@ export const GemigramLogo = ({ variant = 'icon', size = 48, className = '' }: Ge
             className="text-white font-black tracking-[0.3em] uppercase leading-none"
             style={{ fontSize: size * 0.3 }}
           >
-            {BRAND.subProducts.forge}
+            {BRAND.product.name}
           </span>
           <span 
-            className="text-orange-500 font-bold tracking-[0.4em] uppercase leading-none mt-1"
+            className="text-gemigram-neon font-bold tracking-[0.4em] uppercase leading-none mt-1"
             style={{ fontSize: size * 0.12 }}
           >
             {BRAND.product.tagline}
@@ -81,10 +81,10 @@ export const GemigramLogo = ({ variant = 'icon', size = 48, className = '' }: Ge
           className="text-white font-black tracking-[0.3em] uppercase leading-none"
           style={{ fontSize: size * 0.25 }}
         >
-          {BRAND.subProducts.forge}
+          {BRAND.product.name}
         </span>
         <span 
-          className="text-orange-500 font-bold tracking-[0.4em] uppercase leading-none mt-1"
+          className="text-gemigram-neon font-bold tracking-[0.4em] uppercase leading-none mt-1"
           style={{ fontSize: size * 0.1 }}
         >
           {BRAND.product.tagline}
@@ -94,5 +94,5 @@ export const GemigramLogo = ({ variant = 'icon', size = 48, className = '' }: Ge
   );
 };
 
-// Backwards compatibility export
-export const AetherLogo = GemigramLogo;
+// Secondary export
+export default GemigramLogo;

@@ -1,5 +1,5 @@
 /**
- * AetherOS Branding Constants
+ * GemigramOS Branding Constants
  * Programmatic source of truth for design tokens.
  */
 

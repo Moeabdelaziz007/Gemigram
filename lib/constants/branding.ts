@@ -15,7 +15,7 @@ export const BRAND = {
   naming: {
     aether: {
       role: 'legacy_alias',
-      note: 'Aether is retained only for backwards compatibility in code exports and storage keys.',
+      note: 'Gemigram is retained only for backwards compatibility in code exports and storage keys.',
     },
   },
   labels: {
