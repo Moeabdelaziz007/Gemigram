@@ -3,7 +3,9 @@ import { onDocumentWritten } from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import { spawn } from "child_process";
 
-admin.initializeApp();
+if (!admin.apps.length) {
+    admin.initializeApp();
+}
 
 export const syncAdminRole = onDocumentWritten("users/{userId}", async (event: any) => {
   const userId = event.params.userId;
@@ -49,16 +51,43 @@ export const executeAgentTool = onRequest({ timeoutSeconds: 60, memory: "256MiB"
     return;
   }
 
-  const { toolId, action, params } = req.body;
-  
-  if (!toolId) {
-    res.status(400).json({ status: "error", message: "Missing toolId substrate." });
+  // Verify Authentication BEFORE any processing
+  const authHeader = req.headers?.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ status: "error", message: "Unauthorized. Missing Bearer token." });
     return;
   }
 
-  // 1. Build Command Arguments
-  const serviceName = toolId.replace('workspace_', ''); // e.g., 'workspace_gmail' -> 'gmail'
-  const args = [serviceName, action];
+  const token = authHeader.split('Bearer ')[1];
+  try {
+    await admin.auth().verifyIdToken(token);
+  } catch (error) {
+    res.status(401).json({ status: "error", message: "Unauthorized. Invalid token." });
+    return;
+  }
+
+  const { toolName, action, params } = req.body;
+  
+  if (!toolName) {
+    res.status(400).json({ status: "error", message: "Missing toolName substrate." });
+    return;
+  }
+
+  let args: string[] = [];
+  switch (toolName) {
+    case "workspace_email_manager":
+      args = ['gmail', `+${action}`];
+      break;
+    case "workspace_calendar_manager":
+      args = ['calendar', `+${action}`];
+      break;
+    case "workspace_tasks_manager":
+      args = ['tasks', action];
+      break;
+    default:
+      res.status(400).json({ status: "error", message: "Unknown toolName substrate." });
+      return;
+  }
 
   // 2. Inject Parameters safely
   if (params && typeof params === 'object') {
@@ -78,12 +107,13 @@ export const executeAgentTool = onRequest({ timeoutSeconds: 60, memory: "256MiB"
     child.stdout.on('data', (data: Buffer) => { stdoutArr.push(data); });
     child.stderr.on('data', (data: Buffer) => { stderrArr.push(data); });
 
-    const exitCode = await new Promise((resolve) => {
+    const exitCode = await new Promise((resolve, reject) => {
       child.on('close', resolve);
+      child.on('error', reject);
     });
 
-    const stdout = Buffer.concat(stdoutArr).toString();
-    const stderr = Buffer.concat(stderrArr).toString();
+    const stdout = Buffer.concat(stdoutArr).toString().trim();
+    const stderr = Buffer.concat(stderrArr).toString().trim();
 
     if (exitCode !== 0) {
       console.warn(`[GWS-Bridge] Command failed with exit code ${exitCode}. Stderr: ${stderr}`);
@@ -92,9 +122,9 @@ export const executeAgentTool = onRequest({ timeoutSeconds: 60, memory: "256MiB"
     // Try to parse as JSON, fallback to raw string
     try {
       const data = JSON.parse(stdout);
-      res.json({ status: "success", toolId, action, data });
+      res.json({ status: "success", toolName, action, data });
     } catch {
-      res.json({ status: "success", toolId, action, rawOutput: stdout || stderr });
+      res.json({ status: "success", toolName, action, rawOutput: stdout || stderr });
     }
 
   } catch (error) {
