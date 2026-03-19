@@ -32,9 +32,6 @@ export const useGemigramStore = create<GemigramState>()(
       // Only persist specific slices if needed
       partialize: (state) => ({
         agents: state.agents,
-        mcpServers: state.mcpServers,
-        user: state.user,
-        theme: state.theme,
       }),
     }
   )
