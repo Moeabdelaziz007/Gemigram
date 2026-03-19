@@ -72,10 +72,9 @@ export default function ForgePage() {
     };
 
     try {
-      await setDoc(doc(db, 'agents', agentId), {
-        ...newAgent,
-        createdAt: serverTimestamp(),
-      });
+      // Use Sovereign Store to sync outbound
+      const { useSovereignStore } = await import('@/lib/store/useSovereignStore');
+      await useSovereignStore.getState().saveAgent(user.uid, newAgent);
 
       await createMemory({
         agentId,

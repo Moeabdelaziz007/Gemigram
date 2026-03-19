@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'export', // Enable static export
+// output: 'export', // Removed to support NextAuth middleware
   transpilePackages: ['framer-motion'],
 
 };

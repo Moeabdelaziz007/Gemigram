@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { getRecommendedSkills, synthesizeAgentMetadata } from '@/lib/agents/skills-assignment';
-import { matchPersonaFromDescription, enhanceSystemPromptWithPersona } from '@/lib/persona/persona-templates';
 import { useSpeechSynthesis } from './useSpeechSynthesis';
 import { useSpeechRecognition } from './useSpeechRecognition';
+import { enhanceSystemPromptWithPersona } from '@/lib/persona/persona-templates';
 
 export interface VoiceState {
   isListening: boolean;
@@ -60,35 +59,40 @@ export function useForgeLogic() {
     setStatus('processing');
     setCurrentStep('synthesis');
     
-    // Simulate neural extraction latency
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    try {
+      const response = await fetch('/api/forge/synthesize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: command }),
+      });
 
-    const persona = matchPersonaFromDescription(command) || 'Analytical';
-    const metadata = synthesizeAgentMetadata(command);
-    const recommendedSkills = getRecommendedSkills(command, metadata.suggestedRole, persona);
+      if (!response.ok) throw new Error('Synthesis failed');
+      const blueprint = await response.json();
 
-    setFormData(prev => ({
-        ...prev,
-        description: command,
-        name: metadata.suggestedName || prev.name,
-        role: metadata.suggestedRole || prev.role,
-        persona: persona,
-        rules: ['Always remain objective', 'Sovereign Protocol Active'],
-        skills: recommendedSkills,
-        tools: metadata.tools || { webSearch: true },
-        systemPrompt: metadata.systemPrompt,
-        avatarUrl: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${metadata.suggestedName}` // Placeholder, real generation would be triggered here
-    }));
+      setFormData(prev => ({
+          ...prev,
+          description: command,
+          name: blueprint.suggestedName || prev.name,
+          role: blueprint.suggestedRole || prev.role,
+          persona: blueprint.persona || 'Analytical',
+          rules: blueprint.rules || ['Always remain objective'],
+          skills: blueprint.skills || { analysis: true },
+          tools: blueprint.tools || { webSearch: true },
+          systemPrompt: blueprint.systemPrompt || prev.systemPrompt,
+          avatarUrl: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${blueprint.suggestedName}`
+      }));
 
-    setStatus('idle');
-    setCurrentStep('blueprint');
-    
-    speak(`Synthesis complete. Materializing ${metadata.suggestedName || 'entity'} with Sovereign Pattern.`, () => {
-      // Auto-finalize after speech if autoMaterialize is true
-      setTimeout(() => {
-        finalizeMaterialization();
-      }, 1500);
-    });
+      setStatus('idle');
+      setCurrentStep('blueprint');
+      
+      speak(`Synthesis complete. ${blueprint.suggestedName} is ready for materialization.`, () => {
+        setTimeout(() => finalizeMaterialization(), 1500);
+      });
+    } catch (error) {
+      console.error('Neural Core Error:', error);
+      setStatus('idle');
+      speak('The neural forge is unstable. Reverting to basic template.');
+    }
   }, [speak]);
 
   const initiateListening = useCallback(() => {

@@ -2,9 +2,10 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
-import { auth, googleProvider } from '@/firebase';
+import { auth as firebaseAuth, googleProvider } from '@/firebase';
 import { fetchGoogleCloudProjects, subscribeToUnreadNotifications } from '@/lib/data-access/gemigramRepository';
 import { useGemigramStore, useUnreadNotifications } from '@/lib/store/useGemigramStore';
+import { SessionProvider, useSession } from "next-auth/react";
 
 interface AuthContextType {
   user: User | null;
@@ -14,11 +15,13 @@ interface AuthContextType {
   unreadNotificationsCount: number;
   googleAccessToken: string | null;
   loadGoogleProjects: () => Promise<void>;
+  session?: any;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(null);
@@ -35,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useGemigramStore();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (nextUser) => {
       setUser((currentUser) => {
         const currentUserId = currentUser?.uid ?? null;
         const nextUserId = nextUser?.uid ?? null;
@@ -78,6 +81,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [user, setAgents, setUnreadNotifications]);
 
+  // Sync NextAuth token to state if available
+  useEffect(() => {
+    if ((session as any)?.accessToken) {
+      setGoogleAccessToken((session as any).accessToken as string);
+    }
+  }, [session]);
+
   const loadGoogleProjects = useCallback(async () => {
     if (!googleAccessToken) {
       return;
@@ -100,7 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(firebaseAuth, googleProvider);
       const credential = GoogleAuthProvider.credentialFromResult(result);
       setGoogleAccessToken(credential?.accessToken ?? null);
     } catch (error) {
@@ -113,7 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearUserScopedState();
       setHydratedUserId(null);
       setGoogleAccessToken(null);
-      await auth.signOut();
+      await firebaseAuth.signOut();
     } catch (error) {
       console.error('Logout Error:', error);
     }
@@ -122,17 +132,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       user,
-      loading,
+      loading: loading || status === "loading",
       login,
       logout,
       unreadNotificationsCount: unreadNotifications.length,
       googleAccessToken,
       loadGoogleProjects,
+      session
     }),
-    [googleAccessToken, loadGoogleProjects, loading, login, logout, unreadNotifications.length, user],
+    [googleAccessToken, loadGoogleProjects, loading, status, login, logout, unreadNotifications.length, user, session],
   );
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <SessionProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </SessionProvider>
+  );
 }
 
 export const useAuth = () => {

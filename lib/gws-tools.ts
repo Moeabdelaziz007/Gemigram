@@ -37,22 +37,55 @@ export async function fetchDriveFiles(accessToken: string, limit = 5): Promise<G
   return data.files || [];
 }
 
+interface GmailMessage {
+  id: string;
+  snippet: string;
+  payload?: {
+    headers?: Array<{ name: string; value: string }>;
+  };
+}
+
 /**
- * Fetch latest Gmail threads
+ * Fetch latest Gmail threads with real snippets
  */
 export async function fetchLatestMails(accessToken: string, limit = 5): Promise<GWSMail[]> {
-  const response = await fetch(
+  const listResponse = await fetch(
     `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${limit}`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
     }
   );
 
-  if (!response.ok) throw new Error('Failed to fetch Gmail threads');
-  const data = await response.json();
-  
-  // Real implementation would fetch snippets for each message ID
-  return (data.messages || []).map((m: any) => ({ id: m.id, snippet: 'Email snippet placeholder...' }));
+  if (!listResponse.ok) throw new Error('Failed to fetch Gmail list');
+  const listData = await listResponse.json();
+  const messages = (listData.messages || []) as Array<{ id: string }>;
+
+  // Fetch full details for each message to get the snippet and subject
+  const fullMessages = await Promise.all(
+    messages.map(async (m) => {
+      const msgRes = await fetch(
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=minimal`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+      if (!msgRes.ok) return null;
+      return (await msgRes.json()) as GmailMessage;
+    })
+  );
+
+  return (fullMessages.filter((m) => m !== null) as GmailMessage[])
+    .map((m) => ({
+      id: m.id,
+      snippet: m.snippet,
+      subject: m.payload?.headers?.find((h: any) => h.name === 'Subject')?.value || 'No Subject',
+    }));
+}
+
+interface CalendarEvent {
+  id: string;
+  summary?: string;
+  start?: { dateTime?: string; date?: string };
 }
 
 /**
@@ -67,7 +100,18 @@ export async function fetchCalendarEvents(accessToken: string, limit = 5): Promi
     }
   );
 
-  if (!response.ok) throw new Error('Failed to fetch Calendar events');
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.warn('Calendar Fetch Error:', errorData);
+    throw new Error('Failed to fetch Calendar events');
+  }
+  
   const data = await response.json();
-  return data.items || [];
+  const items = (data.items || []) as CalendarEvent[];
+  
+  return items.map((ev) => ({
+    id: ev.id,
+    summary: ev.summary || 'No Title',
+    start: ev.start || {},
+  }));
 }

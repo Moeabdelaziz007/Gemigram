@@ -1,54 +1,129 @@
 'use client';
 
 import { Agent } from '@/lib/store/useGemigramStore';
-import { Cloud, Newspaper, Bitcoin, Calculator, Database } from 'lucide-react';
+import { Mail, Calendar, HardDrive, LayoutGrid } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { fetchLatestMails, fetchCalendarEvents, fetchDriveFiles, GWSMail, GWSEvent, GWSFile } from '@/lib/gws-tools';
+
 type WorkspaceProps = {
   activeAgent: Agent;
 };
 
 export default function Workspace({ activeAgent }: WorkspaceProps) {
+  const { data: session } = useSession();
+  const [mails, setMails] = useState<GWSMail[]>([]);
+  const [events, setEvents] = useState<GWSEvent[]>([]);
+  const [files, setFiles] = useState<GWSFile[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadSovereignData() {
+      if (session?.accessToken) {
+        setLoading(true);
+        try {
+          const [mailData, eventData, fileData] = await Promise.all([
+            fetchLatestMails(session.accessToken, 3),
+            fetchCalendarEvents(session.accessToken, 3),
+            fetchDriveFiles(session.accessToken, 3)
+          ]);
+          setMails(mailData);
+          setEvents(eventData);
+          setFiles(fileData);
+        } catch (err) {
+          console.error("GWS Sync Error:", err);
+        } finally {
+          setLoading(false);
+        }
+      }
+    }
+    loadSovereignData();
+  }, [session, activeAgent]);
+
   const widgets = [];
 
-  if (activeAgent.tools?.weather) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="p-6 rounded-3xl bg-white/5 border border-white/10 animate-pulse">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-5 h-5 bg-white/10 rounded-full" />
+              <div className="w-24 h-4 bg-white/10 rounded" />
+            </div>
+            <div className="space-y-2">
+              <div className="w-full h-3 bg-white/5 rounded" />
+              <div className="w-3/4 h-3 bg-white/5 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // GWS Widgets (Sovereign Data)
+  if (mails.length > 0) {
     widgets.push({
-      id: 'weather',
-      title: 'Weather',
-      icon: <Cloud className="w-5 h-5 text-cyan-400" />,
-      content: '22°C, Clear Skies'
+      id: 'gmail',
+      title: 'Sovereign Mail',
+      icon: <Mail className="w-5 h-5 text-red-400" />,
+      content: (
+        <div className="space-y-2">
+          {mails.map(m => (
+            <div key={m.id} className="text-xs border-l border-red-500/30 pl-2">
+              <div className="font-bold truncate">{m.subject}</div>
+              <div className="opacity-60 truncate">{m.snippet}</div>
+            </div>
+          ))}
+        </div>
+      )
     });
   }
-  if (activeAgent.tools?.news) {
+
+  if (events.length > 0) {
     widgets.push({
-      id: 'news',
-      title: 'Latest News',
-      icon: <Newspaper className="w-5 h-5 text-fuchsia-400" />,
-      content: 'AI breakthroughs continue to accelerate global innovation.'
+      id: 'calendar',
+      title: 'Upcoming Events',
+      icon: <Calendar className="w-5 h-5 text-blue-400" />,
+      content: (
+        <div className="space-y-2">
+          {events.map(ev => (
+            <div key={ev.id} className="text-xs border-l border-blue-500/30 pl-2">
+              <div className="font-bold">{ev.summary}</div>
+              <div className="opacity-60 text-[10px]">{new Date(ev.start.dateTime || ev.start.date || '').toLocaleString()}</div>
+            </div>
+          ))}
+        </div>
+      )
     });
   }
-  if (activeAgent.tools?.crypto) {
+
+  if (files.length > 0) {
     widgets.push({
-      id: 'crypto',
-      title: 'Crypto Market',
-      icon: <Bitcoin className="w-5 h-5 text-emerald-400" />,
-      content: 'BTC: $98,450.22'
+      id: 'drive',
+      title: 'Active Assets',
+      icon: <HardDrive className="w-5 h-5 text-emerald-400" />,
+      content: (
+        <div className="space-y-2">
+          {files.map(f => (
+            <div key={f.id} className="flex items-center gap-2 text-xs">
+              <LayoutGrid className="w-3 h-3 opacity-40" />
+              <span className="truncate">{f.name}</span>
+            </div>
+          ))}
+        </div>
+      )
     });
   }
-  if (activeAgent.tools?.calculator) {
-    widgets.push({
-      id: 'calc',
-      title: 'Calculator',
-      icon: <Calculator className="w-5 h-5 text-amber-400" />,
-      content: 'Ready for input'
-    });
-  }
-  if (activeAgent.tools?.semanticMemory) {
-    widgets.push({
-      id: 'memory',
-      title: 'RAG Memory',
-      icon: <Database className="w-5 h-5 text-indigo-400" />,
-      content: '5 memories indexed'
-    });
+
+  // Legacy fallback or dynamic tool widgets if GWS is empty
+  if (widgets.length === 0) {
+    return (
+        <div className="flex items-center justify-center p-20 opacity-30 italic text-white">
+            Workspace idle. Awaiting sovereign command...
+        </div>
+    );
   }
 
   return (
