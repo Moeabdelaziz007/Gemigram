@@ -107,7 +107,7 @@ export const GEMINI_ROUTER_TOOLS = [
 
 /**
  * useVoiceCommandRouter - The single entry point for all Gemini ToolCalls.
- * Implements FIFO queue, debouncing, and state dispatching.
+ * Implements FIFO queue, 150ms navigation debounce, and state dispatching.
  */
 export function useVoiceCommandRouter() {
   const router = useRouter();
@@ -120,34 +120,37 @@ export function useVoiceCommandRouter() {
   const queueRef = useRef<ToolCallEvent[]>([]);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Process Tool Call implementation
   const executeToolCall = useCallback(async (event: ToolCallEvent): Promise<ToolCallResult> => {
     const { name, args, callId } = event;
     
     // Log dispatch to Cognitive Session
     store.updateSessionMetadata({ 
       lastActivity: Date.now(),
-      activeWidgets: [...(store.sessionMetadata?.activeWidgets || []), name]
+      activeWidgets: Array.from(new Set([...(store.sessionMetadata?.activeWidgets || []), name]))
     });
-
-    console.log(`[IntentEngine] Dispatching: ${name}`, args);
 
     try {
       switch (name) {
         case 'navigate_to_stage': {
           const stage = args.stage as 'landing' | 'forge' | 'workspace';
-          store.setVoiceSession({ stage, lastVoiceAction: `NAV_TO_STAGE_${stage}` });
+          store.setVoiceSession({ 
+            stage, 
+            lastVoiceAction: `NAV_TO_STAGE_${stage.toUpperCase()}`,
+            updatedAt: Date.now()
+          });
           return { callId, success: true };
         }
 
         case 'navigate_to_route': {
           const route = args.route as string;
-          // 150ms debounce for route navigation
           if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-          debounceTimerRef.current = setTimeout(() => {
-            router.push(route);
-          }, 150);
-          return { callId, success: true };
+          
+          return new Promise((resolve) => {
+            debounceTimerRef.current = setTimeout(() => {
+              router.push(route);
+              resolve({ callId, success: true });
+            }, 150);
+          });
         }
 
         case 'activate_agent': {
@@ -157,31 +160,52 @@ export function useVoiceCommandRouter() {
         }
 
         case 'create_agent': {
-          const manifest = args.manifest as any;
+          const manifest = args.manifest as any; // Manifest shape is validated by Gemini
           store.setPendingManifest(manifest);
-          store.setVoiceSession({ stage: 'forge', lastVoiceAction: 'CREATE_AGENT' });
+          store.setVoiceSession({ 
+            stage: 'forge', 
+            lastVoiceAction: 'INIT_AGENT_SYNTHESIS',
+            updatedAt: Date.now()
+          });
+          return { callId, success: true };
+        }
+
+        case 'set_nav_visibility': {
+          // Note: UiSlice currently doesn't have navVisible. 
+          // We log this as an INTENT for future HUD expansion.
+          store.setVoiceSession({
+            ...store.voiceSession,
+            lastVoiceAction: `HUD_VISIBILITY_${args.visible ? 'ON' : 'OFF'}`,
+            updatedAt: Date.now()
+          });
           return { callId, success: true };
         }
 
         case 'system_command': {
-          const cmd = args.cmd as string;
-          if (cmd === 'shutdown') store.setSessionState('SHUTDOWN');
-          if (cmd === 'recover') store.setSessionState('RECOVERING');
+          const cmd = args.cmd as 'shutdown' | 'recover' | 'handoff';
+          store.setSessionState(
+            cmd === 'shutdown' ? 'SHUTDOWN' : 
+            cmd === 'recover' ? 'RECOVERING' : 
+            'HANDING_OFF'
+          );
           return { callId, success: true };
         }
 
         default:
-          return { callId, success: false, error: `Tool ${name} not implemented.` };
+          return { callId, success: false, error: `Tool ${name} not recognized by Neural Engine.` };
       }
     } catch (err) {
+      console.error(`[IntentEngine] Dispatch Error (${name}):`, err);
       return { callId, success: false, error: String(err) };
     }
   }, [router, store]);
 
   // FIFO Queue Processor
   useEffect(() => {
+    let active = true;
+
     const processQueue = async () => {
-      if (isProcessing || queueRef.current.length === 0) return;
+      if (!active || isProcessing || queueRef.current.length === 0) return;
 
       setIsProcessing(true);
       const event = queueRef.current.shift();
@@ -192,18 +216,21 @@ export function useVoiceCommandRouter() {
         await executeToolCall(event);
       }
 
-      setIsProcessing(false);
+      if (active) setIsProcessing(false);
     };
 
     const interval = setInterval(processQueue, 50);
-    return () => clearInterval(interval);
+    return () => {
+      active = false;
+      clearInterval(interval);
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
   }, [isProcessing, executeToolCall]);
 
-  // Public Dispatcher (to be wired to Live API hook)
-  const dispatchToolCall = (event: ToolCallEvent) => {
+  const dispatchToolCall = useCallback((event: ToolCallEvent) => {
     queueRef.current.push(event);
     setQueueLength(queueRef.current.length);
-  };
+  }, []);
 
   return {
     isProcessing,

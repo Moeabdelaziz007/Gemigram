@@ -160,7 +160,12 @@ export function useVoiceAgentLogic({ activeAgent, googleAccessToken }: UseVoiceA
         tools.push({ functionDeclarations });
       }
       
-      connect(activeAgent?.systemPrompt, activeAgent?.voiceName, tools);
+      const interruptContext = useGemigramStore.getState().getInterruptContext();
+      const finalPrompt = interruptContext 
+        ? `${activeAgent?.systemPrompt}\n\n${interruptContext}`
+        : activeAgent?.systemPrompt;
+
+      connect(finalPrompt, activeAgent?.voiceName, tools);
     }
   }, [isConnected, disconnect, stopRecording, connect, activeAgent]);
 
