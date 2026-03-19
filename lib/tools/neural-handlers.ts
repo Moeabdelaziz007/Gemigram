@@ -207,9 +207,10 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
 
       result = {
         status: 'success',
-        memories: memories.filter(memory =>
-          typeof (memory as { content?: unknown }).content === 'string' && typeof args.query === 'string' && ((memory as { content: string }).content).toLowerCase().includes(args.query.toLowerCase())
-        )
+        memories: memories.filter(memory => {
+          const m = memory as Record<string, unknown>;
+          return typeof m.content === 'string' && typeof args.query === 'string' && m.content.toLowerCase().includes(args.query.toLowerCase());
+        })
       };
     } catch {
       result = { status: 'error' as const, message: 'Memory retrieval failure.' };
