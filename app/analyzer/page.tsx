@@ -20,7 +20,7 @@ export default function AnalyzerPage() {
   const [repoUrl, setRepoUrl] = useState('https://github.com/Moeabdelaziz007/Gemigram-Voice-OS');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
-  const [result, setResult] = useState<{ analysis?: string; fileCount?: number; error?: string } | null>(null);
+  const [result, setResult] = useState<{ success?: boolean; analysis?: string; fileCount?: number; error?: string } | null>(null);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -45,12 +45,12 @@ export default function AnalyzerPage() {
     try {
       const res = await analyzeRepository(repoUrl);
       if (res.success) {
-        setResult({ analysis: res.analysis, fileCount: res.fileCount });
+        setResult({ success: true, analysis: res.analysis, fileCount: res.fileCount });
       } else {
-        setResult({ error: res.error });
+        setResult({ success: false, error: (res as any).error });
       }
     } catch (err: any) {
-      setResult({ error: err.message });
+      setResult({ success: false, error: err.message });
     } finally {
       setIsAnalyzing(false);
     }
