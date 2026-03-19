@@ -1,0 +1,632 @@
+diff --git a/components/Providers.tsx b/components/Providers.tsx
+index f4838c8..294d4d4 100644
+--- a/components/Providers.tsx
++++ b/components/Providers.tsx
+@@ -1,19 +1,19 @@
+ 'use client';
+ 
+-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+-import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, User } from 'firebase/auth';
+-import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+-import { auth, db, googleProvider, handleFirestoreError, OperationType } from '@/firebase';
+-import { useAetherStore, Agent } from '@/lib/store/useAetherStore';
+-import { Notification } from '@/lib/types/models';
++import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
++import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
++import { auth, googleProvider } from '@/firebase';
++import { fetchGoogleCloudProjects, subscribeToUnreadNotifications, subscribeToUserAgents } from '@/lib/data-access/aetherRepository';
++import { useAetherStore, useUnreadNotifications } from '@/lib/store/useAetherStore';
+ 
+ interface AuthContextType {
+   user: User | null;
+   loading: boolean;
+   login: () => Promise<void>;
+   logout: () => Promise<void>;
+-  unreadNotifications: Notification[];
++  unreadNotificationsCount: number;
+   googleAccessToken: string | null;
++  loadGoogleProjects: () => Promise<void>;
+ }
+ 
+ const AuthContext = createContext<AuthContextType | undefined>(undefined);
+@@ -21,109 +21,125 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
+ export function AuthProvider({ children }: { children: ReactNode }) {
+   const [user, setUser] = useState<User | null>(null);
+   const [loading, setLoading] = useState(true);
+-  const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
+   const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(null);
+-  
+-  const { setAgents, setUserProjects, setActiveProjectId } = useAetherStore();
++  const unreadNotifications = useUnreadNotifications();
++
++  const {
++    activeProjectId,
++    setAgents,
++    setUnreadNotifications,
++    setUserProjects,
++    setActiveProjectId,
++    clearUserScopedState,
++    setHydratedUserId,
++  } = useAetherStore();
+ 
+   useEffect(() => {
+-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+-      setUser(u);
+-      setLoading(false);
+-      if (!u) {
+-        setAgents([]);
++    const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
++      setUser((currentUser) => {
++        const currentUserId = currentUser?.uid ?? null;
++        const nextUserId = nextUser?.uid ?? null;
++
++        if (currentUserId !== nextUserId) {
++          clearUserScopedState();
++          setHydratedUserId(nextUserId);
++        }
++
++        return nextUser;
++      });
++
++      if (!nextUser) {
+         setGoogleAccessToken(null);
+       }
+-    });
+-    return () => unsubscribe();
+-  }, [setAgents]);
+ 
+-  // Global Agent Sync
+-  useEffect(() => {
+-    if (!user) return;
+-    const q = query(collection(db, 'agents'), orderBy('name', 'asc'));
+-    const unsubscribe = onSnapshot(q, (snapshot) => {
+-      try {
+-        const firestoreAgents = snapshot.docs.map(doc => ({
+-          id: doc.id,
+-          ...doc.data()
+-        })) as Agent[];
+-        
+-        const owned = firestoreAgents.filter(fa => fa.ownerId === user?.uid);
+-        setAgents(owned.length > 0 ? owned : firestoreAgents);
+-      } catch (err) {
+-        console.warn('Error syncing agents:', err);
+-      }
++      setLoading(false);
+     });
++
+     return () => unsubscribe();
+-  }, [user, setAgents]);
++  }, [clearUserScopedState, setHydratedUserId]);
+ 
+-  // Global Notification Sync
+   useEffect(() => {
+-    if (!user) return;
+-    const q = query(
+-      collection(db, 'notifications'),
+-      where('userId', '==', user.uid),
+-      where('read', '==', false)
++    if (!user) {
++      setAgents([]);
++      setUnreadNotifications([]);
++      return;
++    }
++
++    const unsubscribeAgents = subscribeToUserAgents(
++      user.uid,
++      setAgents,
++      (error) => console.warn('Error syncing agents:', error),
++    );
++
++    const unsubscribeNotifications = subscribeToUnreadNotifications(
++      user.uid,
++      setUnreadNotifications,
++      (error) => console.warn('Error syncing notifications:', error),
+     );
+-    const unsubscribe = onSnapshot(q, (snapshot) => {
+-      try {
+-        setUnreadNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification)));
+-      } catch (err) {
+-        console.warn('Error syncing notifications:', err);
++
++    return () => {
++      unsubscribeAgents();
++      unsubscribeNotifications();
++      setAgents([]);
++      setUnreadNotifications([]);
++    };
++  }, [user, setAgents, setUnreadNotifications]);
++
++  const loadGoogleProjects = useCallback(async () => {
++    if (!googleAccessToken) {
++      return;
++    }
++
++    if (activeProjectId) {
++      return;
++    }
++
++    try {
++      const projects = await fetchGoogleCloudProjects(googleAccessToken);
++      setUserProjects(projects);
++      if (projects.length > 0) {
++        setActiveProjectId(projects[0].id);
+       }
+-    });
+-    return () => unsubscribe();
+-  }, [user]);
++    } catch (projectErr) {
++      console.warn('Project discovery failed:', projectErr);
++    }
++  }, [activeProjectId, googleAccessToken, setActiveProjectId, setUserProjects]);
+ 
+-  const login = async () => {
++  const login = useCallback(async () => {
+     try {
+       const result = await signInWithPopup(auth, googleProvider);
+       const credential = GoogleAuthProvider.credentialFromResult(result);
+-      if (credential?.accessToken) {
+-        setGoogleAccessToken(credential.accessToken);
+-        
+-        // Universal Project Discovery
+-        try {
+-          const response = await fetch('https://cloudresourcemanager.googleapis.com/v1/projects', {
+-            headers: {
+-              'Authorization': `Bearer ${credential.accessToken}`
+-            }
+-          });
+-          const data = await response.json();
+-          if (data.projects) {
+-            const projects = data.projects.map((p: any) => ({
+-              id: p.projectId,
+-              name: p.name
+-            }));
+-            setUserProjects(projects);
+-            if (projects.length > 0) {
+-              setActiveProjectId(projects[0].id);
+-            }
+-          }
+-        } catch (projectErr) {
+-          console.warn('Project discovery failed:', projectErr);
+-        }
+-      }
++      setGoogleAccessToken(credential?.accessToken ?? null);
+     } catch (error) {
+-      console.error("Login Error:", error);
++      console.error('Login Error:', error);
+     }
+-  };
++  }, []);
+ 
+-  const logout = async () => {
++  const logout = useCallback(async () => {
+     try {
+-      await auth.signOut();
++      clearUserScopedState();
++      setHydratedUserId(null);
+       setGoogleAccessToken(null);
++      await auth.signOut();
+     } catch (error) {
+-      console.error("Logout Error:", error);
++      console.error('Logout Error:', error);
+     }
+-  };
++  }, [clearUserScopedState, setHydratedUserId]);
+ 
+-  return (
+-    <AuthContext.Provider value={{ user, loading, login, logout, unreadNotifications, googleAccessToken }}>
+-      {!loading && children}
+-    </AuthContext.Provider>
++  const value = useMemo(
++    () => ({
++      user,
++      loading,
++      login,
++      logout,
++      unreadNotificationsCount: unreadNotifications.length,
++      googleAccessToken,
++      loadGoogleProjects,
++    }),
++    [googleAccessToken, loadGoogleProjects, loading, login, logout, unreadNotifications.length, user],
+   );
++
++  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+ }
+ 
+ export const useAuth = () => {
+diff --git a/components/ui/FloatingNav.tsx b/components/ui/FloatingNav.tsx
+index 0f35506..99611c0 100644
+--- a/components/ui/FloatingNav.tsx
++++ b/components/ui/FloatingNav.tsx
+@@ -1,15 +1,14 @@
+ 'use client';
+ 
+-import { useState, useEffect, useRef } from 'react';
++import { useEffect, useRef, useState } from 'react';
+ import { motion, AnimatePresence } from 'framer-motion';
+-import { LayoutDashboard, Users, Settings, Plus, User, LogOut, Bell, Globe, Home, ChevronRight } from 'lucide-react';
+-import { db } from '@/firebase';
+-import { collection, query, where, onSnapshot } from 'firebase/firestore';
++import { LayoutDashboard, Users, Settings, Plus, User, LogOut, Globe, Home } from 'lucide-react';
+ import Image from 'next/image';
+ import { AetherLogo } from '@/components/AetherLogo';
+ import { useRouter } from 'next/navigation';
+-import { Notification } from '@/lib/types/models';
+ import { BRAND } from '@/lib/constants/branding';
++import { useUnreadNotificationsCount } from '@/lib/store/useAetherStore';
++import type { User } from 'firebase/auth';
+ 
+ const ORBS_CONFIG = [
+   {
+@@ -72,36 +71,18 @@ const ORBS_CONFIG = [
+ 
+ interface FloatingNavProps {
+   currentView: string;
+-  user: any;
++  user: User | null;
+   onLogin: () => void;
+   onLogout: () => void;
+ }
+ 
+ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNavProps) {
+   const [expandingOrb, setExpandingOrb] = useState<string | null>(null);
+-  const [unreadNotifications, setUnreadNotifications] = useState<Notification[]>([]);
+   const [activeHint, setActiveHint] = useState<string | null>(null);
++  const unreadNotificationsCount = useUnreadNotificationsCount();
+   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+   const router = useRouter();
+ 
+-  useEffect(() => {
+-    if (!user) return;
+-    const q = query(
+-      collection(db, 'notifications'),
+-      where('userId', '==', user.uid),
+-      where('read', '==', false)
+-    );
+-    const unsubscribe = onSnapshot(q, (snapshot) => {
+-      try {
+-        const notifs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Notification));
+-        setUnreadNotifications(notifs);
+-      } catch (err) {
+-        console.warn('Notifications error:', err);
+-      }
+-    });
+-    return () => unsubscribe();
+-  }, [user]);
+-
+   const handleNavigate = (id: string, path: string) => {
+     if (currentView === id) return;
+     setExpandingOrb(id);
+@@ -126,7 +107,6 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
+ 
+   return (
+     <>
+-      {/* Page Transition Overlay */}
+       <AnimatePresence>
+         {expandingOrb && (
+           <motion.div
+@@ -139,7 +119,6 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
+         )}
+       </AnimatePresence>
+ 
+-      {/* Sovereign Sidebar (Desktop) */}
+       <motion.aside
+         initial={{ x: -80, opacity: 0 }}
+         animate={{ x: 0, opacity: 1 }}
+@@ -162,13 +141,18 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
+                   title={`Navigate to ${orb.label}`}
+                   aria-label={`Navigate to ${orb.label}`}
+                   className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
+-                    isActive 
+-                      ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/25 shadow-[0_0_25px_rgba(57,255,20,0.15)]' 
++                    isActive
++                      ? 'bg-gemigram-neon/10 text-gemigram-neon border border-gemigram-neon/25 shadow-[0_0_25px_rgba(57,255,20,0.15)]'
+                       : 'text-white/30 hover:text-white hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06]'
+                   }`}
+                 >
+-                  <div className={`${isActive ? 'text-gemigram-neon' : 'group-hover:text-white'}`}>
++                  <div className={`${isActive ? 'text-gemigram-neon' : 'group-hover:text-white'} relative`}>
+                     {orb.icon}
++                    {orb.id === 'home' && unreadNotificationsCount > 0 && (
++                      <span className="absolute -right-1.5 -top-1.5 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full bg-gemigram-neon px-1 text-[9px] font-black text-black">
++                        {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
++                      </span>
++                    )}
+                   </div>
+                   <span className="hidden xl:block text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap">{orb.label}</span>
+                 </button>
+@@ -198,7 +182,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
+                   <span className="text-[8px] text-white/40 uppercase tracking-widest leading-none mt-1">Sovereign_Active</span>
+                 </div>
+               </div>
+-              <button 
++              <button
+                 onClick={onLogout}
+                 title="Terminate session"
+                 aria-label="Terminate session"
+@@ -209,7 +193,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
+               </button>
+             </div>
+           ) : (
+-            <button 
++            <button
+               onClick={onLogin}
+               className="w-full py-4 rounded-2xl bg-gemigram-neon text-black font-black uppercase text-[10px] tracking-widest shadow-[0_0_30px_rgba(16,255,135,0.3)] hover:scale-[1.02] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
+             >
+@@ -219,7 +203,6 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
+         </div>
+       </motion.aside>
+ 
+-      {/* Mobile Dock (Bottom) */}
+       <motion.nav
+         initial={{ y: 80 }}
+         animate={{ y: 0 }}
+@@ -240,7 +223,14 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
+                   isActive ? 'text-gemigram-neon bg-gemigram-neon/10' : 'text-white/40'
+                 }`}
+               >
+-                {orb.icon}
++                <div className="relative">
++                  {orb.icon}
++                  {orb.id === 'home' && unreadNotificationsCount > 0 && (
++                    <span className="absolute -right-1.5 -top-1.5 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full bg-gemigram-neon px-1 text-[9px] font-black text-black">
++                      {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
++                    </span>
++                  )}
++                </div>
+               </button>
+               <span className={`pointer-events-none absolute bottom-full mb-2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 transition-opacity duration-200 md:group-hover:opacity-100 md:group-hover:visible ${activeHint === orb.id ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                 {orb.label}
+diff --git a/firebase.ts b/firebase.ts
+index ca492a4..70e66cb 100644
+--- a/firebase.ts
++++ b/firebase.ts
+@@ -1,7 +1,8 @@
+-import { initializeApp } from 'firebase/app';
+-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+-import { getFirestore, collection, doc, getDoc, setDoc, addDoc, onSnapshot, query, where, orderBy, getDocFromServer } from 'firebase/firestore';
+-import { getStorage } from 'firebase/storage';
++import { initializeApp, type FirebaseApp } from 'firebase/app';
++import { getAuth, GoogleAuthProvider, type Auth, type UserInfo } from 'firebase/auth';
++import { doc, getDocFromServer, getFirestore, type Firestore } from 'firebase/firestore';
++import { getStorage, type FirebaseStorage } from 'firebase/storage';
++
+ const firebaseConfig = {
+   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+@@ -11,11 +12,10 @@ const firebaseConfig = {
+   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+ };
+ 
+-// Initialize Firebase only if we are in the browser
+-let app;
+-let db: any;
+-let auth: any;
+-let storage: any;
++let app: FirebaseApp;
++let db: Firestore;
++let auth: Auth;
++let storage: FirebaseStorage;
+ 
+ if (typeof window !== 'undefined') {
+   app = initializeApp(firebaseConfig);
+@@ -23,28 +23,25 @@ if (typeof window !== 'undefined') {
+   auth = getAuth(app);
+   storage = getStorage(app);
+ } else {
+-  // Mock implementations for server-side/build-time
+-  app = {} as any;
+-  db = {} as any;
+-  auth = { currentUser: null } as any;
+-  storage = {} as any;
++  app = {} as FirebaseApp;
++  db = {} as Firestore;
++  auth = { currentUser: null } as Auth;
++  storage = {} as FirebaseStorage;
+ }
+ 
+ export { db, auth, storage };
+ export const googleProvider = new GoogleAuthProvider();
+ 
+-// Standard Scopes for GWS Discovery
+ googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform.read-only');
+ googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform');
+ 
+-// Connection test - only run in browser
+ if (typeof window !== 'undefined') {
+   const testConnection = async () => {
+     try {
+       await getDocFromServer(doc(db, 'test', 'connection'));
+     } catch (error) {
+       if (error instanceof Error && error.message.includes('the client is offline')) {
+-        console.error("Please check your Firebase configuration. The client is offline.");
++        console.error('Please check your Firebase configuration. The client is offline.');
+       }
+     }
+   };
+@@ -90,15 +87,15 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
+       emailVerified: auth.currentUser?.emailVerified,
+       isAnonymous: auth.currentUser?.isAnonymous,
+       tenantId: auth.currentUser?.tenantId,
+-      providerInfo: auth.currentUser?.providerData.map((provider: any) => ({
++      providerInfo: auth.currentUser?.providerData.map((provider: UserInfo) => ({
+         providerId: provider.providerId,
+         displayName: provider.displayName,
+         email: provider.email,
+-        photoUrl: provider.photoURL
+-      })) || []
++        photoUrl: provider.photoURL,
++      })) || [],
+     },
+     operationType,
+-    path
++    path,
+   };
+   console.error('Firestore Error: ', JSON.stringify(errInfo));
+   throw new Error(JSON.stringify(errInfo));
+diff --git a/lib/data-access/aetherRepository.ts b/lib/data-access/aetherRepository.ts
+new file mode 100644
+index 0000000..c855c2f
+--- /dev/null
++++ b/lib/data-access/aetherRepository.ts
+@@ -0,0 +1,74 @@
++import {
++  collection,
++  onSnapshot,
++  orderBy,
++  query,
++  where,
++  type QueryConstraint,
++  type Unsubscribe,
++} from 'firebase/firestore';
++import { db } from '@/firebase';
++import type { Agent } from '@/lib/store/useAetherStore';
++import type { Notification } from '@/lib/types/models';
++
++const buildQuery = (collectionName: string, constraints: QueryConstraint[]) =>
++  query(collection(db, collectionName), ...constraints);
++
++export function subscribeToUserAgents(
++  userId: string,
++  onData: (agents: Agent[]) => void,
++  onError?: (error: unknown) => void,
++): Unsubscribe {
++  const agentsQuery = buildQuery('agents', [
++    where('ownerId', '==', userId),
++    orderBy('name', 'asc'),
++  ]);
++
++  return onSnapshot(
++    agentsQuery,
++    (snapshot) => {
++      onData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Agent));
++    },
++    onError,
++  );
++}
++
++export function subscribeToUnreadNotifications(
++  userId: string,
++  onData: (notifications: Notification[]) => void,
++  onError?: (error: unknown) => void,
++): Unsubscribe {
++  const notificationsQuery = buildQuery('notifications', [
++    where('userId', '==', userId),
++    where('read', '==', false),
++  ]);
++
++  return onSnapshot(
++    notificationsQuery,
++    (snapshot) => {
++      onData(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Notification));
++    },
++    onError,
++  );
++}
++
++export async function fetchGoogleCloudProjects(accessToken: string) {
++  const response = await fetch('https://cloudresourcemanager.googleapis.com/v1/projects', {
++    headers: {
++      Authorization: `Bearer ${accessToken}`,
++    },
++  });
++
++  if (!response.ok) {
++    throw new Error(`Project discovery failed with status ${response.status}`);
++  }
++
++  const data = await response.json();
++
++  return Array.isArray(data.projects)
++    ? data.projects.map((project: { projectId: string; name: string }) => ({
++        id: project.projectId,
++        name: project.name,
++      }))
++    : [];
++}
+diff --git a/lib/store/useAetherStore.ts b/lib/store/useAetherStore.ts
+index b49f0ee..e87a9ac 100644
+--- a/lib/store/useAetherStore.ts
++++ b/lib/store/useAetherStore.ts
+@@ -1,11 +1,45 @@
+-import { create, StateCreator } from 'zustand';
+-import { persist, createJSONStorage } from 'zustand/middleware';
+-import { createSensorySlice, SensorySlice } from './slices/createSensorySlice';
+-import { createAgentSlice, AgentSlice } from './slices/createAgentSlice';
+-import { createUiSlice, UiSlice } from './slices/createUiSlice';
+-import { createCognitiveSlice, CognitiveSlice } from './slices/createCognitiveSlice';
++import { create } from 'zustand';
++import { createJSONStorage, persist } from 'zustand/middleware';
++import { createSensorySlice, type SensorySlice } from './slices/createSensorySlice';
++import { createAgentSlice, type AgentSlice } from './slices/createAgentSlice';
++import { createUiSlice, type UiSlice } from './slices/createUiSlice';
++import { createCognitiveSlice, type CognitiveSlice } from './slices/createCognitiveSlice';
++import type { Notification } from '@/lib/types/models';
+ 
+-export interface AetherState extends SensorySlice, AgentSlice, UiSlice, CognitiveSlice {}
++interface AuthSlice {
++  hydratedUserId: string | null;
++  unreadNotifications: Notification[];
++  setHydratedUserId: (userId: string | null) => void;
++  setUnreadNotifications: (notifications: Notification[]) => void;
++  clearUserScopedState: () => void;
++}
++
++export interface AetherState extends SensorySlice, AgentSlice, UiSlice, CognitiveSlice, AuthSlice {}
++
++const USER_SCOPED_DEFAULTS = {
++  hydratedUserId: null,
++  unreadNotifications: [] as Notification[],
++  activeProjectId: null,
++  userProjects: [],
++  agents: [],
++  activeAgentId: null,
++  transcript: [],
++  streamingBuffer: '',
++  isInterrupted: false,
++  isThinking: false,
++  isSpeaking: false,
++  contextUsage: 0,
++  sessionState: 'INITIALIZING' as const,
++  sessionMetadata: null,
++  consecutiveErrors: 0,
++  micLevel: 0,
++  speakerLevel: 0,
++  latencyMs: 0,
++  isVisionActive: false,
++  tokensUsed: 0,
++  tokenBudget: 1_000_000,
++  pendingManifest: null,
++};
+ 
+ export const useAetherStore = create<AetherState>()(
+   persist(
+@@ -14,15 +48,28 @@ export const useAetherStore = create<AetherState>()(
+       ...createAgentSlice(set, get, api),
+       ...createUiSlice(set, get, api),
+       ...createCognitiveSlice(set, get, api),
++      hydratedUserId: null,
++      unreadNotifications: [],
++      setHydratedUserId: (userId) => set({ hydratedUserId: userId }),
++      setUnreadNotifications: (notifications) => set({ unreadNotifications: notifications }),
++      clearUserScopedState: () => set({ ...USER_SCOPED_DEFAULTS }),
+     }),
+     {
+       name: 'aether-storage',
+       storage: createJSONStorage(() => localStorage),
++      partialize: (state) => ({
++        linkType: state.linkType,
++        voiceProfile: state.voiceProfile,
++        voiceSession: state.voiceSession,
++      }),
+     }
+   )
+ );
+ 
+-// Re-export types for convenience
++export const useUnreadNotifications = () => useAetherStore((state) => state.unreadNotifications);
++export const useUnreadNotificationsCount = () => useAetherStore((state) => state.unreadNotifications.length);
++export const useOwnedAgents = () => useAetherStore((state) => state.agents);
++
+ export type { TranscriptMessage } from './slices/createSensorySlice';
+ export type { Agent, ProjectMetadata } from './slices/createAgentSlice';
+ export type { SessionState, SessionMetadata } from './slices/createCognitiveSlice';
