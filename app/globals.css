@@ -354,14 +354,11 @@
   .text-responsive-2xl { font-size: clamp(1.25rem, 5vw, 1.5rem); }
   .text-responsive-3xl { font-size: clamp(1.5rem, 6vw, 2rem); }
 
-<<<<<<< HEAD
   body {
     @apply selection:bg-gemigram-neon selection:text-black;
     font-feature-settings: "cv02", "cv05", "cv11";
     position: relative;
   }
-=======
->>>>>>> origin/jules-8582805368289786599-6110a29d
 
   /* Cinematic Overlays */
   body::after {

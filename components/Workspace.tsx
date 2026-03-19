@@ -1,11 +1,11 @@
 'use client';
 
-import { Agent } from '@/lib/store/useGemigramStore';
+import { Agent } from '@/lib/store/slices/createAgentSlice';
 import { Mail, Calendar, HardDrive, LayoutGrid } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { fetchLatestMails, fetchCalendarEvents, fetchDriveFiles, GWSMail, GWSEvent, GWSFile } from '@/lib/gws-tools';
+import { fetchLatestMails, fetchCalendarEvents, fetchDriveFiles, type GWSMail, type GWSEvent, type GWSFile } from '@/lib/gws-tools';
 
 type WorkspaceProps = {
   activeAgent: Agent;

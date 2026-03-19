@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGemigramStore } from '@/lib/store/useGemigramStore';
-import type { Agent } from '@/lib/store/useGemigramStore';
+import type { Agent } from '@/lib/store/slices/createAgentSlice';
 
 interface PureVoiceCanvasProps {
   activeAgent: Agent;
