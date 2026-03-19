@@ -5,7 +5,7 @@
  * from various marketplaces and public sources.
  */
 
-import { SkillDefinition } from '../agents/skill-types';
+import { SkillDefinition } from '../skill-types';
 
 /**
  * Public API Discovery Skill
@@ -152,8 +152,6 @@ export const API_RATE_LIMITING_SKILL: SkillDefinition = {
 
 // Export all API marketplace skills as an array
 export const API_MARKETPLACE_SKILLS: SkillDefinition[] = [
-  RAPIDAPI_CONNECTOR_SKILL,
-  APILAYER_INTEGRATION_SKILL,
   PUBLIC_API_DISCOVERY_SKILL,
   ENTERPRISE_API_GATEWAY_SKILL,
   API_AUTHENTICATION_SKILL,
