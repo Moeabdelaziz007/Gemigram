@@ -10,14 +10,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 const LOADING_STEPS = [
   "جاري الاتصال بمستودع GitHub...",
   "يتم سحب وفك ضغط الملفات البرمجية...",
-  "تجميع وتحليل هيكلة Aether-Voice-OS...",
+  "تجميع وتحليل هيكلة Gemigram-Voice-OS...",
   "تفعيل نموذج Gemini 3.1 Pro (مستوى التفكير العميق)...",
   "البحث في توثيقات Google Ecosystem (Live API & Firebase)...",
   "صياغة التقرير المعماري النهائي..."
 ];
 
 export default function AnalyzerPage() {
-  const [repoUrl, setRepoUrl] = useState('https://github.com/Moeabdelaziz007/Aether-Voice-OS');
+  const [repoUrl, setRepoUrl] = useState('https://github.com/Moeabdelaziz007/Gemigram-Voice-OS');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [result, setResult] = useState<{ analysis?: string; fileCount?: number; error?: string } | null>(null);

@@ -13,12 +13,12 @@ const HEARTBEATS = [
 
 export default function NeuralPulse() {
   return (
-    <div className="w-full max-w-sm quantum-glass rounded-2xl overflow-hidden aether-border">
-      <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-        <span className="text-[10px] uppercase tracking-widest font-bold text-aether-neon opacity-70">Neural Pulse</span>
-        <div className="flex gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-aether-neon animate-pulse" />
-          <div className="w-1.5 h-1.5 rounded-full bg-aether-neon/30" />
+    <div className="w-full max-w-sm glass-medium rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+      <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between bg-white/[0.01]">
+        <span className="text-[10px] uppercase tracking-widest font-black text-gemigram-neon opacity-60">Neural Pulse</span>
+        <div className="flex gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-gemigram-neon animate-pulse shadow-[0_0_8px_var(--gemigram-neon)]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
         </div>
       </div>
       

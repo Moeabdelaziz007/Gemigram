@@ -1,6 +1,6 @@
 'use client';
 
-import { useAetherStore } from '@/lib/store/useAetherStore';
+import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import { Brain, Globe, ZoomIn, ZoomOut, Move, Network, Radio } from 'lucide-react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
@@ -9,7 +9,7 @@ import { BRAND } from '@/lib/constants/branding';
 import { useVisualTier } from '@/lib/hooks/useVisualTier';
 
 export default function GalaxyScene() {
-  const { agents, setActiveAgentId, activeAgentId } = useAetherStore();
+  const { agents, setActiveAgentId, activeAgentId } = useGemigramStore();
   const router = useRouter();
   const { tier, allowMotion, allowAmbientMotion, allowHeavyEffects, isMobile } = useVisualTier();
   const [zoom, setZoom] = useState(1);
@@ -171,6 +171,33 @@ export default function GalaxyScene() {
       <div ref={galaxySceneRef} className="relative flex flex-1 items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,255,135,0.05)_0%,transparent_70%)]" />
+          
+          {/* Dynamic Starfield */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(40)].map((_, i) => (
+              <motion.div
+                key={`star-${i}`}
+                initial={{ 
+                  x: Math.random() * 100 + '%', 
+                  y: Math.random() * 100 + '%',
+                  opacity: Math.random() * 0.5 + 0.1,
+                  scale: Math.random() * 0.5 + 0.5 
+                }}
+                animate={allowAmbientMotion ? {
+                  opacity: [0.1, 0.6, 0.1],
+                  scale: [0.5, 1, 0.5]
+                } : {}}
+                transition={allowAmbientMotion ? {
+                  duration: 3 + Math.random() * 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: Math.random() * 5
+                } : {}}
+                className="absolute h-0.5 w-0.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+              />
+            ))}
+          </div>
+
           <motion.div
             style={allowAmbientMotion ? { x: parallaxX, y: parallaxY } : undefined}
             className="absolute left-[-10%] top-[-14%] h-[46%] w-[56%] rounded-full bg-gradient-to-br from-gemigram-neon/5 to-transparent blur-[56px] md:blur-[72px]"
@@ -182,7 +209,7 @@ export default function GalaxyScene() {
             />
           )}
           <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.025]" />
-          <div className="absolute inset-0 opacity-25 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIxIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI4MCIgcj0iMC41IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iMTIwIiByPSIwLjgiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')] bg-[length:200px_200px] bg-repeat" />
+          <div className="absolute inset-0 opacity-15 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMCIgY3k9IjExMCIgcj0iMC44IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTcwIiBjeT0iMjAiIHI9IjAuNSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjQwIiBjeT0iMTYwIiByPSIwLjYiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')] bg-[length:300px_300px] bg-repeat" />
         </div>
 
         <motion.div style={{ scale: zoom }} className="relative z-30 group">
@@ -215,13 +242,20 @@ export default function GalaxyScene() {
           </div>
         </motion.div>
 
-        {[160, 240, 320].map((r, i) => (
+        {[160, 240, 320, 400].map((r, i) => (
           <motion.div
             key={i}
             style={{ scale: zoom, width: r * 2, height: r * 2 }}
             className="pointer-events-none absolute rounded-full border border-dashed border-white/5"
-            animate={allowAmbientMotion ? { borderColor: ['rgba(16,255,135,0.05)', 'rgba(255,255,255,0.02)', 'rgba(16,255,135,0.05)'] } : { borderColor: 'rgba(255,255,255,0.03)' }}
-            transition={allowAmbientMotion ? { duration: 5, repeat: Infinity } : { duration: 0 }}
+            animate={allowAmbientMotion ? { 
+              borderColor: ['rgba(16,255,135,0.05)', 'rgba(255,255,255,0.02)', 'rgba(16,255,135,0.05)'],
+              rotate: i % 2 === 0 ? 360 : -360
+            } : { borderColor: 'rgba(255,255,255,0.03)' }}
+            transition={allowAmbientMotion ? { 
+              duration: 30 + i * 10, 
+              repeat: Infinity, 
+              ease: 'linear' 
+            } : { duration: 0 }}
           />
         ))}
 

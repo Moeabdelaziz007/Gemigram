@@ -1,13 +1,13 @@
 'use client';
 
 import { useAuth } from '@/components/Providers';
-import { useAetherStore } from '@/lib/store/useAetherStore';
+import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { agents } = useAetherStore();
+  const { agents } = useGemigramStore();
   const router = useRouter();
 
   useEffect(() => {

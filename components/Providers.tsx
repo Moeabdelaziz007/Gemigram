@@ -3,8 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
 import { auth, googleProvider } from '@/firebase';
-import { fetchGoogleCloudProjects, subscribeToUnreadNotifications, subscribeToUserAgents } from '@/lib/data-access/aetherRepository';
-import { useAetherStore, useUnreadNotifications } from '@/lib/store/useAetherStore';
+import { fetchGoogleCloudProjects, subscribeToUnreadNotifications, subscribeToUserAgents } from '@/lib/data-access/gemigramRepository';
+import { useGemigramStore, useUnreadNotifications } from '@/lib/store/useGemigramStore';
 
 interface AuthContextType {
   user: User | null;
@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setActiveProjectId,
     clearUserScopedState,
     setHydratedUserId,
-  } = useAetherStore();
+  } = useGemigramStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (nextUser) => {

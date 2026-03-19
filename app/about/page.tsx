@@ -7,7 +7,7 @@ import AppShell from '@/components/AppShell';
 export default function AboutPage() {
   const team = [
     { name: "Moe Abdelaziz", role: "Founding Architect", avatar: "MA" },
-    { name: "Aether AI", role: "Core Intelligence", avatar: "AI" },
+    { name: "Gemigram AI", role: "Core Intelligence", avatar: "AI" },
     { name: "Sovereign Devs", role: "The Collective", avatar: "SC" }
   ];
 
@@ -43,7 +43,7 @@ export default function AboutPage() {
             transition={{ delay: 0.2 }}
             className="text-white/40 text-xl md:text-2xl max-w-3xl mx-auto font-light leading-relaxed"
           >
-            Gemigram AetherOS is more than an app—it's a decentralized intelligence layer 
+            Gemigram GemigramOS is more than an app—it's a decentralized intelligence layer 
             designed to return autonomy to the people through Voice-First automation.
           </motion.p>
         </section>

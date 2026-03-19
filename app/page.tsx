@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/Providers';
 import { useRouter } from 'next/navigation';
-import { useAetherStore } from '@/lib/store/useAetherStore';
+import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import HeroBackground from '@/components/HeroBackground';
 import { EnterpriseHeader } from '@/components/landing/Header';
 import { EnterpriseHero } from '@/components/landing/Hero';
@@ -17,8 +17,8 @@ export default function LandingPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const voiceSession = useAetherStore((state) => state.voiceSession);
-  const setVoiceSession = useAetherStore((state) => state.setVoiceSession);
+  const voiceSession = useGemigramStore((state) => state.voiceSession);
+  const setVoiceSession = useGemigramStore((state) => state.setVoiceSession);
 
   const handleVoiceLogin = () => {
     setVoiceSession({

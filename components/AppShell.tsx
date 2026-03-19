@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingNav } from './ui/FloatingNav';
 import { Flame, Sparkles, Cloud, Signal, Activity } from 'lucide-react';
-import { AetherLogo } from './AetherLogo';
+import { GemigramLogo } from './GemigramLogo';
 import { useAuth } from './Providers';
 import { usePathname } from 'next/navigation';
 import { ThemeToggle } from './ThemeToggle';
 import { useSystemTelemetry } from '../hooks/useSystemTelemetry';
 import { BRAND } from '@/lib/constants/branding';
 import { useVisualTier } from '@/lib/hooks/useVisualTier';
-import { useAetherStore } from '../lib/store/useAetherStore';
+import { useGemigramStore } from '../lib/store/useGemigramStore';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -23,7 +23,7 @@ export default function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { tier, allowMotion, allowAmbientMotion, isMobile } = useVisualTier();
   const telemetry = useSystemTelemetry();
-  const { linkType } = useAetherStore();
+  const { linkType } = useGemigramStore();
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 60000);
@@ -65,7 +65,7 @@ export default function AppShell({ children }: AppShellProps) {
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-gemigram-neon/30 bg-gemigram-neon/10">
-                  <AetherLogo size={14} />
+                  <GemigramLogo size={14} />
                 </div>
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-gemigram-neon leading-none">{BRAND.product.name}</span>
@@ -77,7 +77,7 @@ export default function AppShell({ children }: AppShellProps) {
 
               <div className="hidden items-center gap-5 lg:flex">
                 <div className="group flex cursor-pointer items-center gap-2">
-                  <Cloud className="h-3.5 w-3.5 text-blue-400/50 transition-colors group-hover:text-blue-400" />
+                  <Cloud className="h-3.5 w-3.5 text-gemigram-neon/50 transition-colors group-hover:text-gemigram-neon" />
                   <div className="flex flex-col">
                     <span className="text-[9px] font-bold text-white/40 transition-colors group-hover:text-white">Weather</span>
                     <span className="text-[10px] font-mono font-bold text-white">

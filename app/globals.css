@@ -56,41 +56,34 @@
   --text-mobile-hero: clamp(2.25rem, 10vw, 4rem);
 }
 
-/* Dark Mode Variables — THE SOVEREIGN PALETTE */
+/* Dark Mode Variables — THE AMBIENT AETHER (Liquid Luxury) */
 [data-theme='dark'] {
-  --bg-primary: #030508;
-  --bg-secondary: #070c14;
-  --bg-tertiary: #0f1620;
-  --bg-surface: #0a1018;
-  --text-primary: rgba(255, 255, 255, 0.95);
-  --text-secondary: rgba(255, 255, 255, 0.60);
-  --text-tertiary: rgba(255, 255, 255, 0.40);
+  --bg-primary: #050608;
+  --bg-secondary: #0a0c10;
+  --bg-tertiary: #10141a;
+  --bg-surface: #0c1016;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.70);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
   --text-disabled: rgba(255, 255, 255, 0.25);
-  --border-color: rgba(57, 255, 20, 0.08);
-  --glass-border: rgba(57, 255, 20, 0.06);
-  --glass-bg-subtle: rgba(5, 11, 20, 0.5);
-  --glass-bg-medium: rgba(5, 11, 20, 0.6);
-  --glass-bg-strong: rgba(5, 11, 20, 0.7);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-bg-subtle: rgba(10, 12, 16, 0.4);
+  --glass-bg-medium: rgba(10, 12, 16, 0.6);
+  --glass-bg-strong: rgba(10, 12, 16, 0.82);
 
-  /* Glass Blur — tuned down for steadier GPU cost */
-  --glass-blur-sm: 16px;
-  --glass-blur-md: 28px;
-  --glass-blur-lg: 40px;
+  /* Deep High-Density Blurs */
+  --glass-blur-sm: 24px;
+  --glass-blur-md: 40px;
+  --glass-blur-lg: 64px;
 
-  --glass-border-light: rgba(255, 255, 255, 0.04);
-  --glass-border-medium: rgba(255, 255, 255, 0.06);
-  --glass-border-strong: rgba(57, 255, 20, 0.10);
-  --color-neon-green: #39FF14;
-  --color-mint-chip: #00FFA3;
-  --color-neon-blue: #00f0ff;
-  --font-heading: var(--font-sans);
-  --font-body: var(--font-sans);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
-  --gemigram-neon: #39FF14;
-  --gemigram-green: #39FF14;
-  --gemigram-mint: #00FFA3;
-  --gemigram-lime: #DFFF00;
-  --gemigram-neon-glow: rgba(57, 255, 20, 0.7);
+  --glass-border-light: rgba(255, 255, 255, 0.08);
+  --glass-border-medium: rgba(255, 255, 255, 0.12);
+  --glass-border-strong: rgba(255, 255, 255, 0.20);
+  
+  --gemigram-neon: #00FFC2; /* Refined Mint-Teal */
+  --gemigram-glow: rgba(0, 255, 194, 0.4);
+  --accent-purple: #9D50FF;
 }
 
 :root {
@@ -136,58 +129,39 @@
 
 @layer utilities {
   .sovereign-glass {
-    background: linear-gradient(135deg, rgba(57, 255, 20, 0.04) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(57, 255, 20, 0.02) 100%);
-    backdrop-filter: blur(48px);
-    -webkit-backdrop-filter: blur(48px);
-    border: 1px solid rgba(57, 255, 20, 0.15);
-    border-radius: 2.5rem;
+    background: linear-gradient(165deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(var(--glass-blur-lg));
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+    border: 1px solid var(--glass-border-medium);
+    border-radius: 2rem;
     box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
-      inset 0 0 40px rgba(57, 255, 20, 0.05),
-      0 0 40px rgba(57, 255, 20, 0.08),
-      0 30px 60px rgba(0, 0, 0, 0.8);
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
+      0 30px 60px rgba(0, 0, 0, 0.5),
+      0 0 100px rgba(0, 0, 0, 0.4);
     position: relative;
-    overflow: hidden;
-  }
-
-  .sovereign-glass::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at top left, rgba(57, 255, 20, 0.08), transparent 60%);
-    pointer-events: none;
   }
 
   .glass-subtle {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(57, 255, 20, 0.01) 100%);
-    -webkit-backdrop-filter: blur(var(--glass-blur-sm));
+    background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(var(--glass-blur-sm));
-    border: 1px solid var(--glass-border-light);
-    box-shadow:
-      0 0 1px 0 rgba(57, 255, 20, 0.1),
-      0 4px 20px rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(var(--glass-blur-sm));
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-medium {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(57, 255, 20, 0.02) 100%);
-    -webkit-backdrop-filter: blur(var(--glass-blur-md));
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(var(--glass-blur-md));
-    border: 1px solid var(--glass-border-medium);
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
-      0 0 1px 0 rgba(57, 255, 20, 0.15),
-      0 8px 40px rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(var(--glass-blur-md));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0.5px 0 0 rgba(255, 255, 255, 0.1);
   }
 
   .glass-strong {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(57, 255, 20, 0.03) 100%);
-    -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+    background: rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(var(--glass-blur-lg));
-    border: 1px solid var(--glass-border-strong);
-    box-shadow:
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
-      0 0 2px 0 rgba(57, 255, 20, 0.2),
-      0 12px 48px rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
   }
 
   .glass-performance {

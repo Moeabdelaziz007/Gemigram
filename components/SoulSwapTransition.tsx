@@ -22,7 +22,7 @@ interface SoulSwapTransitionProps {
  * 3. 24 particle implosion (from random edges → center)
  * 4. Agent name reveal with typewriter-style appearance
  * 
- * Ported from Aether-Voice-OS SoulSwapAnimation.tsx
+ * Ported from Gemigram-Voice-OS SoulSwapAnimation.tsx
  * and enhanced for the Quantum Glass design system.
  */
 export function SoulSwapTransition({ isVisible, onComplete, targetAgentName }: SoulSwapTransitionProps) {

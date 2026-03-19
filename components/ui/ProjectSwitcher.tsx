@@ -1,10 +1,10 @@
 import React from 'react';
-import { useAetherStore } from '@/lib/store/useAetherStore';
+import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import { Database, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ProjectSwitcher() {
-  const { userProjects, activeProjectId, setActiveProjectId } = useAetherStore();
+  const { userProjects, activeProjectId, setActiveProjectId } = useGemigramStore();
   const [isOpen, setIsOpen] = React.useState(false);
 
   if (userProjects.length === 0) return null;
