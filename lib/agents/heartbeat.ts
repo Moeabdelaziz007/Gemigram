@@ -28,15 +28,47 @@ export async function startAgentHeartbeat(
 ): Promise<() => void> {
   const {
     intervalMs = 30000,      // 30 seconds
-    timeoutMs = 300000,      // 5 minutes
     autoStart = true
   } = config;
 
   let intervalId: NodeJS.Timeout | null = null;
   let isActive = true;
+  let channel: BroadcastChannel | null = null;
+
+  const getAgentFailures = async (id: string): Promise<number> => {
+    try {
+      const { getDoc } = await import('firebase/firestore');
+      const agentRef = doc(db, 'agents', id);
+      const snap = await getDoc(agentRef);
+      return snap.data()?.healthMetrics?.consecutiveFailures || 0;
+    } catch {
+      return 0;
+    }
+  };
+
+  // Initialize BroadcastChannel for tab coordination
+  if (typeof window !== 'undefined') {
+    channel = new BroadcastChannel(`heartbeat-${agentId}`);
+    channel.onmessage = (event) => {
+      if (event.data.type === 'ALIVE' && event.data.tabId !== window.name) {
+        // Another tab is already handling this agent
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+          // console.log(`[Heartbeat] Yielding ${agentId} to another tab`);
+        }
+      } else if (event.data.type === 'YIELDING' && event.data.agentId === agentId) {
+        // Tab that was handling it is closing, take over if we are active
+        if (!intervalId && isActive && !document.hidden) {
+          intervalId = setInterval(sendHeartbeat, intervalMs);
+          void sendHeartbeat();
+        }
+      }
+    };
+  }
 
   const sendHeartbeat = async () => {
-    if (!isActive) return;
+    if (!isActive || (typeof document !== 'undefined' && document.hidden)) return;
 
     try {
       const agentRef = doc(db, 'agents', agentId);
@@ -51,11 +83,11 @@ export async function startAgentHeartbeat(
         }
       });
 
-      // console.log(`[Heartbeat] Agent ${agentId} pulse sent`);
+      // Broadcast presence to other tabs
+      channel?.postMessage({ type: 'ALIVE', agentId, tabId: typeof window !== 'undefined' ? window.name : 'server' });
     } catch (error) {
       console.error('[Heartbeat] Failed to send pulse:', error);
       
-      // Mark as potentially offline after failures
       try {
         const agentRef = doc(db, 'agents', agentId);
         await updateDoc(agentRef, {
@@ -68,31 +100,38 @@ export async function startAgentHeartbeat(
     }
   };
 
-  const getAgentFailures = async (id: string): Promise<number> => {
-    try {
-      // This would require getDoc import - simplified version
-      return 0;
-    } catch {
-      return 0;
-    }
+  const setupVisibilityListeners = () => {
+    if (typeof document === 'undefined') return;
+    
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+      } else if (!intervalId && isActive) {
+        intervalId = setInterval(sendHeartbeat, intervalMs);
+        void sendHeartbeat();
+      }
+    });
   };
 
   if (autoStart) {
-    // Send initial heartbeat immediately
-    await sendHeartbeat();
-    
-    // Set up recurring heartbeats
-    intervalId = setInterval(sendHeartbeat, intervalMs);
-    // console.log(`[Heartbeat] Started monitoring agent ${agentId} (interval: ${intervalMs}ms)`);
+    if (typeof document !== 'undefined' && !document.hidden) {
+      await sendHeartbeat();
+      intervalId = setInterval(sendHeartbeat, intervalMs);
+    }
+    setupVisibilityListeners();
   }
 
-  // Return cleanup function
   return () => {
     isActive = false;
     if (intervalId) {
       clearInterval(intervalId);
-      // console.log(`[Heartbeat] Stopped monitoring agent ${agentId}`);
+      intervalId = null;
     }
+    channel?.postMessage({ type: 'YIELDING', agentId });
+    channel?.close();
   };
 }
 

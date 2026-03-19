@@ -1,23 +1,20 @@
 import { test, expect } from '@playwright/test';
 
-test('navigate to hub and try to open forge', async ({ page }) => {
-  await page.goto('/hub');
+test('navigate to hub and verify materialization button', async ({ page }) => {
+  // Mock auth state for the test
+  await page.addInitScript(() => {
+    window.localStorage.setItem('firebase:authUser:mock-app-key', JSON.stringify({ uid: 'test-user' }));
+  });
 
-  // The layout might redirect unauthenticated users to /, or show a loading state first.
-  // Wait for network idle.
+  await page.goto('/hub');
   await page.waitForLoadState('networkidle');
 
-  // Check the URL to see where we end up. If we are redirected to / due to auth,
-  // we cannot test the button. Let's make it conditional or mock auth.
-  const url = page.url();
-  if (url.includes('/hub')) {
-     const createButton = page.locator('button', { hasText: 'Materialize_Entity' }).first();
-     if (await createButton.isVisible()) {
-        await createButton.click();
-        await expect(page).toHaveURL(/.*\/forge/);
-     }
-  } else {
-    // If redirected, test that we are on home.
-    await expect(page).toHaveURL(/.*(\/|\/hub)/);
-  }
+  // Verify 'Materialize_Entity' button exists and is interactive
+  const materializeBtn = page.locator('button', { hasText: 'Materialize_Entity' }).first();
+  await expect(materializeBtn).toBeVisible();
+  await expect(materializeBtn).toBeEnabled();
+
+  // Test navigation to forge
+  await materializeBtn.click();
+  await expect(page).toHaveURL(/.*\/forge/);
 });

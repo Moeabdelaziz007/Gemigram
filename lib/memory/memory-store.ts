@@ -167,13 +167,14 @@ export async function searchMemories(
     );
 
     const snapshot = await getDocs(q);
-    const memories = snapshot.docs.map(doc => {
+    const memories: MemoryForWorker[] = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
         ...data,
         createdAt: (data.createdAt as Timestamp).toMillis(), // Convert for worker
-      } as any;
+        lastAccessedAt: (data.lastAccessedAt as Timestamp).toMillis(), // Convert for worker
+      } as MemoryForWorker;
     });
 
     // Instantiate Worker
@@ -277,21 +278,25 @@ export async function applyMemoryDecay(agentId: string): Promise<void> {
 
 
 /**
- * Batch create multiple memories
+ * Batch create multiple memories with concurrent execution
  */
 export async function batchCreateMemories(
   memories: Omit<Memory, 'id' | 'createdAt' | 'lastAccessedAt'>[]
 ): Promise<string[]> {
-  const ids: string[] = [];
+  if (!memories || memories.length === 0) return [];
   
-  for (const memory of memories) {
-    try {
-      const id = await createMemory(memory);
-      ids.push(id);
-    } catch (error) {
-      console.error('[MemoryStore] Failed to create memory in batch:', error);
+  const results = await Promise.allSettled(
+    memories.map(memory => createMemory(memory))
+  );
+  
+  const ids: string[] = [];
+  results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+      ids.push(result.value);
+    } else {
+      console.error(`[MemoryStore] Failed to create memory at index ${index}:`, result.reason);
     }
-  }
+  });
   
   return ids;
 }
