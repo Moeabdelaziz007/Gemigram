@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import GemigramLogoIcon from './GemigramLogo';
+import { GemigramLogo as GemigramLogoIcon } from './GemigramLogo';
 import { BRAND } from '@/lib/constants/branding';
 
 export type LogoVariant = 'icon' | 'wordmark' | 'full' | 'favicon';
