@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
 import { auth, googleProvider } from '@/firebase';
-import { fetchGoogleCloudProjects, subscribeToUnreadNotifications, subscribeToUserAgents } from '@/lib/data-access/gemigramRepository';
+import { fetchGoogleCloudProjects, subscribeToUnreadNotifications } from '@/lib/data-access/gemigramRepository';
 import { useGemigramStore, useUnreadNotifications } from '@/lib/store/useGemigramStore';
 
 interface AuthContextType {
@@ -65,12 +65,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const unsubscribeAgents = subscribeToUserAgents(
-      user.uid,
-      setAgents,
-      (error) => console.warn('Error syncing agents:', error),
-    );
-
     const unsubscribeNotifications = subscribeToUnreadNotifications(
       user.uid,
       setUnreadNotifications,
@@ -78,7 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     return () => {
-      unsubscribeAgents();
       unsubscribeNotifications();
       setAgents([]);
       setUnreadNotifications([]);

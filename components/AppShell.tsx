@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingNav } from './ui/FloatingNav';
-import { Flame, Sparkles, Cloud, Signal, Activity } from 'lucide-react';
+import { Cloud, Signal, Activity } from 'lucide-react';
 import { GemigramLogo } from './GemigramLogo';
 import { useAuth } from './Providers';
 import { usePathname } from 'next/navigation';
@@ -12,6 +12,8 @@ import { useSystemTelemetry } from '../hooks/useSystemTelemetry';
 import { BRAND } from '@/lib/constants/branding';
 import { useVisualTier } from '@/lib/hooks/useVisualTier';
 import { useGemigramStore } from '../lib/store/useGemigramStore';
+import { HUD } from './ui/HUD';
+import { useFirestoreSync } from '../lib/hooks/useFirestoreSync';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -24,6 +26,9 @@ export default function AppShell({ children }: AppShellProps) {
   const { tier, allowMotion, allowAmbientMotion, isMobile } = useVisualTier();
   const telemetry = useSystemTelemetry();
   const { linkType } = useGemigramStore();
+  
+  // Activate Sovereign Sync
+  useFirestoreSync();
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 60000);
@@ -57,6 +62,7 @@ export default function AppShell({ children }: AppShellProps) {
       className="safe-x flex h-[100dvh] w-full overflow-hidden bg-theme-primary font-sans text-white selection:bg-gemigram-neon/30"
       data-visual-tier={tier}
     >
+      <HUD />
       <FloatingNav currentView={currentView} user={user} onLogin={login} onLogout={logout} />
 
       <div className="relative flex min-w-0 flex-1 flex-col">
@@ -189,29 +195,6 @@ export default function AppShell({ children }: AppShellProps) {
             </motion.div>
           </AnimatePresence>
         </main>
-
-        <footer className="pointer-events-none absolute bottom-6 left-1/2 z-50 hidden -translate-x-1/2 xl:flex">
-          <div className={`pointer-events-auto flex items-center gap-5 rounded-full border border-gemigram-neon/[0.08] px-6 py-2.5 ${shellGlassClass}`}>
-            <div className="flex items-center gap-2 border-r border-white/10 pr-5">
-              <span className="text-hud">INFRA::</span>
-              <div className="flex items-center gap-3">
-                <Flame className="h-3.5 w-3.5 text-orange-500/50" />
-                <Sparkles className="h-3.5 w-3.5 text-gemigram-neon/50" />
-                <Cloud className="h-3.5 w-3.5 text-blue-400/50" />
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] font-bold tracking-[0.3em] text-white/80">GEMIGRAM_HUD_V4</span>
-              <span className="text-hud">SOVEREIGN_ENGINE_ACTIVE</span>
-            </div>
-
-            <div className="flex items-center gap-2 border-l border-white/10 pl-5">
-              <Activity className={`h-3 w-3 text-gemigram-neon ${allowAmbientMotion ? 'animate-pulse' : ''}`} />
-              <span className="text-hud uppercase text-gemigram-neon">Sovereign_Link_Stable</span>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );

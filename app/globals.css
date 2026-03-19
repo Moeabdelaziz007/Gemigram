@@ -354,6 +354,45 @@
   .text-responsive-2xl { font-size: clamp(1.25rem, 5vw, 1.5rem); }
   .text-responsive-3xl { font-size: clamp(1.5rem, 6vw, 2rem); }
 
+  body {
+    @apply bg-theme-primary text-theme-foreground selection:bg-gemigram-neon selection:text-black;
+    font-feature-settings: "cv02", "cv05", "cv11";
+    position: relative;
+  }
+
+  /* Cinematic Overlays */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.15;
+  }
+
+  .glass-subtle {
+    @apply bg-white/[0.03] backdrop-blur-md border border-white/10;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+  }
+
+  .quantum-glass {
+    @apply bg-black/40 backdrop-blur-2xl border border-white/5;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
   .page-shell {
     @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }

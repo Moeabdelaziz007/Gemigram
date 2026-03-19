@@ -2,7 +2,7 @@
 
 import React, { useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Brain, Cpu, Activity, ShieldCheck, Radio } from 'lucide-react';
+import { Zap, Brain, Cpu, ShieldCheck, Radio } from 'lucide-react';
 
 interface DigitalEntityProps {
   state: 'Disconnected' | 'Listening' | 'Thinking' | 'Speaking' | 'Executing';
@@ -68,22 +68,38 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
 
   return (
     <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden" ref={containerRef}>
+      {/* Liquid Gooey Filters */}
+      <svg className="absolute w-0 h-0 invisible">
+        <defs>
+          <filter id="liquid-gooey">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" result="goo" />
+            <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+          </filter>
+          <radialGradient id="obsidian-shine" cx="30%" cy="30%" r="50%">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.15)" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
+        </defs>
+      </svg>
+      
       {/* Background Atmosphere - Sovereign Void */}
-      <div className="absolute inset-0 bg-theme-primary" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.05)_0%,transparent_70%)]" />
+      <div className="absolute inset-0 bg-theme-primary overflow-hidden">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_120%,var(--gemigram-neon)_0%,transparent_50%)]" />
+      </div>
       
       {/* Neural Link Status Decor */}
       <AnimatePresence>
         {state !== 'Disconnected' && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute top-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1 rounded-full border border-white/5 bg-white/[0.02] backdrop-blur-sm z-20"
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 10 }}
+            className="absolute top-10 left-1/2 -translate-x-1/2 flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/10 bg-black/40 backdrop-blur-xl z-20 shadow-[0_0_30px_rgba(0,0,0,0.5)]"
           >
             <ShieldCheck className={`w-3 h-3 ${isLocal ? 'text-purple-400' : 'text-gemigram-neon'}`} />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-              {isLocal ? 'Local Spine Link Active' : 'Cloud Direct Link Active'}
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/60">
+              {isLocal ? 'Sovereign Local Spine' : 'Direct Cloud Neural'}
             </span>
           </motion.div>
         )}
@@ -92,130 +108,120 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
       <div className="relative z-10 flex flex-col items-center">
         {/* The Entity Core Orbit */}
         <div className="relative flex items-center justify-center">
-          {/* Reaction Ring (Waveform Ring) */}
+          {/* Reaction Ring - High Precision */}
           <motion.div 
-            className="absolute rounded-full border-2 border-dashed"
-            style={{ borderColor: stateConfig.accent, opacity: stateConfig.ringOpacity }}
+            className="absolute rounded-full border border-white/5"
             animate={{ 
-              width: 380 + (state === 'Speaking' ? volume * 150 : 0),
-              height: 380 + (state === 'Speaking' ? volume * 150 : 0),
+              width: [380, 420, 380],
+              height: [380, 420, 380],
               rotate: 360,
+              opacity: stateConfig.ringOpacity
             }}
             transition={{ 
-              rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-              width: { type: 'spring', stiffness: 200, damping: 15 },
-              height: { type: 'spring', stiffness: 200, damping: 15 }
+              rotate: { duration: 30, repeat: Infinity, ease: "linear" },
+              width: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+              height: { duration: 4, repeat: Infinity, ease: "easeInOut" }
             }}
           />
 
-          {/* Secondary Orbit */}
+          {/* Liquid Obsidian Mascot - The 11/10 Asset */}
           <motion.div 
-            className="absolute w-[450px] h-[450px] rounded-full border border-white/5"
-            animate={{ rotate: -360 }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          />
-
-          {/* Liquid Obsidian Mascot Silhouette */}
-          <motion.div 
-            className="relative w-72 h-[450px] flex flex-col items-center"
+            className="relative w-80 h-[500px] flex flex-col items-center justify-center"
+            style={{ filter: "url(#liquid-gooey)" }}
             animate={{ 
-              y: [0, -15, 0],
+              y: [0, -20, 0],
             }}
             transition={{ 
-              duration: stateConfig.speed, 
+              duration: stateConfig.speed * 2, 
               repeat: Infinity, 
               ease: "easeInOut" 
             }}
           >
-            {/* The Gemigram Entity - Head (Floating Singularity) */}
-            <div className="relative w-28 h-32 mb-4 flex flex-col items-center justify-center">
-              {/* Head Shell */}
-              <div className="absolute inset-0 bg-white/5 backdrop-blur-md rounded-[40px] border border-white/10 overflow-hidden">
-                {/* Circuit Veins (Procedural) */}
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_30%_30%,#00F0FF_0%,transparent_50%),radial-gradient(circle_at_70%_60%,#A855F7_0%,transparent_50%)]" />
-                <motion.div 
-                  className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent h-1"
-                  animate={{ y: ['-100%', '300%'] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                />
-              </div>
+            {/* The Head - Liquid Singularity */}
+            <motion.div 
+              className="relative w-32 h-36 mb-6 rounded-[50px] bg-black/90 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/5 flex items-center justify-center overflow-hidden"
+              style={{
+                background: 'linear-gradient(135deg, #050505 0%, #1a1a1a 100%)'
+              }}
+            >
+              {/* Internal Refraction Surface */}
+              <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_60%)]" />
               
-              {/* Sovereign Eyes (Tracking UI) */}
-              <div className="flex gap-4 z-10">
+              {/* Sovereign Eyes - High Specular */}
+              <div className="flex gap-6 z-10">
                 <motion.div 
-                  className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_15px_#fff]"
+                  className="w-3 h-3 rounded-full bg-white shadow-[0_0_20px_#fff,0_0_40px_var(--gemigram-neon)]"
                   animate={{ 
                     scale: stateConfig.eyeScale,
                     opacity: state === 'Thinking' ? [0.4, 1, 0.4] : 1,
-                    x: state === 'Listening' ? [0, 2, -2, 0] : 0
                   }}
                   transition={{ 
-                    duration: state === 'Thinking' ? 0.3 : 1, 
+                    duration: state === 'Thinking' ? 0.3 : 2, 
                     repeat: Infinity 
                   }}
                 />
                 <motion.div 
-                  className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_15px_#fff]"
+                  className="w-3 h-3 rounded-full bg-white shadow-[0_0_20px_#fff,0_0_40px_var(--gemigram-neon)]"
                   animate={{ 
                     scale: stateConfig.eyeScale,
                     opacity: state === 'Thinking' ? [0.4, 1, 0.4] : 1,
-                    x: state === 'Listening' ? [0, -2, 2, 0] : 0
                   }}
                   transition={{ 
-                    duration: state === 'Thinking' ? 0.3 : 1, 
+                    duration: state === 'Thinking' ? 0.3 : 2, 
                     repeat: Infinity 
                   }}
                 />
               </div>
 
-              {/* Neural Activity Ray */}
+              {/* Reactive Core Glow */}
               <AnimatePresence>
-                {state === 'Speaking' && (
+                {(state === 'Speaking' || state === 'Executing') && (
                   <motion.div 
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.5, 1] }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5, repeat: Infinity }}
-                    className="absolute inset-0 bg-white/5 rounded-full blur-2xl"
+                    className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--gemigram-neon)_0%,transparent_70%)] opacity-20 blur-xl"
                   />
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
             
-            {/* Torso - Liquid Obsidian Panel */}
-            <div className="relative w-48 h-72 rounded-[60px] bg-white/[0.03] backdrop-blur-2xl border border-white/10 overflow-hidden group">
-              {/* The Core Singularity */}
+            {/* Torso - Liquid Volume */}
+            <motion.div 
+              className="relative w-56 h-80 rounded-[80px] bg-black/90 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(255,255,255,0.02)] overflow-hidden flex items-center justify-center"
+              animate={{
+                borderRadius: state === 'Speaking' ? ["80px", "60px", "80px"] : "80px"
+              }}
+              transition={{ duration: 0.5, repeat: Infinity }}
+            >
+              {/* The Singularity Light */}
               <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full blur-[40px]"
+                className="absolute w-32 h-32 rounded-full blur-[50px]"
                 style={{ backgroundColor: stateConfig.accent }}
                 animate={{ 
                   scale: [1, stateConfig.corePulse, 1],
-                  opacity: [0.3, 0.7, 0.3],
-                  boxShadow: [`0 0 20px ${stateConfig.glow}`, `0 0 60px ${stateConfig.glow}`, `0 0 20px ${stateConfig.glow}`]
+                  opacity: [0.2, 0.6, 0.2],
                 }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               />
 
-              <div className="absolute inset-0 flex items-center justify-center opacity-10">
-                <Radio className={`w-32 h-32 ${state === 'Speaking' ? 'animate-pulse' : ''}`} />
-              </div>
+              {/* Mirror Shine Overlay */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent_70%)] pointer-events-none" />
 
-              {/* Digital Veins */}
-              <div className="absolute inset-0 pointer-events-none p-8 flex flex-col gap-4">
-                <div className="h-px w-full bg-white/10" />
-                <div className="h-px w-2/3 bg-white/10" />
-                <div className="h-px w-full bg-white/10" />
-              </div>
-            </div>
+              <Radio className={`w-32 h-32 opacity-10 text-white ${state === 'Speaking' ? 'animate-pulse' : ''}`} />
+            </motion.div>
 
-            {/* Gesture Arms (Pulsing Lines) */}
+            {/* Ghost Limbs (Liquid Tendrils) */}
             <motion.div 
-              className="absolute top-48 -left-12 w-16 h-48 border-l border-white/20 rounded-l-full blur-[3px]"
-              animate={{ rotate: state === 'Speaking' ? -20 : -10 }}
+              className="absolute top-48 -left-16 w-24 h-64 border-l-2 border-white/10 rounded-l-full blur-[4px]"
+              animate={{ rotate: state === 'Speaking' ? [-15, -25, -15] : -15 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div 
-              className="absolute top-48 -right-12 w-16 h-48 border-r border-white/20 rounded-r-full blur-[3px]"
-              animate={{ rotate: state === 'Speaking' ? 20 : 10 }}
+              className="absolute top-48 -right-16 w-24 h-64 border-r-2 border-white/10 rounded-r-full blur-[4px]"
+              animate={{ rotate: state === 'Speaking' ? [15, 25, 15] : 15 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
           </motion.div>
         </div>

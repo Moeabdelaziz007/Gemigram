@@ -15,10 +15,12 @@ export interface UiSlice {
     updatedAt: number | null;
   };
   pendingManifest: Partial<Agent> | null;
+  lastSyncedAt: number | null;
   setLinkType: (type: 'stateless' | 'bridge' | 'hibernating') => void;
   setVoiceProfile: (profile: Partial<UiSlice['voiceProfile']>) => void;
   setVoiceSession: (session: Partial<UiSlice['voiceSession']>) => void;
   setPendingManifest: (manifest: Partial<Agent> | null) => void;
+  setLastSyncedAt: (time: number | null) => void;
 }
 
 export const INITIAL_UI_STATE = {
@@ -34,6 +36,7 @@ export const INITIAL_UI_STATE = {
     updatedAt: null,
   },
   pendingManifest: null,
+  lastSyncedAt: null,
 };
 
 export const createUiSlice: StateCreator<UiSlice> = (set) => ({
@@ -50,4 +53,5 @@ export const createUiSlice: StateCreator<UiSlice> = (set) => ({
     }
   })),
   setPendingManifest: (manifest) => set({ pendingManifest: manifest }),
+  setLastSyncedAt: (time) => set({ lastSyncedAt: time }),
 });

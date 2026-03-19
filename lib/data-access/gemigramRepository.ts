@@ -72,3 +72,11 @@ export async function fetchGoogleCloudProjects(accessToken: string) {
       }))
     : [];
 }
+export async function saveAgent(agent: Agent, userId: string) {
+  const agentRef = doc(db, 'agents', agent.id);
+  await setDoc(agentRef, {
+    ...agent,
+    ownerId: userId,
+    updatedAt: Timestamp.now()
+  }, { merge: true });
+}

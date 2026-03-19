@@ -3,6 +3,7 @@ import { Outfit } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/components/Providers';
 import AppShell from '@/components/AppShell';
+import { ActiveIntelligence } from '@/components/ActiveIntelligence';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="relative z-[1]">
               {children}
             </main>
+            <ActiveIntelligence />
           </AppShell>
         </AuthProvider>
       </body>
