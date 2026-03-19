@@ -210,6 +210,8 @@ export async function recordMemoryAccess(memoryId: string): Promise<void> {
     await updateMemory(memoryId, {
       accessCount: (memory.accessCount || 0) + 1,
       lastAccessedAt: Timestamp.now(),
+      // Importance Reinforcement: Boost importance by 5% each access, max 1.0
+      importance: Math.min(1.0, (memory.importance || 0.5) * 1.05)
     });
   } catch (error) {
     console.error('[MemoryStore] Failed to record memory access:', error);

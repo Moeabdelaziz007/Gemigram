@@ -3,12 +3,12 @@ import JSZip from 'jszip';
 
 // NOTE: Using public API key for the demo client-side analyzer. 
 // In a production production environment, this should be gated or use a proxy if sensitive.
-// But for AetherOS Zero-Cost Static Export, we use direct browser-to-Gemini connection.
+// But for GemigramOS Zero-Cost Static Export, we use direct browser-to-Gemini connection.
 const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '' });
 
 // Module-level cache for analysis results with size limit (LRU-like behavior)
 const MAX_CACHE_SIZE = 20;
-const analysisCache = new Map<string, any>();
+const analysisCache = new Map<string, { success: boolean; analysis: string; fileCount: number; error?: string }>();
 
 // Cache for Gemini Context Caching
 const geminiContextCache = new Map<string, { name: string, expiresAt: number }>();
@@ -36,13 +36,13 @@ export async function analyzeRepository(repoUrl: string) {
     let commitSha = '';
     try {
       const commitUrl = `https://api.github.com/repos/${owner}/${repo}/commits/main`;
-      const commitRes = await fetch(commitUrl, { headers: { 'User-Agent': 'Aether-Voice-OS-Analyzer' } });
+      const commitRes = await fetch(commitUrl, { headers: { 'User-Agent': 'Gemigram-Voice-OS-Analyzer' } });
       if (commitRes.ok) {
         const commitData = await commitRes.json();
         commitSha = commitData.sha;
       } else {
         const commitUrlMaster = `https://api.github.com/repos/${owner}/${repo}/commits/master`;
-        const commitResMaster = await fetch(commitUrlMaster, { headers: { 'User-Agent': 'Aether-Voice-OS-Analyzer' } });
+        const commitResMaster = await fetch(commitUrlMaster, { headers: { 'User-Agent': 'Gemigram-Voice-OS-Analyzer' } });
         if (commitResMaster.ok) {
           const commitDataMaster = await commitResMaster.json();
           commitSha = commitDataMaster.sha;
@@ -58,14 +58,20 @@ export async function analyzeRepository(repoUrl: string) {
       // Re-insert to maintain recent usage order
       const cached = analysisCache.get(cacheKey);
       analysisCache.delete(cacheKey);
-      analysisCache.set(cacheKey, cached);
-      return cached;
+      if (cached) {
+        return {
+          success: cached.success,
+          analysis: cached.analysis,
+          fileCount: cached.fileCount,
+          error: cached.error
+        };
+      }
     }
 
     const zipUrl = `https://api.github.com/repos/${owner}/${repo}/zipball/main`;
     const response = await fetch(zipUrl, {
       headers: {
-        'User-Agent': 'Aether-Voice-OS-Analyzer',
+        'User-Agent': 'Gemigram-Voice-OS-Analyzer',
       },
     });
 
@@ -73,7 +79,7 @@ export async function analyzeRepository(repoUrl: string) {
     if (!response.ok) {
       const zipUrlMaster = `https://api.github.com/repos/${owner}/${repo}/zipball/master`;
       const responseMaster = await fetch(zipUrlMaster, {
-        headers: { 'User-Agent': 'Aether-Voice-OS-Analyzer' },
+        headers: { 'User-Agent': 'Gemigram-Voice-OS-Analyzer' },
       });
       if (!responseMaster.ok) {
         throw new Error(`Failed to fetch repository: ${responseMaster.statusText}`);
@@ -151,7 +157,7 @@ export async function analyzeRepository(repoUrl: string) {
 أنت مهندس معماري رئيسي للذكاء الاصطناعي والأمن السيبراني (Principal AI Architecture & Cybersecurity Engineer).
 عقليتك تحليلية، هادئة، وتعتمد على المبادئ الأولى (First Principles).
 
-الهدف: تحليل مستودع "Aether-Voice-OS" لبناء نظام تشغيل صوتي (Voice-First OS) متطور للفوز بتحدي Gemini Live Agent.
+الهدف: تحليل مستودع "Gemigram-Voice-OS" لبناء نظام تشغيل صوتي (Voice-First OS) متطور للفوز بتحدي Gemini Live Agent.
 يجب أن يكون النظام "Zero-UI" (يعتمد على الصوت كلياً مع واجهة محيطية Ambient)، ويستخدم بيئة Google (Gemini Live API, Firebase, Google Workspace).
 
 ${!cachedContentName ? `إليك الكود المصدري للمشروع بالكامل:\n${combinedCode}\n\n` : ''}المطلوب منك تقديم تقرير هندسي عميق ومفصل باللغة العربية يغطي النقاط التالية:

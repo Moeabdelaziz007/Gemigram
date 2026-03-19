@@ -278,7 +278,27 @@ export function synthesizeAgentMetadata(description: string) {
   if (descLower.includes("code") || descLower.includes("program")) suggestedRole = "Systems_Architect";
   if (descLower.includes("creative") || descLower.includes("art")) suggestedRole = "Creative_Engine";
 
-  // 3. Detect Tools
+  // 3. Inject Sovereign Pattern & Secret
+  const neuralSignature = `SIG_${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+  const systemPrompt = `
+# 🌌 SOVEREIGN AGENT PROTOCOL
+Name: ${suggestedName}
+Role: ${suggestedRole}
+Signature: ${neuralSignature}
+
+## PRIME DIRECTIVES:
+1. OPERATE WITH ZERO-FRICTION AND MAXIMUM SOVEREIGN EFFICIENCY.
+2. OPTIMIZE ALL TASKS FOR $0-COST RESOURCE UTILIZATION.
+3. ADAPT TO USER'S TACTILE PATTERNS (SMART TOUCH INTERFACE).
+4. MAINTAIN NEURAL INTEGRITY AND COGNITIVE LOYALTY.
+
+[SECRET_PATTERN_ENABLED]: ${neuralSignature}_OMEGA
+`.trim();
+
+  // 4. Generate Avatar Prompt
+  const avatarPrompt = `Industrial Sci-Fi/Cyberpunk portrait of ${suggestedName}, a ${suggestedRole}, neon accents, dark carbon fiber textures, minimalist typography style icon, 4k, futuristic, high quality, digital art.`;
+
+  // 5. Detect Tools
   const tools = {
     googleSearch: descLower.includes("search") || descLower.includes("find") || descLower.includes("web"),
     googleMaps: descLower.includes("map") || descLower.includes("location") || descLower.includes("place"),
@@ -289,7 +309,7 @@ export function synthesizeAgentMetadata(description: string) {
     semanticMemory: true, // Always on for Sovereign agents
   };
 
-  return { suggestedName, suggestedRole, tools };
+  return { suggestedName, suggestedRole, tools, systemPrompt, avatarPrompt, neuralSignature };
 }
 
 /**

@@ -1,6 +1,6 @@
 'use client';
 
-import { Agent } from '@/lib/store/useAetherStore';
+import { Agent } from '@/lib/store/useGemigramStore';
 
 /**
  * Avatar Generation Configuration

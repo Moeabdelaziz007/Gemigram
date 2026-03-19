@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLiveAPI } from '@/hooks/useLiveAPI';
 import { useAudioProcessor } from '@/hooks/useAudioProcessor';
-import { useAetherStore, Agent } from '@/lib/store/useAetherStore';
+import { useGemigramStore, Agent } from '@/lib/store/useGemigramStore';
 import { fetchWithTimeout, getLocalBridgeUrl, getNetworkTimeoutMs, isBridgeCheckEnabled, normalizeNetworkError } from '@/lib/network/runtime';
 import { ToolResult, Tool, FunctionDeclaration } from '@/lib/types/live-api';
 
@@ -16,9 +16,9 @@ export function useVoiceAgentLogic({ activeAgent, googleAccessToken }: UseVoiceA
   const [isThinking, setIsThinking] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
   
-  const transcript = useAetherStore(state => state.transcript);
-  const linkType = useAetherStore(state => state.linkType);
-  const setLinkType = useAetherStore(state => state.setLinkType);
+  const transcript = useGemigramStore(state => state.transcript);
+  const linkType = useGemigramStore(state => state.linkType);
+  const setLinkType = useGemigramStore(state => state.setLinkType);
 
   useEffect(() => {
     if (!isBridgeCheckEnabled()) {

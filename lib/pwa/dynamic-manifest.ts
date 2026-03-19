@@ -1,4 +1,4 @@
-import { Agent } from '@/lib/store/useAetherStore';
+import { Agent } from '@/lib/store/useGemigramStore';
 
 /**
  * PWA Manifest configuration for agent deployment

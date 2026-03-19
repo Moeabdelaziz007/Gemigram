@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/Providers';
-import { useAetherStore } from '@/lib/store/useAetherStore';
+import { useGemigramStore } from '@/lib/store/useGemigramStore';
 
 export function useWorkspaceLogic() {
   const { user, googleAccessToken } = useAuth();
-  const { agents, activeAgentId } = useAetherStore();
+  const { agents, activeAgentId } = useGemigramStore();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);

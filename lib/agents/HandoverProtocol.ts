@@ -1,7 +1,7 @@
 /**
  * Handover Protocol — Deep Context Preservation for Agent Switching
  * 
- * Ported from Aether-Voice-OS core/ai/handover/models.py and adapted
+ * Ported from Gemigram-Voice-OS core/ai/handover/models.py and adapted
  * to TypeScript with Firestore persistence.
  * 
  * Enables seamless agent-to-agent context transfer with:

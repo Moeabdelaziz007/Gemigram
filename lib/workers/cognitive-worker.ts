@@ -1,5 +1,5 @@
 /**
- * Cognitive Worker for AetherOS
+ * Cognitive Worker for GemigramOS
  * Offloads heavy mathematical and filtering operations from the main thread.
  */
 
@@ -36,21 +36,26 @@ self.onmessage = (e: MessageEvent) => {
         const hoursSinceCreation = (now - createdAt) / (1000 * 60 * 60);
         
         // Advanced Decay: Importance decreases slower if it has high initial importance
-        // or has been accessed frequently (simulated via metadata if available)
-        const accessMultiplier = (memory.metadata?.accessCount || 1) * 0.1;
-        const effectiveDecay = Math.max(0.01, memory.decay - accessMultiplier);
+        // factor in soul type: 'analytical' decays slower, 'creative' decays faster but fluctuates
+        const soul = memory.metadata?.soul?.toLowerCase() || 'analytical';
+        const soulMultiplier = soul === 'analytical' ? 0.8 : soul === 'creative' ? 1.2 : 1.0;
         
+        const accessMultiplier = (memory.metadata?.accessCount || 1) * 0.15;
+        const effectiveDecay = Math.max(0.005, (memory.decay - accessMultiplier) * soulMultiplier);
+        
+        // Exponential decay based on importance and access
         let newImportance = memory.importance * Math.exp(-effectiveDecay * hoursSinceCreation);
 
-        // Importance Weighting: Boost based on tags or specific metadata
-        if (memory.tags.includes('critical') || memory.tags.includes('seed')) {
-          newImportance = Math.min(1.0, newImportance * 1.5);
+        // Importance Weighting & Sovereign Pattern Boost
+        if (memory.tags.includes('critical') || memory.tags.includes('seed') || memory.tags.includes('sovereign')) {
+          newImportance = Math.min(1.0, newImportance * 1.6);
         }
 
-        if (newImportance < 0.05) {
+        // Garbage collection threshold
+        if (newImportance < 0.03) {
           updates.push({ id: memory.id, delete: true });
         } else {
-          updates.push({ id: memory.id, importance: Number(newImportance.toFixed(4)) });
+          updates.push({ id: memory.id, importance: Number(newImportance.toFixed(5)) });
         }
       });
 

@@ -83,14 +83,14 @@ export const CONVERSATION_FLOW: Record<ConversationStep, ConversationMessage> = 
   COMPUTE_TIER: {
     step: 'COMPUTE_TIER',
     speaker: 'ASTRAEUS',
-    text: "Select your compute intelligence tier. Standard for basic tasks, Neural for advanced reasoning with GWS, or Aether for omni-modal ultra-low latency processing.",
-    voicePrompt: "Choose your compute tier. Standard is good for simple tasks. Neural provides advanced reasoning and access to Google Workspace. Aether offers the fastest multi-modal processing.",
-    suggestions: ['Standard', 'Neural', 'Aether'],
+    text: "Select your compute intelligence tier. Standard for basic tasks, Neural for advanced reasoning with GWS, or Gemigram for omni-modal ultra-low latency processing.",
+    voicePrompt: "Choose your compute tier. Standard is good for simple tasks. Neural provides advanced reasoning and access to Google Workspace. Gemigram offers the fastest multi-modal processing.",
+    suggestions: ['Standard', 'Neural', 'Gemigram'],
     requiresInput: true,
     validation: (input) => {
-      const validTiers = ['Standard', 'Neural', 'Aether'];
+      const validTiers = ['Standard', 'Neural', 'Gemigram'];
       if (!validTiers.includes(input)) {
-        return { valid: false, error: 'Please select Standard, Neural, or Aether' };
+        return { valid: false, error: 'Please select Standard, Neural, or Gemigram' };
       }
       return { valid: true };
     },

@@ -544,7 +544,7 @@ export class MCPClient {
           protocolVersion: '2024-11-05',
           capabilities: {},
           clientInfo: {
-            name: 'Gemigram-AetherOS',
+            name: 'Gemigram-GemigramOS',
             version: '1.0.0'
           }
         }

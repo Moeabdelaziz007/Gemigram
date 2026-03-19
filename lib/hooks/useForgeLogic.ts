@@ -25,6 +25,8 @@ export interface AgentFormData {
   persona?: string;
   rules?: string[];
   memoryDecay?: number;
+  avatarUrl?: string;
+  autoMaterialize?: boolean;
 }
 
 export function useForgeLogic() {
@@ -40,6 +42,8 @@ export function useForgeLogic() {
     persona: 'Analytical',
     rules: ['Always remain objective', 'Prioritize user intent'],
     memoryDecay: 0.01,
+    avatarUrl: '',
+    autoMaterialize: true,
   });
 
   const [currentStep, setCurrentStep] = useState<VoiceState['currentStep']>('intro');
@@ -69,14 +73,22 @@ export function useForgeLogic() {
         name: metadata.suggestedName || prev.name,
         role: metadata.suggestedRole || prev.role,
         persona: persona,
-        rules: ['Always remain objective'],
+        rules: ['Always remain objective', 'Sovereign Protocol Active'],
         skills: recommendedSkills,
-        tools: metadata.tools || { webSearch: true }
+        tools: metadata.tools || { webSearch: true },
+        systemPrompt: metadata.systemPrompt,
+        avatarUrl: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${metadata.suggestedName}` // Placeholder, real generation would be triggered here
     }));
 
     setStatus('idle');
     setCurrentStep('blueprint');
-    speak(`Synthesis complete. Generating blueprint for ${metadata.suggestedName || 'entity'}. Review parameters.`);
+    
+    speak(`Synthesis complete. Materializing ${metadata.suggestedName || 'entity'} with Sovereign Pattern.`, () => {
+      // Auto-finalize after speech if autoMaterialize is true
+      setTimeout(() => {
+        finalizeMaterialization();
+      }, 1500);
+    });
   }, [speak]);
 
   const initiateListening = useCallback(() => {

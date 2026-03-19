@@ -8,7 +8,7 @@ import {
   Memory,
   MemoryType 
 } from '@/lib/memory/memory-store';
-import { useAetherStore } from '@/lib/store/useAetherStore';
+import { useGemigramStore } from '@/lib/store/useGemigramStore';
 
 /**
  * Hook for managing agent memories and skills
@@ -19,7 +19,7 @@ export function useMemory(agentId: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  const { sessionMetadata } = useAetherStore();
+  const { sessionMetadata } = useGemigramStore();
 
   const fetchMemories = useCallback(async () => {
     if (!agentId) return;

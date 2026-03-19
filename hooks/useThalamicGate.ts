@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { useAetherStore } from '../lib/store/useAetherStore';
+import { useGemigramStore } from '../lib/store/useGemigramStore';
 
 interface ThalamicGateConfig {
   /** Silence threshold (0-1) below which we consider the user "quiet". Default: 0.02 */
@@ -22,7 +22,7 @@ interface ThalamicGateConfig {
  * When detected, injects a proactive "[SYSTEM: ...]" prompt into the
  * Gemini WebSocket session so the AI reaches out first.
  * 
- * Ported from Aether-Voice-OS ThalamicGate (Python) and adapted for
+ * Ported from Gemigram-Voice-OS ThalamicGate (Python) and adapted for
  * the browser-native WebSocket in useLiveAPI.
  * 
  * @param analyser - The AnalyserNode from the audio context
@@ -125,7 +125,7 @@ export function useThalamicGate(
     isActiveRef.current = true;
 
     intervalRef.current = setInterval(() => {
-      const { isThinking, isSpeaking } = useAetherStore.getState();
+      const { isThinking, isSpeaking } = useGemigramStore.getState();
       
       // Do not intervene if the AI is currently processing or talking
       if (isThinking || isSpeaking) {
