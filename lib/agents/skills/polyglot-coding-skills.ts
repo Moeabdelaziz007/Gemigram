@@ -220,7 +220,7 @@ export const CPP_PROGRAMMING_SKILL: SkillDefinition = {
   metadata: {
     icon: 'Cpu',
     color: 'text-purple-600',
-    difficulty: 'expert',
+    difficulty: 'advanced',
     estimatedSetupTime: '30 minutes',
     tags: ['cpp', 'c++', 'performance', 'systems', 'games', 'hpc'],
     version: '1.0.0',

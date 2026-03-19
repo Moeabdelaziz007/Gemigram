@@ -36,7 +36,7 @@ export const SYSTEM_ARCHITECT_SKILL: SkillDefinition = {
   metadata: {
     icon: 'Network',
     color: 'text-teal-500',
-    difficulty: 'expert',
+    difficulty: 'advanced',
     estimatedSetupTime: '25 minutes',
     tags: ['architecture', 'system-design', 'patterns', 'scalability', 'engineering', 'ddd'],
     version: '1.0.0',
