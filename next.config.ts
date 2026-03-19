@@ -33,7 +33,19 @@ const nextConfig: NextConfig = {
   },
 // output: 'export', // Removed to support NextAuth middleware
   transpilePackages: ['framer-motion'],
-
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'microphone=(self)',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -1,103 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ===============================================================
-    // Assumed Data Model
-    // ===============================================================
-    //
-    // Collection: agents
-    // Fields:
-    //   - id: string
-    //   - name: string
-    //   - role: string
-    //   - systemPrompt: string
-    //   - voiceName: string
-    //   - seed: string
-    //   - users: string
-    //   - ownerId: string (required)
-    //   - createdAt: timestamp
-    //
-    // Collection: agents/{agentId}/history
-    // Fields:
-    //   - text: string
-    //   - userId: string
-    //   - role: string (user/model)
-    //   - timestamp: timestamp
-    //
-    // Collection: notifications
-    // Fields:
-    //   - userId: string
-    //   - type: string
-    //   - title: string
-    //   - message: string
-    //   - read: boolean
-    //   - timestamp: timestamp
-    //   - secret: string (used for webhook auth)
-    //
-    // ===============================================================
-
-    // ===============================================================
-    // Helper Functions
-    // ===============================================================
-    function isAuthenticated() {
-      return request.auth != null;
+    match /users/{userId}/agents/{agentId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+    match /users/{userId}/memories/{memoryId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-
-    function isAgentOwner(agentId) {
-      return isAuthenticated() && get(/databases/$(database)/documents/agents/$(agentId)).data.ownerId == request.auth.uid;
-    }
-
-    function isValidAgent(data) {
-      return data.keys().hasAll(['id', 'name', 'role', 'systemPrompt', 'voiceName', 'ownerId']) &&
-             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
-             data.role is string && data.role.size() < 500 &&
-             data.systemPrompt is string && data.systemPrompt.size() < 5000 &&
-             data.voiceName in ['Puck', 'Charon', 'Kore', 'Fenrir', 'Zephyr'] &&
-             data.ownerId == request.auth.uid;
-    }
-
-    function isValidHistory(data) {
-      return data.keys().hasAll(['userId', 'role', 'text']) &&
-             data.role in ['user', 'model'] &&
-             data.text is string && data.text.size() < 10000 &&
-             data.userId == request.auth.uid;
-    }
-
-    function isAdmin() {
-      return isAuthenticated() &&
-        (request.auth.token.admin == true ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
-    }
-
-    // ===============================================================
-    // Rules
-    // ===============================================================
-
-    match /agents/{agentId} {
-      allow read: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
-      allow create: if isAuthenticated() && isValidAgent(request.resource.data);
-      allow update: if isAuthenticated() && isOwner(resource.data.ownerId) && isValidAgent(request.resource.data);
-      allow delete: if isAuthenticated() && isOwner(resource.data.ownerId);
-
-      match /history/{messageId} {
-        allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
-        allow create: if isAuthenticated() && isValidHistory(request.resource.data);
-      }
-    }
-
-    match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
-      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
-      allow update: if isAuthenticated() && request.auth.uid == resource.data.userId;
-      allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
-    }
-
-    match /users/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
