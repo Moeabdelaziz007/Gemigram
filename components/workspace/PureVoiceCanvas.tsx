@@ -4,6 +4,9 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import type { Agent } from '@/lib/store/slices/createAgentSlice';
+import { ModelSelector } from './ModelSelector';
+import { useTranslation } from '../../lib/i18n/useTranslation';
+import { SynthesisEngine } from '../../lib/voice/synthesis-engine';
 
 interface PureVoiceCanvasProps {
   activeAgent: Agent;
@@ -28,6 +31,15 @@ export const PureVoiceCanvas: React.FC<PureVoiceCanvasProps> = ({ activeAgent })
 
   // Local state for Agent Name fade logic
   const [showAgentName, setShowAgentName] = useState(true);
+  const { isRTL } = useTranslation();
+
+  // Voice Synthesis Effect: Speak when agent adds a message
+  useEffect(() => {
+    const lastMsg = transcript[transcript.length - 1];
+    if (lastMsg && lastMsg.role === 'agent' && !isSpeaking) {
+      SynthesisEngine.speak(lastMsg.content);
+    }
+  }, [transcript, isSpeaking]);
 
   // Derived Orb State
   const orbState = useMemo(() => {
@@ -72,8 +84,11 @@ export const PureVoiceCanvas: React.FC<PureVoiceCanvasProps> = ({ activeAgent })
   };
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center overflow-hidden z-50">
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="fixed inset-0 bg-black flex flex-col items-center justify-center overflow-hidden z-50">
       
+      {/* [0] Neural Selection Gear */}
+      <ModelSelector />
+
       {/* [1] VoiceOrb */}
       <div className="relative flex items-center justify-center">
         {/* Glow Layer */}

@@ -7,10 +7,11 @@
 
 import { db, auth } from '../../firebase';
 import { collection, addDoc, query, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
-import { executeGWSClientAction } from './workspace-client';
 import { useGemigramStore } from '../store/useGemigramStore';
 import { fetchWithTimeout, getLocalBridgeUrl, getNetworkTimeoutMs, isLocalBridgeExecutionEnabled, normalizeNetworkError } from '../network/runtime';
 import { ToolResult } from '../types/live-api';
+import { GoogleWorkspaceClient } from './google-workspace';
+import { CreditManager } from '../billing/credit-manager';
 
 const FUNCTION_URL = process.env.NEXT_PUBLIC_FUNCTION_URL?.trim() || 'https://executeagenttool-v7vofv7mxa-uc.a.run.app';
 const DEFAULT_PERSONA = 'GemigramAssistant';
@@ -37,7 +38,7 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
   let result: ToolResult = { status: 'success' };
 
   if (name === 'browse_url' || (name === 'searchWeb' && args.url)) {
-    const urlToRead = args.url || args.query;
+    const urlToRead = readString(args.url || args.query);
     try {
       const response = await fetchWithTimeout(
         `https://r.jina.ai/${urlToRead}`,
@@ -101,7 +102,7 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
   }
 
   if (name === 'listProjects') {
-    const token = args.accessToken;
+    const token = readString(args.accessToken);
     if (!token) return { status: 'error', message: 'Access token required for project discovery.' };
 
     try {
@@ -113,15 +114,15 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
         },
         getNetworkTimeoutMs(process.env.NEXT_PUBLIC_REMOTE_FETCH_TIMEOUT_MS, 4000)
       );
-      const data = await response.json();
+      const data = await response.json() as { projects?: unknown[] };
       result = { status: 'success', projects: data.projects || [] };
     } catch (error) {
       result = createNetworkErrorResult('Failed to fetch projects.', error);
     }
   }
   else if (name === 'getProjectDetails') {
-    const token = args.accessToken;
-    const projectId = args.projectId;
+    const token = readString(args.accessToken);
+    const projectId = readString(args.projectId);
     if (!token || !projectId) return { status: 'error', message: 'Missing credentials or Project ID.' };
 
     try {
@@ -133,13 +134,13 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
         },
         getNetworkTimeoutMs(process.env.NEXT_PUBLIC_REMOTE_FETCH_TIMEOUT_MS, 4000)
       );
-      result = await response.json();
+      result = await response.json() as ToolResult;
     } catch (error) {
       result = createNetworkErrorResult('Failed to fetch project details.', error);
     }
   }
   else if (name === 'getWeather') {
-    const location = args.location || 'Unknown';
+    const location = readString(args.location, 'Unknown');
     result = {
       location,
       temperature: Math.floor(Math.random() * 30) + 10,
@@ -157,7 +158,7 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
     };
   }
   else if (name === 'getMapLocation') {
-    const location = args.location || 'Unknown';
+    const location = readString(args.location, 'Unknown');
     result = {
       location,
       lat: (Math.random() * 180 - 90).toFixed(4),
@@ -226,79 +227,84 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
       const user = auth.currentUser;
       if (!user) return { status: 'error' as const, message: 'User must be authenticated for Workspace operations.' };
 
-      const gwsToken = readString(args.accessToken);
-      if (!gwsToken) {
-        return {
-          status: 'error' as const,
-          message: 'Action requires elevated GWS credentials. Please re-authenticate via Nexus Gateway.',
-          requiresAuth: true
-        };
+      // Direct Google Workspace Client calls
+      switch (name) {
+        case 'workspace_gmail':
+          try {
+            const query = readString(args.query, 'is:unread');
+            const data = await GoogleWorkspaceClient.searchGmail(query);
+            await CreditManager.applyUsageCharge(500, 2);
+            return { status: 'success', data, toolId: name };
+          } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : 'Gmail operation failed';
+            return { status: 'fail', message: msg, toolId: name };
+          }
+
+        case 'workspace_calendar':
+          try {
+            const data = await GoogleWorkspaceClient.listEvents();
+            await CreditManager.applyUsageCharge(300, 1.5);
+            return { status: 'success', data, toolId: name };
+          } catch (e: unknown) {
+            const msg = e instanceof Error ? e.message : 'Calendar operation failed';
+            return { status: 'fail', message: msg, toolId: name };
+          }
+
+        default:
+          // Fallback to Bridge or Cloud
+          try {
+            const localBridgeUrl = getLocalBridgeUrl('/execute');
+            if (isLocalBridgeExecutionEnabled() && localBridgeUrl) {
+              const localResponse = await fetchWithTimeout(
+                localBridgeUrl,
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    toolId: name,
+                    action: readString(args.action, '+triage'),
+                    params: args.params || {},
+                    persona: readString(args.persona, DEFAULT_PERSONA),
+                  }),
+                },
+                1500
+              );
+              return await localResponse.json() as ToolResult;
+            }
+
+            const idToken = await user.getIdToken();
+            const cloudResponse = await fetchWithTimeout(
+              FUNCTION_URL,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${idToken}`
+                },
+                body: JSON.stringify({
+                  toolId: name,
+                  action: readString(args.action, '+triage'),
+                  params: args.params || {},
+                  persona: readString(args.persona, DEFAULT_PERSONA)
+                })
+              },
+              4000
+            );
+            return await cloudResponse.json() as ToolResult;
+          } catch (error) {
+            return createNetworkErrorResult('Neural routing failed.', error);
+          }
       }
-
-      try {
-        const clientResult = await executeGWSClientAction(name, readString(args.action, '+triage'), args.params || {}, gwsToken);
-        return clientResult as ToolResult;
-      } catch (clientError) {
-        const failure = normalizeNetworkError(clientError);
-        console.warn('[NeuralHandler] Client-Spine direct API failed:', failure.kind, failure.message);
-      }
-
-      const localBridgeUrl = getLocalBridgeUrl('/execute');
-      if (isLocalBridgeExecutionEnabled() && localBridgeUrl) {
-        try {
-          console.warn('[NeuralHandler] Client-Spine unavailable. Attempting Local Bridge...');
-          const localResponse = await fetchWithTimeout(
-            localBridgeUrl,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                toolId: name,
-                action: readString(args.action, '+triage'),
-                params: args.params || {},
-                persona: readString(args.persona, DEFAULT_PERSONA),
-              }),
-            },
-            getNetworkTimeoutMs(process.env.NEXT_PUBLIC_BRIDGE_TIMEOUT_MS, 1500)
-          );
-
-          result = await localResponse.json();
-          return result;
-        } catch (localBridgeError) {
-          const failure = normalizeNetworkError(localBridgeError);
-          console.warn('[NeuralHandler] Local Bridge unavailable:', failure.kind, failure.message);
-        }
-      }
-
-      console.warn('[NeuralHandler] Falling back to Cloud Spine...');
-      const idToken = await user.getIdToken();
-      const response = await fetchWithTimeout(
-        FUNCTION_URL,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${idToken}`
-          },
-          body: JSON.stringify({
-            toolId: name,
-            action: readString(args.action, '+triage'),
-            params: args.params || {},
-            persona: readString(args.persona, DEFAULT_PERSONA)
-          })
-        },
-        getNetworkTimeoutMs(process.env.NEXT_PUBLIC_REMOTE_FETCH_TIMEOUT_MS, 4000)
-      );
-
-      result = await response.json();
     } catch (error: unknown) {
       console.error('[NeuralHandler] Critical Failure:', error);
-      result = createNetworkErrorResult('Neural routing failed (Client, Local & Cloud unavailable).', error);
+      return createNetworkErrorResult('Neural routing failed.', error);
     }
   }
 
   return result;
 }
+
+import { IntentEngine } from '../neural/intent-engine';
 
 /**
  * 🎙️ Gemigram Voice Orchestrator (Zero-UI Protocol)
@@ -312,7 +318,7 @@ export async function GemigramVoiceOrchestrator(intent: string, context: Record<
 
   let toolId = '';
   let action = '+triage';
-  const params = context.params || {};
+  let params = (context.params as Record<string, unknown>) || {};
 
   if (recipeMatch) {
     const recipe = recipeMatch[0].toLowerCase();
@@ -335,6 +341,17 @@ export async function GemigramVoiceOrchestrator(intent: string, context: Record<
       case 'search': toolId = 'searchWeb'; break;
       case 'read':
       case 'browse': toolId = 'browse_url'; break;
+    }
+  }
+
+  // Phase 2 Final: LLM Intent Fallback
+  if (!toolId || intent.split(' ').length > 4) {
+    console.warn('[Orchestrator] Regex insufficient. Engaging Neural Intent Engine...');
+    const refined = await IntentEngine.classify(intent);
+    if (refined.confidence > 0.6) {
+      toolId = refined.toolId;
+      action = refined.action;
+      params = { ...params, ...refined.params };
     }
   }
 

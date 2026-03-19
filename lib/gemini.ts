@@ -3,13 +3,36 @@
  * Uses the Universal Neural Router for Multi-Model Intelligence.
  */
 
-import { runNeuralIntelligence, runSimpleReasoning } from "./neural/client";
+import { runSimpleReasoning, runNeuralIntelligence } from "./neural/client";
+import { useGemigramStore } from "./store/useGemigramStore";
 
 /**
  * Standard Reasoning Flow
  */
-export const runSovereignReasoning = async (prompt: string, context?: string) => {
-  return await runSimpleReasoning(prompt, context, "google");
+export const runSovereignReasoning = async (
+  prompt: string,
+  context?: string,
+  options: { userId?: string; agentId?: string; useRAG?: boolean } = {}
+) => {
+  const provider = useGemigramStore.getState().activeProvider;
+  
+  if (options.useRAG && options.userId && options.agentId) {
+    const messages = [];
+    if (context) messages.push({ role: "system" as const, content: context });
+    messages.push({ role: "user" as const, content: prompt });
+    
+    const result = await runNeuralIntelligence(
+      provider,
+      messages,
+      {},
+      options.userId,
+      options.agentId,
+      true
+    );
+    return result.text;
+  }
+
+  return await runSimpleReasoning(prompt, context, provider);
 };
 
 export const generateText = runSovereignReasoning;

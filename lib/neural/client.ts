@@ -8,13 +8,16 @@ import { NeuralMessage, NeuralOptions, NeuralResponse, NeuralProvider } from "./
 export const runNeuralIntelligence = async (
   provider: NeuralProvider,
   messages: NeuralMessage[],
-  options: NeuralOptions = {}
+  options: NeuralOptions = {},
+  userId?: string,
+  agentId?: string,
+  useRAG?: boolean
 ): Promise<NeuralResponse> => {
   try {
     const response = await fetch("/api/neural/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ provider, messages, options }),
+      body: JSON.stringify({ provider, messages, options, userId, agentId, useRAG }),
     });
 
     if (!response.ok) {

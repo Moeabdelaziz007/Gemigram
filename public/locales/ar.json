@@ -1,0 +1,23 @@
+{
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "search": "بحث",
+    "loading": "جاري التحميل...",
+    "error": "خطأ في النظام"
+  },
+  "navigation": {
+    "dashboard": "قمرة القيادة",
+    "workspace": "مساحة العمل",
+    "forge": "المصنع الوراثي",
+    "hub": "مركز الكيانات",
+    "settings": "إعدادات السيادة"
+  },
+  "neural": {
+    "status_active": "الرابط العصبي مستقر",
+    "status_thinking": "تحليل النبضات الفكرية...",
+    "status_executing": "تنفيذ البروتوكول المحكم...",
+    "intent_confidence": "نسبة ثقة المحرك"
+  }
+}
