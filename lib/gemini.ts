@@ -1,36 +1,21 @@
 /**
- * Sovereign AI Bridge
- * Refactored to use Internal API Proxy to secure credentials.
- * Following v3.0 Security Rules (No client-side keys).
+ * 🧬 Sovereign AI Bridge (Refactored)
+ * Uses the Universal Neural Router for Multi-Model Intelligence.
  */
 
+import { runNeuralIntelligence, runSimpleReasoning } from "./neural/client";
+
+/**
+ * Standard Reasoning Flow
+ */
 export const runSovereignReasoning = async (prompt: string, context?: string) => {
-  try {
-    const response = await fetch("/api/gemini/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, context }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Neural bridge communication failure.");
-    }
-
-    const data = await response.json();
-    return data.text;
-  } catch (error) {
-    console.error("[Sovereign_Link_Failure]:", error);
-    throw error;
-  }
+  return await runSimpleReasoning(prompt, context, "google");
 };
 
 export const generateText = runSovereignReasoning;
 
 /**
  * Streaming Link for real-time agent output
- * TODO: Implement server-side streaming endpoint if needed.
- * Currently falling back to standard reasoning for safety.
  */
 export const streamSovereignReasoning = async (prompt: string, onChunk: (chunk: string) => void) => {
   try {
