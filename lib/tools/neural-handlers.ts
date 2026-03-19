@@ -240,13 +240,11 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
         return clientResult as ToolResult;
       } catch (clientError) {
         const failure = normalizeNetworkError(clientError);
-        console.warn('[NeuralHandler] Client-Spine direct API failed:', failure.kind, failure.message);
-      }
+        }
 
       const localBridgeUrl = getLocalBridgeUrl('/execute');
       if (isLocalBridgeExecutionEnabled() && localBridgeUrl) {
         try {
-          console.warn('[NeuralHandler] Client-Spine unavailable. Attempting Local Bridge...');
           const localResponse = await fetchWithTimeout(
             localBridgeUrl,
             {
@@ -266,11 +264,9 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
           return result;
         } catch (localBridgeError) {
           const failure = normalizeNetworkError(localBridgeError);
-          console.warn('[NeuralHandler] Local Bridge unavailable:', failure.kind, failure.message);
-        }
+          }
       }
 
-      console.warn('[NeuralHandler] Falling back to Cloud Spine...');
       const idToken = await user.getIdToken();
       const response = await fetchWithTimeout(
         FUNCTION_URL,
@@ -292,7 +288,6 @@ export async function handleNeuralTool(name: string, args: Record<string, unknow
 
       result = await response.json();
     } catch (error: unknown) {
-      console.error('[NeuralHandler] Critical Failure:', error);
       result = createNetworkErrorResult('Neural routing failed (Client, Local & Cloud unavailable).', error);
     }
   }

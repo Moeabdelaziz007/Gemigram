@@ -53,7 +53,6 @@ export async function executeGWSClientAction(toolId: string, action: string, par
     };
 
   } catch (err: any) {
-    console.warn(`[GWS-Client] Direct execution failed, falling back to neural bridge: ${err.message}`);
     throw err; // Allow neural-handlers to catch and fallback
   }
 }

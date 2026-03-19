@@ -49,8 +49,7 @@ export async function analyzeRepository(repoUrl: string) {
         }
       }
     } catch (e) {
-      console.warn('Failed to fetch commit sha for caching', e);
-    }
+      }
 
     const cacheKey = `aether_repo_cache_${owner}_${repo}_${commitSha}`;
 
@@ -105,8 +104,7 @@ export async function analyzeRepository(repoUrl: string) {
         combinedCode += `\n\n--- File: ${actualPath} ---\n\`\`\`\n${content}\n\`\`\`\n`;
         fileCount++;
       } catch (err) {
-        console.warn(`Could not read file ${filename}`);
-      }
+        }
     }
 
     if (fileCount === 0) {
@@ -148,8 +146,7 @@ export async function analyzeRepository(repoUrl: string) {
           });
         }
       } catch (err: any) {
-        console.warn('Failed to create Gemini context cache, falling back to full prompt:', err.message);
-      }
+        }
     } else {
     }
 
@@ -205,7 +202,6 @@ ${!cachedContentName ? `إليك الكود المصدري للمشروع بال
     return result;
 
   } catch (error: any) {
-    console.error('Analysis error:', error);
     return {
       success: false,
       error: error.message || 'An unknown error occurred during analysis.',
