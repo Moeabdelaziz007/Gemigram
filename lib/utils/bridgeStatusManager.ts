@@ -9,6 +9,7 @@ class BridgeStatusManager {
   private retryDelay: number = 1000;
   private subscribers: Set<StatusCallback> = new Set();
   private isProbing: boolean = false;
+  private probeTimer: any = null;
   private readonly TTL = 30_000; // 30 seconds
   private readonly MAX_RETRY_DELAY = 30_000;
 
@@ -44,6 +45,7 @@ class BridgeStatusManager {
     if (!force && this.isProbing) return;
     if (!force && (now - this.lastChecked < this.TTL) && this.status !== 'unknown') return;
 
+    if (this.probeTimer) clearTimeout(this.probeTimer);
     this.isProbing = true;
     const bridgeStatusUrl = getLocalBridgeUrl('/status');
 
@@ -70,14 +72,18 @@ class BridgeStatusManager {
       this.updateStatus('stateless');
       // Exponential backoff
       this.retryDelay = Math.min(this.retryDelay * 2, this.MAX_RETRY_DELAY);
-      console.warn(`[BridgeManager] Probe failed. Retrying in ${this.retryDelay}ms`, error);
+      console.warn(`[BridgeManager] Probe failed. Retrying in ${this.retryDelay}ms`);
       
-      // Schedule background retry if it's a transient failure
-      setTimeout(() => this.probe(true), this.retryDelay);
+      this.probeTimer = setTimeout(() => this.probe(true), this.retryDelay);
     } finally {
       this.lastChecked = Date.now();
       this.isProbing = false;
     }
+  }
+
+  public destroy() {
+    if (this.probeTimer) clearTimeout(this.probeTimer);
+    this.subscribers.clear();
   }
 
   private updateStatus(newStatus: BridgeStatus) {

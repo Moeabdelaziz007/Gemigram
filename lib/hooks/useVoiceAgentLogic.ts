@@ -125,7 +125,12 @@ export function useVoiceAgentLogic({ activeAgent, googleAccessToken }: UseVoiceA
         tools.push({ functionDeclarations });
       }
       
-      const finalPrompt = activeAgent?.systemPrompt || '';
+      let finalPrompt = activeAgent?.systemPrompt || '';
+
+      const lastInt = useGemigramStore.getState().transcript.filter(m => m.role === 'user').pop();
+      if (lastInt && (Date.now() - (useGemigramStore.getState().interruptedAt || 0) < 5000)) {
+        finalPrompt += `\n\n[CONTEXT: You were just interrupted by the user. Acknowledge the interruption and pivot immediately to their latest point.]`;
+      }
 
       connect(finalPrompt, activeAgent?.voiceName, tools);
     }

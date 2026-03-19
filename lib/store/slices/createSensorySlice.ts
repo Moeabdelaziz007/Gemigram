@@ -99,7 +99,7 @@ export const createSensorySlice: StateCreator<SensorySlice> = (set, get) => ({
     set({
       activeInterrupt: {
         tokenId: nanoid(),
-        interruptedAt: performance.now(),
+        interruptedAt: Date.now(),
         audioFramesDropped: framesDropped,
         lastValidTranscriptChunk: lastChunk,
         resolvedAt: null,
@@ -124,6 +124,6 @@ export const createSensorySlice: StateCreator<SensorySlice> = (set, get) => ({
   getInterruptContext: () => {
     const active = get().activeInterrupt;
     if (!active) return '';
-    return `[INTERRUPT@${Math.floor(active.interruptedAt)}ms] User barged in after: '${active.lastValidTranscriptChunk}'. Resume from this point.`;
+    return `[INTERRUPT@${active.interruptedAt}] User barged in after: '${active.lastValidTranscriptChunk}'. Resume from this point.`;
   }
 });

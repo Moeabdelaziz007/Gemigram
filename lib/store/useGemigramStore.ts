@@ -5,7 +5,7 @@ import { createAgentSlice, AgentSlice, Agent } from './slices/createAgentSlice';
 import { createUiSlice, UiSlice } from './slices/createUiSlice';
 import { createCognitiveSlice, CognitiveSlice } from './slices/createCognitiveSlice';
 
-import { createAuthSlice, AuthSlice } from './slices/createAuthSlice';
+import { createSwarmSlice, SwarmSlice } from './slices/createSwarmSlice';
 
 // Re-export Agent type for convenience
 export type { Agent };
@@ -15,7 +15,7 @@ export type { Agent };
  * Centralized state management for the Gemigram AIOS.
  * Architecture: Sliced Pattern (Zustand)
  */
-export interface GemigramState extends SensorySlice, AgentSlice, UiSlice, CognitiveSlice, AuthSlice {}
+export interface GemigramState extends SensorySlice, AgentSlice, UiSlice, CognitiveSlice, AuthSlice, SwarmSlice {}
 
 export const useGemigramStore = create<GemigramState>()(
   persist(
@@ -25,6 +25,7 @@ export const useGemigramStore = create<GemigramState>()(
       ...createUiSlice(...a),
       ...createCognitiveSlice(...a),
       ...createAuthSlice(...a),
+      ...createSwarmSlice(...a),
     }),
     {
       name: 'gemigram-storage',
