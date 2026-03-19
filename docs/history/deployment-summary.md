@@ -95,6 +95,7 @@ Files: 4 modified/created
 ```
 
 #### Animation Upgrades
+{% raw %}
 ```typescript
 // Smooth entrance animations
 initial={{ opacity: 0, x: ±30 }}
@@ -108,6 +109,7 @@ stats: {
   uptime: 99.99%
 }
 ```
+{% endraw %}
 
 ---
 
