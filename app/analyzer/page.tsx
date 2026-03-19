@@ -47,7 +47,7 @@ export default function AnalyzerPage() {
       if (res.success) {
         setResult({ analysis: res.analysis, fileCount: res.fileCount });
       } else {
-        setResult({ error: res.error });
+        setResult({ error: (res as any).error });
       }
     } catch (err: any) {
       setResult({ error: err.message });
