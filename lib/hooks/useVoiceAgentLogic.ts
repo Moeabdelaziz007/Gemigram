@@ -1,8 +1,10 @@
+```javascript
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLiveAPI } from '@/hooks/useLiveAPI';
 import { useAudioProcessor } from '@/hooks/useAudioProcessor';
 import { useGemigramStore, Agent } from '@/lib/store/useGemigramStore';
-import { fetchWithTimeout, getLocalBridgeUrl, getNetworkTimeoutMs, isBridgeCheckEnabled, normalizeNetworkError } from '@/lib/network/runtime';
+import { bridgeStatusManager } from '@/lib/utils/bridgeStatusManager';
+import { useVoiceCommandRouter } from '@/lib/hooks/useVoiceCommandRouter';
 import { ToolResult, Tool, FunctionDeclaration } from '@/lib/types/live-api';
 
 export interface UseVoiceAgentLogicProps {
@@ -38,45 +40,10 @@ export function useVoiceAgentLogic({ activeAgent, googleAccessToken }: UseVoiceA
   }, []);
 
   useEffect(() => {
-    if (!isBridgeCheckEnabled()) {
-      setLinkType('stateless');
-      return;
-    }
-
-    const bridgeStatusUrl = getLocalBridgeUrl('/status');
-    if (!bridgeStatusUrl) {
-      setLinkType('stateless');
-      return;
-    }
-
-    let isMounted = true;
-
-    const checkBridge = async () => {
-      try {
-        const response = await fetchWithTimeout(
-          bridgeStatusUrl,
-          { cache: 'no-store' },
-          getNetworkTimeoutMs(process.env.NEXT_PUBLIC_BRIDGE_TIMEOUT_MS, 1500)
-        );
-
-        if (isMounted) {
-          setLinkType(response.ok ? 'bridge' : 'stateless');
-        }
-      } catch (error) {
-        const failure = normalizeNetworkError(error);
-        console.warn('[VoiceAgent] Bridge probe unavailable:', failure.kind, failure.message);
-
-        if (isMounted) {
-          setLinkType('stateless');
-        }
-      }
-    };
-
-    void checkBridge();
-
-    return () => {
-      isMounted = false;
-    };
+    setLinkType(bridgeStatusManager.getStatus());
+    const unsub = bridgeStatusManager.subscribe(setLinkType);
+    void bridgeStatusManager.probe();
+    return unsub;
   }, [setLinkType]);
 
   const { 
