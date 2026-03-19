@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import GemigramLogoIcon from './GemigramLogo';
 import { BRAND } from '@/lib/constants/branding';
 
 export type LogoVariant = 'icon' | 'wordmark' | 'full' | 'favicon';
@@ -52,7 +53,7 @@ export const GemigramLogo = ({ variant = 'icon', size = 48, className = '' }: Ge
   if (variant === 'wordmark') {
     return (
       <div className={`flex items-center gap-3 ${className}`} style={{ height: size }}>
-        <GemigramLogo variant="icon" size={size} />
+        <div style={{ width: size, height: size }}><GemigramLogoIcon className="w-full h-full" /></div>
         <div className="flex flex-col">
           <span 
             className="text-white font-black tracking-[0.3em] uppercase leading-none"
@@ -74,7 +75,7 @@ export const GemigramLogo = ({ variant = 'icon', size = 48, className = '' }: Ge
   // Full variant (icon + wordmark side by side)
   return (
     <div className={`flex items-center gap-4 ${className}`} style={{ height: size }}>
-      <GemigramLogo variant="icon" size={size * 0.8} />
+      <div style={{ width: size * 0.8, height: size * 0.8 }}><GemigramLogoIcon className="w-full h-full" /></div>
       <div className="flex flex-col">
         <span 
           className="text-white font-black tracking-[0.3em] uppercase leading-none"

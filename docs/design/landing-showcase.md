@@ -111,31 +111,38 @@ external models via MCP protocol
 ## 🎭 Animation Config
 
 ### Section Entry
+{% raw %}
 ```typescript
 initial={{ opacity: 0, y: 20 }}
 whileInView={{ opacity: 1, y: 0 }}
 viewport={{ once: true }}
 ```
+{% endraw %}
 
 ### MCP Card (Left)
+{% raw %}
 ```typescript
 initial={{ opacity: 0, x: -30 }}
 whileInView={{ opacity: 1, x: 0 }}
 viewport={{ once: true }}
 ```
+{% endraw %}
 
 ### API Card (Right)
+{% raw %}
 ```typescript
 initial={{ opacity: 0, x: 30 }}
 whileInView={{ opacity: 1, x: 0 }}
 viewport={{ once: true }}
 ```
+{% endraw %}
 
 ---
 
 ## 💻 Code Snippet
 
 ### Full Section Implementation
+{% raw %}
 ```tsx
 {/* MCP & API Marketplace Integration Showcase */}
 <section className="py-32 relative bg-carbon-black/50">
@@ -230,6 +237,7 @@ viewport={{ once: true }}
   </div>
 </section>
 ```
+{% endraw %}
 
 ---
 

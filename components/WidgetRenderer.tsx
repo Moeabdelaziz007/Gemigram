@@ -9,7 +9,7 @@ export function WidgetRenderer({ data }: { data: ToolResult }) {
   if (!data) return null;
 
   // Gmail Triage Widget
-  if (data.type === 'gmail_triage' || (data as any).messages) {
+  if ((data as any).type === 'gmail_triage' || (data as any).messages) {
     const gmailData = data as any;
     return (
       <EphemeralWidget className="w-full h-full flex flex-col p-6">
@@ -38,7 +38,7 @@ export function WidgetRenderer({ data }: { data: ToolResult }) {
   }
 
   // Calendar Agenda Widget
-  if (data.type === 'calendar_agenda' || (data as any).events) {
+  if ((data as any).type === 'calendar_agenda' || (data as any).events) {
     const calendarData = data as any;
     return (
       <EphemeralWidget className="w-full h-full flex flex-col p-6">

@@ -9,7 +9,7 @@ interface SovereignDashboardProps {
   activeAgent: any;
   volume: number;
   status: string;
-  linkType: string;
+  linkType: 'stateless' | 'bridge' | 'hibernating';
   transcript: any[];
 }
 

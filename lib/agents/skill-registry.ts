@@ -274,34 +274,7 @@ class SkillRegistry {
     return tree;
   }
   
-  /**
-   * Register a skill bundle
-   * @param bundle - Bundle definition
-   */
-  registerBundle(bundle: SkillBundle): void {
-    if (this.bundles.has(bundle.id)) {
-      throw new Error(`Bundle "${bundle.id}" is already registered.`);
-    }
-    this.bundles.set(bundle.id, bundle);
-  }
-  
-  /**
-   * Get a skill bundle by ID
-   * @param id - Bundle identifier
-   * @returns Bundle definition or undefined
-   */
-  getBundle(id: string): SkillBundle | undefined {
-    return this.bundles.get(id);
-  }
-  
-  /**
-   * Get all registered bundles
-   * @returns Array of all bundles
-   */
-  getAllBundles(): SkillBundle[] {
-    return Array.from(this.bundles.values());
-  }
-  
+
   /**
    * Expand a bundle into individual skills
    * @param bundleId - Bundle identifier

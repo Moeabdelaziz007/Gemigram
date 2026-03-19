@@ -132,6 +132,7 @@ setShowDeployOption(true);
 ### ✅ **Dual-Action Workflow** - PASSED
 
 **Option 1: Deploy as PWA**
+{% raw %}
 ```typescript
 <DeployAgentButton
   agent={{
@@ -146,6 +147,7 @@ setShowDeployOption(true);
   variant="primary"
 />
 ```
+{% endraw %}
 
 **Option 2: Continue to Workspace**
 ```typescript

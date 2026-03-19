@@ -12,7 +12,7 @@ interface VoiceRecognition extends EventTarget {
   onstart: ((this: SpeechRecognition, ev: Event) => any) | null;
   onend: ((this: SpeechRecognition, ev: Event) => any) | null;
   onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => any) | null;
-  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionError) => any) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => any) | null;
 }
 
 interface SpeechRecognition extends EventTarget {
@@ -45,6 +45,11 @@ interface SpeechRecognitionResult {
 interface SpeechRecognitionAlternative {
   transcript: string;
   confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message?: string;
 }
 
 export function useVoiceInteraction() {
@@ -90,7 +95,7 @@ export function useVoiceInteraction() {
         setTranscript(finalTranscript || interimTranscript);
       };
 
-      recognitionInstance.onerror = (event: SpeechRecognitionError) => {
+      recognitionInstance.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error:', event.error);
         setError(event.error);
         setIsListening(false);

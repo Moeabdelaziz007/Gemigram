@@ -1,7 +1,8 @@
 'use client';
 
 import { Agent } from '@/lib/store/useAetherStore';
-
+import { Cloud, Newspaper, Bitcoin, Calculator, Database } from 'lucide-react';
+import { motion } from 'framer-motion';
 type WorkspaceProps = {
   activeAgent: Agent;
 };
