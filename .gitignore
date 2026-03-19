@@ -28,5 +28,7 @@ e2e-results/
 .firebaserc
 .firebase/
 firebase-debug.log
+
+# Internal Roadmaps (Gemigram Sovereign Access Only)
 .kombai/
 .qoder/
