@@ -39,6 +39,10 @@ const nextConfig: NextConfig = {
         source: '/(.*)',
         headers: [
           {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://*.google.com https://*.googleapis.com; connect-src 'self' https://*.googleapis.com wss://*.googleapis.com https://*.firebase.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:;",
+          },
+          {
             key: 'Permissions-Policy',
             value: 'microphone=(self)',
           },
