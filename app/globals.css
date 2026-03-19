@@ -355,7 +355,7 @@
   .text-responsive-3xl { font-size: clamp(1.5rem, 6vw, 2rem); }
 
   body {
-    @apply bg-theme-primary text-theme-foreground selection:bg-gemigram-neon selection:text-black;
+    @apply bg-[#050B14] text-white selection:bg-gemigram-neon selection:text-black;
     font-feature-settings: "cv02", "cv05", "cv11";
     position: relative;
   }

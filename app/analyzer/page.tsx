@@ -47,10 +47,10 @@ export default function AnalyzerPage() {
       if (res.success) {
         setResult({ analysis: res.analysis, fileCount: res.fileCount });
       } else {
-        setResult({ error: res.error });
+        setResult({ error: "error" in res ? res.error : "Unknown error" });
       }
-    } catch (err: any) {
-      setResult({ error: err.message });
+    } catch (err: unknown) {
+      setResult({ error: err instanceof Error ? err.message : String(err) });
     } finally {
       setIsAnalyzing(false);
     }
