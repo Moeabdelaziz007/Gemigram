@@ -18,6 +18,9 @@ export interface NeuralOptions {
   topP?: number;
   stopSequences?: string[];
   streaming?: boolean;
+  userId?: string;
+  agentId?: string;
+  useRAG?: boolean;
 }
 
 export interface NeuralResponse {

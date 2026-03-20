@@ -24,10 +24,7 @@ export const runSovereignReasoning = async (
     const result = await runNeuralIntelligence(
       provider,
       messages,
-      {},
-      options.userId,
-      options.agentId,
-      true
+      options
     );
     return result.text;
   }

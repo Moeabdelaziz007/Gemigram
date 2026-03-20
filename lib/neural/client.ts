@@ -1,31 +1,20 @@
+import { NeuralRouter } from "./router";
 import { NeuralMessage, NeuralOptions, NeuralResponse, NeuralProvider } from "./types";
+
+const router = new NeuralRouter();
 
 /**
  * 🧬 Neural Client Bridge
  * Standardized client-side interface for Multi-Model Intelligence.
  */
-
 export const runNeuralIntelligence = async (
   provider: NeuralProvider,
   messages: NeuralMessage[],
-  options: NeuralOptions = {},
-  userId?: string,
-  agentId?: string,
-  useRAG?: boolean
+  options: NeuralOptions = {}
 ): Promise<NeuralResponse> => {
   try {
-    const response = await fetch("/api/neural/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ provider, messages, options, userId, agentId, useRAG }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || "Neural link communication failure.");
-    }
-
-    return await response.json();
+    // 🚀 Spark Plan Bypass: Execute locally on the Neural-Spine
+    return await router.generate(provider, messages, options);
   } catch (error) {
     console.error(`[Neural_Client_Failure] [${provider}]:`, error);
     throw error;

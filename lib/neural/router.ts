@@ -9,16 +9,24 @@ export class NeuralRouter {
   private deepseek?: OpenAI;
 
   constructor() {
-    if (process.env.GEMINI_API_KEY) {
-      this.googleAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    const anthropicKey = process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY;
+    const deepseekKey = process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY || process.env.DEEPSEEK_API_KEY;
+
+    if (geminiKey) {
+      this.googleAI = new GoogleGenerativeAI(geminiKey);
     }
-    if (process.env.ANTHROPIC_API_KEY) {
-      this.anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    if (anthropicKey) {
+      this.anthropic = new Anthropic({ 
+        apiKey: anthropicKey,
+        dangerouslyAllowBrowser: true // Required for client-side SDK usage
+      });
     }
-    if (process.env.DEEPSEEK_API_KEY) {
+    if (deepseekKey) {
       this.deepseek = new OpenAI({
-        apiKey: process.env.DEEPSEEK_API_KEY,
+        apiKey: deepseekKey,
         baseURL: "https://api.deepseek.com",
+        dangerouslyAllowBrowser: true // Required for client-side SDK usage
       });
     }
   }
@@ -61,7 +69,7 @@ export class NeuralRouter {
         parts: [{ text: m.content }],
       }));
 
-    const lastMessage = history.pop()?.parts[0].text || "";
+    history.pop();
     
     const result = await model.generateContent({
       contents: history,
