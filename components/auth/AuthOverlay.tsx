@@ -200,7 +200,7 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
                       onClick={handleGoogleLogin}
                       className="w-full py-6 rounded-3xl bg-white/[0.03] border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white/[0.06] hover:border-white/20 transition-all flex items-center justify-center gap-4"
                     >
-                      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 invert opacity-50" alt="Google" />
+                      <img src="https://www.gstatic.c@/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 invert opacity-50" alt="Google" />
                       Google_Genesis (One-Click)
                     </button>
                   </div>

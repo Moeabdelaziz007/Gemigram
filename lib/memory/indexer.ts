@@ -1,4 +1,4 @@
-import { db } from "@/lib/firebase";
+import { db } from "@/firebase";
 import { collection, addDoc, query, where, getDocs, limit } from "firebase/firestore";
 import { generateEmbedding, rankMemories } from "./vector-engine";
 import { MemoryFragment, RetrievalResult } from "./types";

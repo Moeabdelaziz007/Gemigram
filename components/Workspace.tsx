@@ -4,7 +4,7 @@ import { Agent } from '@/lib/store/slices/createAgentSlice';
 import { Mail, Calendar, HardDrive, LayoutGrid } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/components/Providers';
 import { fetchLatestMails, fetchCalendarEvents, fetchDriveFiles, type GWSMail, type GWSEvent, type GWSFile } from '@/lib/gws-tools';
 
 type WorkspaceProps = {
@@ -12,7 +12,7 @@ type WorkspaceProps = {
 };
 
 export default function Workspace({ activeAgent }: WorkspaceProps) {
-  const { data: session } = useSession();
+  const { googleAccessToken } = useAuth();
   const [mails, setMails] = useState<GWSMail[]>([]);
   const [events, setEvents] = useState<GWSEvent[]>([]);
   const [files, setFiles] = useState<GWSFile[]>([]);
@@ -20,13 +20,13 @@ export default function Workspace({ activeAgent }: WorkspaceProps) {
 
   useEffect(() => {
     async function loadSovereignData() {
-      if (session?.accessToken) {
+      if (googleAccessToken) {
         setLoading(true);
         try {
           const [mailData, eventData, fileData] = await Promise.all([
-            fetchLatestMails(session.accessToken, 3),
-            fetchCalendarEvents(session.accessToken, 3),
-            fetchDriveFiles(session.accessToken, 3)
+            fetchLatestMails(googleAccessToken, 3),
+            fetchCalendarEvents(googleAccessToken, 3),
+            fetchDriveFiles(googleAccessToken, 3)
           ]);
           setMails(mailData);
           setEvents(eventData);
@@ -39,7 +39,7 @@ export default function Workspace({ activeAgent }: WorkspaceProps) {
       }
     }
     loadSovereignData();
-  }, [session, activeAgent]);
+  }, [googleAccessToken, activeAgent]);
 
   const widgets = [];
 

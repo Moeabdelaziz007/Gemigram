@@ -1,6 +1,6 @@
-import { initializeApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, type Auth, type UserInfo } from 'firebase/auth';
-import { doc, getDocFromServer, getFirestore, type Firestore } from 'firebase/firestore';
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { getFirestore, doc, getDocFromServer, type Firestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider, type Auth, type UserInfo } from "firebase/auth";
 import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -12,29 +12,33 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Initialize Firebase only once
 let app: FirebaseApp;
 let db: Firestore;
 let auth: Auth;
 let storage: FirebaseStorage;
 
 if (typeof window !== 'undefined') {
-  app = initializeApp(firebaseConfig);
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   db = getFirestore(app);
   auth = getAuth(app);
   storage = getStorage(app);
 } else {
-  app = {} as FirebaseApp;
-  db = {} as Firestore;
-  auth = { currentUser: null } as Auth;
-  storage = {} as FirebaseStorage;
+  // SSR fallback
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  db = getFirestore(app);
+  auth = getAuth(app);
+  storage = getStorage(app);
 }
 
-export { db, auth, storage };
+// Export specific instances as requested
+export { app, db, auth, storage };
 export const googleProvider = new GoogleAuthProvider();
 
 googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform.read-only');
 googleProvider.addScope('https://www.googleapis.com/auth/cloud-platform');
 
+// Connection testing logic (client-side only)
 if (typeof window !== 'undefined') {
   const testConnection = async () => {
     try {
@@ -48,6 +52,9 @@ if (typeof window !== 'undefined') {
   testConnection();
 }
 
+/**
+ * 🧬 Sovereign Error Handling Matrix
+ */
 export const OperationType = {
   CREATE: 'create',
   UPDATE: 'update',

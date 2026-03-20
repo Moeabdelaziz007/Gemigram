@@ -467,25 +467,23 @@ export default function ConversationalAgentCreator({
               </button>
 
               <div className="flex-1 relative">
-                <input
-                  type="text"
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder={isListening ? "Listening..." : "Type or speak your response..."}
-                  className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-white font-mono text-sm focus:outline-none focus:border-aether-neon/50 transition-all placeholder:text-white/20"
-                  disabled={isProcessing || isListening}
-                />
+                <div className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-white/40 font-mono text-sm min-h-[56px] flex items-center">
+                  {isListening ? (
+                    <motion.span 
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      Listening to your neural imprint...
+                    </motion.span>
+                  ) : isProcessing ? (
+                    <span>Sequencing conscious data...</span>
+                  ) : (
+                    <span>Awaiting voice link...</span>
+                  )}
+                </div>
               </div>
 
-              <Button
-                onClick={() => handleSendMessage()}
-                disabled={!userInput.trim() || isProcessing || isListening}
-                leftIcon={<Send className="w-4 h-4" />}
-                size="lg"
-              >
-                Send
-              </Button>
+              {/* Text input removed to enforce VOICE-ONLY challenge rules */}
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Sparkles, Box } from 'lucide-react';
 import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import { MarketplaceCard } from '@/components/marketplace/MarketplaceCard';
-import { db } from '@/lib/firebase';
+import { db } from '@/firebase';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { Agent } from '@/lib/store/slices/createAgentSlice';
 import { useAuth } from '@/components/Providers';

@@ -5,7 +5,6 @@ import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, type User } fr
 import { auth as firebaseAuth, googleProvider } from '@/firebase';
 import { fetchGoogleCloudProjects, subscribeToUnreadNotifications } from '@/lib/data-access/gemigramRepository';
 import { useGemigramStore, useUnreadNotifications } from '@/lib/store/useGemigramStore';
-import { SessionProvider, useSession } from "next-auth/react";
 
 interface AuthContextType {
   user: User | null;
@@ -15,13 +14,11 @@ interface AuthContextType {
   unreadNotificationsCount: number;
   googleAccessToken: string | null;
   loadGoogleProjects: () => Promise<void>;
-  session?: any;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [googleAccessToken, setGoogleAccessToken] = useState<string | null>(null);
@@ -81,13 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [user, setAgents, setUnreadNotifications]);
 
-  // Sync NextAuth token to state if available
-  useEffect(() => {
-    if ((session as any)?.accessToken) {
-      setGoogleAccessToken((session as any).accessToken as string);
-    }
-  }, [session]);
-
   const loadGoogleProjects = useCallback(async () => {
     if (!googleAccessToken) {
       return;
@@ -132,15 +122,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       user,
-      loading: loading || status === "loading",
+      loading,
       login,
       logout,
       unreadNotificationsCount: unreadNotifications.length,
       googleAccessToken,
       loadGoogleProjects,
-      session
     }),
-    [googleAccessToken, loadGoogleProjects, loading, status, login, logout, unreadNotifications.length, user, session],
+    [googleAccessToken, loadGoogleProjects, loading, login, logout, unreadNotifications.length, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -148,11 +137,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <SessionProvider>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    </SessionProvider>
+    <AuthProvider>
+      {children}
+    </AuthProvider>
   );
 }
 

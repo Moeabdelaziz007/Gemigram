@@ -5,7 +5,7 @@
  * neural engine to enable 100% static hosting on Firebase's free tier.
  */
 
-import { db, auth } from '../../firebase';
+import { db, auth } from '@/firebase';
 import { collection, addDoc, query, getDocs, orderBy, limit, Timestamp } from 'firebase/firestore';
 import { useGemigramStore } from '../store/useGemigramStore';
 import { fetchWithTimeout, getLocalBridgeUrl, getNetworkTimeoutMs, isLocalBridgeExecutionEnabled, normalizeNetworkError } from '../network/runtime';

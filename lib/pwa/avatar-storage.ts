@@ -1,5 +1,5 @@
 import { ref, uploadString, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from '../../firebase';
+import { storage } from '@/firebase';
 import { validateAvatarData } from './avatar-generator';
 
 /**

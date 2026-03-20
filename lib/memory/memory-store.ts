@@ -13,7 +13,7 @@ import {
   Timestamp,
   QueryConstraint
 } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db } from '@/firebase';
 
 /**
  * Memory Types for Agent Cognitive Architecture

@@ -1,4 +1,4 @@
-import { db, auth } from "../../firebase";
+import { db, auth } from "@/firebase";
 import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
 
 /**
