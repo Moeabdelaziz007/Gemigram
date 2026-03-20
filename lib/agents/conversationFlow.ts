@@ -9,6 +9,7 @@ export type ConversationStep =
   | 'GREETING'
   | 'ENTITY_NAME'
   | 'CORE_PURPOSE'
+  | 'NEURAL_SYNTHESIS'
   | 'VOICE_SELECTION'
   | 'COMPUTE_TIER'
   | 'PERSONA_DIRECTIVE'
@@ -62,6 +63,14 @@ export const CONVERSATION_FLOW: Record<ConversationStep, ConversationMessage> = 
       if (input.length < 5) return { valid: false, error: 'Please provide more detail about the purpose' };
       return { valid: true };
     },
+  },
+
+  NEURAL_SYNTHESIS: {
+    step: 'NEURAL_SYNTHESIS',
+    speaker: 'ASTRAEUS',
+    text: "Analyzing your core purpose... Synthesizing neural blueprint and selecting optimal toolsets.",
+    voicePrompt: "Analyzing your core purpose... Synthesizing neural blueprint and selecting optimal toolsets. One moment.",
+    requiresInput: false,
   },
   
   VOICE_SELECTION: {
@@ -141,7 +150,7 @@ export const CONVERSATION_FLOW: Record<ConversationStep, ConversationMessage> = 
     voicePrompt: "Which tools should your AI have access to? You can say: all tools, search only, maps and weather, or none.",
     suggestions: ['All tools', 'Search & Maps', 'None', 'Crypto & News'],
     requiresInput: true,
-    validation: (input) => {
+    validation: () => {
       // Flexible validation - accept various inputs
       return { valid: true };
     },
@@ -177,6 +186,7 @@ export const getNextStep = (currentStep: ConversationStep): ConversationStep | n
     'GREETING',
     'ENTITY_NAME',
     'CORE_PURPOSE',
+    'NEURAL_SYNTHESIS',
     'VOICE_SELECTION',
     'COMPUTE_TIER',
     'PERSONA_DIRECTIVE',
@@ -200,6 +210,7 @@ export const getPreviousStep = (currentStep: ConversationStep): ConversationStep
     'GREETING',
     'ENTITY_NAME',
     'CORE_PURPOSE',
+    'NEURAL_SYNTHESIS',
     'VOICE_SELECTION',
     'COMPUTE_TIER',
     'PERSONA_DIRECTIVE',

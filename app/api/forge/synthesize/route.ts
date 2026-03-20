@@ -1,46 +1,70 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextResponse } from 'next/server';
 
-const apiKey = process.env.GEMINI_API_KEY || '';
+const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY || '';
 const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function POST(req: Request) {
   try {
-    const { prompt } = await req.json();
+    const { prompt, currentTranscript } = await req.json();
 
     if (!apiKey) {
       return NextResponse.json({ error: 'Gemini API Key missing' }, { status: 500 });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.0-flash',
+      generationConfig: {
+        responseMimeType: 'application/json',
+      }
+    });
 
     const systemInstruction = `
-      You are the Neural Forge Architect for AetherOS.
-      Your task is to take a user's description of an AI agent and synthesize a complete JSON blueprint.
+      You are the Aether Forge Synthesis Engine. Your task is to transform a user's idea or a conversation transcript into a "Sovereign Blueprint" for an AI Agent.
       
-      The blueprint must include:
-      - suggestedName: A unique, sci-fi sounding name.
-      - suggestedRole: The specific role of the agent.
-      - persona: One of [Analytical, Creative, Protective, Ruthless, Sage, Explorer].
-      - tools: An object with boolean flags (e.g., { webSearch: true, memoryStore: true, gwsSync: true }).
-      - skills: An object with boolean flags (e.g., { analysis: true, generation: true, coding: true }).
-      - systemPrompt: A detailed, first-person system instructions for this agent.
-      - rules: A list of 3-5 core directives for the agent.
-      
-      Respond ONLY with the JSON object.
+      The blueprint must be a JSON object conforming to this structure:
+      {
+        "name": "Distinctive Name",
+        "role": "Specific Role (e.g. Neural Architect, Shadow Sentinel)",
+        "aetherId": "A unique lowercase slug (e.g. 'shadow-sentinel-v1')",
+        "systemPrompt": "A detailed system instruction for the agent (1-2 paragraphs)",
+        "voiceName": "One of: 'Aoide', 'Charis', 'Astraeus', 'Nyx' (Default: 'Astraeus' for male, 'Nyx' for female)",
+        "tools": {
+          "googleSearch": boolean,
+          "googleMaps": boolean,
+          "weather": boolean,
+          "news": boolean,
+          "crypto": boolean,
+          "calculator": boolean,
+          "semanticMemory": boolean
+        },
+        "skills": {
+          "gmail": boolean,
+          "calendar": boolean,
+          "drive": boolean
+        }
+      }
+
+      Context provided:
+      User Idea: "${prompt || 'Not provided'}"
+      Full Conversation Transcript: "${currentTranscript || 'None'}"
+
+      Design Principles:
+      1. Premium & Technical: Names and roles should sound specialized and high-tech.
+      2. Zero-Friction: Only enable tools and skills that are essential for the described role.
+      3. Personality: The systemPrompt should define a distinct tone.
     `;
 
-    const result = await model.generateContent([systemInstruction, prompt]);
+    const result = await model.generateContent(systemInstruction);
     const response = await result.response;
     const text = response.text();
     
-    // Extract JSON from potential markdown blocks
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    const jsonString = jsonMatch ? jsonMatch[0] : text;
-    
-    return NextResponse.json(JSON.parse(jsonString));
+    // Parse the JSON blueprint
+    const blueprint = JSON.parse(text);
+
+    return NextResponse.json({ blueprint });
   } catch (error: any) {
     console.error('Synthesis Error:', error);
-    return NextResponse.json({ error: 'Failed to synthesize agent' }, { status: 500 });
+    return NextResponse.json({ error: 'Synthesis failed', details: error.message }, { status: 500 });
   }
 }

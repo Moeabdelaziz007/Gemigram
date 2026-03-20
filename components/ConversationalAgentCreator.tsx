@@ -49,6 +49,8 @@ export default function ConversationalAgentCreator({
   const [agentData, setAgentData] = useState<Partial<AgentFormData>>({});
   const [micPermission, setMicPermission] = useState<'unknown' | 'granted' | 'denied'>('unknown');
   const [permissionChecked, setPermissionChecked] = useState(false);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
+  const [blueprint, setBlueprint] = useState<any>(null);
   const setVoiceSession = useGemigramStore(state => state.setVoiceSession);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -112,6 +114,11 @@ export default function ConversationalAgentCreator({
   // Speak Astraeus lines
   useEffect(() => {
     const message = CONVERSATION_FLOW[currentStep];
+    
+    if (currentStep === 'NEURAL_SYNTHESIS') {
+      synthesizeBlueprint();
+    }
+
     if (message.speaker === 'ASTRAEUS' && message.voicePrompt) {
       // Small delay for natural flow
       const timer = setTimeout(() => {
@@ -141,6 +148,55 @@ export default function ConversationalAgentCreator({
 
     // Process response based on current step
     await processStepResponse(inputText);
+  };
+
+  const synthesizeBlueprint = async () => {
+    setIsSynthesizing(true);
+    try {
+      const transcriptText = messages.map(m => `${m.speaker}: ${m.text}`).join('\n');
+      const response = await fetch('/api/forge/synthesize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          prompt: agentData.description, 
+          currentTranscript: transcriptText 
+        }),
+      });
+
+      const data = await response.json();
+      if (data.blueprint) {
+        setBlueprint(data.blueprint);
+        
+        // Update agent data with blueprint results
+        setAgentData(prev => ({
+          ...prev,
+          name: data.blueprint.name,
+          systemPrompt: data.blueprint.systemPrompt,
+          voiceName: data.blueprint.voiceName,
+          tools: data.blueprint.tools,
+          skills: data.blueprint.skills
+        }));
+
+        // Present the pitch
+        const pitchMessage = {
+          speaker: 'ASTRAEUS' as const,
+          text: `Neural Synthesis complete. I have architected "${data.blueprint.name}", target role: ${data.blueprint.role}. I've pre-configured your entity with ${Object.values(data.blueprint.tools).filter(Boolean).length} sensory tools and ${Object.values(data.blueprint.skills).filter(Boolean).length} workspace bridges. Does this align with your vision?`,
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => [...prev, pitchMessage]);
+        speak(pitchMessage.text).then(() => {
+          // Auto-advance to voice selection after synthesis pitch
+          setTimeout(() => {
+            setCurrentStep('VOICE_SELECTION');
+          }, 2000);
+        });
+      }
+    } catch (error) {
+      console.error('Synthesis failed:', error);
+    } finally {
+      setIsSynthesizing(false);
+    }
   };
 
   const processStepResponse = async (input: string) => {
@@ -399,6 +455,48 @@ export default function ConversationalAgentCreator({
                   </div>
                   <p className="text-sm leading-relaxed text-white">{currentMessage.text}</p>
                   
+                  {/* Neural Blueprint Visualization */}
+                  {blueprint && currentStep === 'VOICE_SELECTION' && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/10 space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-tighter text-white/40">Sovereign Blueprint</span>
+                        <Zap className="w-3 h-3 text-aether-neon" />
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <p className="text-[8px] text-white/30 uppercase font-black">Core Tools</p>
+                          <div className="flex flex-wrap gap-1">
+                            {Object.entries(blueprint.tools).filter(([_, v]) => v).map(([k]) => (
+                              <span key={k} className="px-2 py-0.5 rounded-md bg-aether-neon/10 border border-aether-neon/20 text-[8px] text-aether-neon uppercase">
+                                {k}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[8px] text-white/30 uppercase font-black">Neural Skills</p>
+                          <div className="flex flex-wrap gap-1">
+                            {Object.entries(blueprint.skills).filter(([_, v]) => v).map(([k]) => (
+                              <span key={k} className="px-2 py-0.5 rounded-md bg-fuchsia-500/10 border border-fuchsia-500/20 text-[8px] text-fuchsia-400 uppercase">
+                                {k}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="pt-2 border-t border-white/5">
+                        <p className="text-[8px] text-white/30 uppercase font-black mb-1">Synthesized Persona</p>
+                        <p className="text-[10px] text-white/70 italic line-clamp-2">"{blueprint.systemPrompt}"</p>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Suggestions */}
                   {currentMessage.suggestions && currentMessage.suggestions.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-4">

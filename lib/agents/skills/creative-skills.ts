@@ -101,9 +101,9 @@ export const VOICE_SYNTHESIS_SKILL: SkillDefinition = {
   ],
   permissions: ['read', 'execute', 'storage'],
   requirements: {
-    apiKeys: ['ELEVENLABS_API_KEY'],
+    apiKeys: [],
     oauthScopes: [],
-    externalServices: ['ElevenLabs API', 'Google TTS']
+    externalServices: ['Gemini Live Native Audio', 'Web Speech API']
   },
   dependencies: [],
   conflicts: [],
@@ -112,10 +112,10 @@ export const VOICE_SYNTHESIS_SKILL: SkillDefinition = {
     color: 'text-violet-500',
     difficulty: 'intermediate',
     estimatedSetupTime: '10 minutes',
-    tags: ['voice', 'speech', 'audio', 'tts', 'synthesis', 'narration'],
-    version: '1.0.0',
-    author: 'Gemigram',
-    documentationUrl: 'https://elevenlabs.io/'
+    tags: ['voice', 'speech', 'audio', 'tts', 'synthesis', 'narration', 'sovereign'],
+    version: '1.1.0',
+    author: 'Aether Architect',
+    documentationUrl: 'https://ai.google.dev/gemini/docs/live'
   }
 };
 
