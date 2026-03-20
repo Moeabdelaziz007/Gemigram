@@ -6,18 +6,35 @@ import * as admin from 'firebase-admin';
  * Handles JWT verification using Firebase Admin SDK.
  */
 
+const isConfigured = 
+  process.env.FIREBASE_PROJECT_ID && 
+  process.env.FIREBASE_CLIENT_EMAIL && 
+  process.env.FIREBASE_PRIVATE_KEY;
+
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
-  });
+  if (isConfigured) {
+    try {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        }),
+      });
+    } catch (e) {
+      console.warn('[ServerAuth] Failed to initialize Firebase Admin:', e);
+    }
+  } else {
+    // Only warn if we are NOT in the build phase (or if we actually need it)
+    if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PHASE) {
+      console.warn('[ServerAuth] Missing Firebase Admin credentials — Auth endpoints will fail.');
+    }
+  }
 }
 
-export const auth = admin.auth();
-export const db = admin.firestore();
+// Safely export auth and db
+export const auth = admin.apps.length ? admin.auth() : null as unknown as admin.auth.Auth;
+export const db = admin.apps.length ? admin.firestore() : null as unknown as admin.firestore.Firestore;
 
 /**
  * verifyIdToken
