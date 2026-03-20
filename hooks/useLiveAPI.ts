@@ -27,8 +27,9 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: ToolResult) =>
   const maxReconnectAttempts = 5;
   const baseReconnectDelay = 1000; // 1s
   const maxReconnectDelay = 30000; // 30s
-  const intentionalDisconnectRef = useRef(false);
   const lastConnectArgsRef = useRef<{ systemInstruction?: string; voiceName?: string; tools?: Tool[] }>({});
+  const audioQueueRef = useRef<string[]>([]);
+  const isPlayingRef = useRef(false);
 
   // 1. Utility Callbacks (Top-Level)
   const addLog = useCallback((text: string, type: 'system' | 'user' | 'agent' | 'tool') => {
@@ -47,12 +48,26 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: ToolResult) =>
 
   const playAudio = useCallback(async (base64Data: string) => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new AudioContext();
+      audioContextRef.current = new AudioContext({ sampleRate: 24000 });
     }
     
     const audioContext = audioContextRef.current;
-    const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-    const audioBuffer = await audioContext.decodeAudioData(binaryData.buffer);
+    
+    // Gemini sends PCM 24kHz 16-bit mono
+    const binaryString = atob(base64Data);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    
+    const pcm16 = new Int16Array(bytes.buffer);
+    const float32 = new Float32Array(pcm16.length);
+    for (let i = 0; i < pcm16.length; i++) {
+      float32[i] = pcm16[i] / 32768.0;
+    }
+    
+    const audioBuffer = audioContext.createBuffer(1, float32.length, 24000);
+    audioBuffer.getChannelData(0).set(float32);
     
     const source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
@@ -65,8 +80,30 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: ToolResult) =>
     
     source.connect(analyserRef.current);
     analyserRef.current.connect(audioContext.destination);
-    source.start();
+    
+    return new Promise<void>((resolve) => {
+      source.onended = () => resolve();
+      source.start();
+    });
   }, [updateVolume]);
+
+  const playNextInQueue = useCallback(async () => {
+    if (audioQueueRef.current.length === 0) {
+      isPlayingRef.current = false;
+      return;
+    }
+    isPlayingRef.current = true;
+    const chunk = audioQueueRef.current.shift()!;
+    await playAudio(chunk);
+    playNextInQueue();
+  }, [playAudio]);
+
+  const enqueueAudio = useCallback((base64Data: string) => {
+    audioQueueRef.current.push(base64Data);
+    if (!isPlayingRef.current) {
+      playNextInQueue();
+    }
+  }, [playNextInQueue]);
 
   const sendVisionFrame = useCallback((base64Data: string) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -210,7 +247,7 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: ToolResult) =>
         if (message.serverContent?.modelTurn?.parts) {
           for (const part of message.serverContent.modelTurn.parts) {
             if (part.inlineData) {
-              playAudio(part.inlineData.data);
+              enqueueAudio(part.inlineData.data);
             }
             if (part.text) {
               addLog(part.text, "agent");
