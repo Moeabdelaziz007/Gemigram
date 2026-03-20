@@ -41,7 +41,7 @@ export default function ConversationalAgentCreator({
   const [currentStep, setCurrentStep] = useState<ConversationStep>('GREETING');
   const [userInput, setUserInput] = useState('');
   const [messages, setMessages] = useState<Array<{
-    speaker: 'ASTRAEUS' | 'USER';
+    speaker: 'GEMINI' | 'USER';
     text: string;
     timestamp: Date;
   }>>([]);
@@ -111,7 +111,7 @@ export default function ConversationalAgentCreator({
     }
   }, [permissionChecked, micPermission, speechRecognitionSupported, isListening, isProcessing, startListening]);
 
-  // Speak Astraeus lines
+  // Speak Gemini lines
   useEffect(() => {
     const message = CONVERSATION_FLOW[currentStep];
     
@@ -119,7 +119,7 @@ export default function ConversationalAgentCreator({
       synthesizeBlueprint();
     }
 
-    if (message.speaker === 'ASTRAEUS' && message.voicePrompt) {
+    if (message.speaker === 'GEMINI' && message.voicePrompt) {
       // Small delay for natural flow
       const timer = setTimeout(() => {
         speak(message.voicePrompt!, { rate: 0.95, pitch: 1.0 });
@@ -179,7 +179,7 @@ export default function ConversationalAgentCreator({
 
         // Present the pitch
         const pitchMessage = {
-          speaker: 'ASTRAEUS' as const,
+          speaker: 'GEMINI' as const,
           text: `Neural Synthesis complete. I have architected "${data.blueprint.name}", target role: ${data.blueprint.role}. I've pre-configured your entity with ${Object.values(data.blueprint.tools).filter(Boolean).length} sensory tools and ${Object.values(data.blueprint.skills).filter(Boolean).length} workspace bridges. Does this align with your vision?`,
           timestamp: new Date(),
         };
@@ -208,7 +208,7 @@ export default function ConversationalAgentCreator({
       if (!result.valid) {
         // Show error and re-ask question
         const errorMessage = {
-          speaker: 'ASTRAEUS' as const,
+          speaker: 'GEMINI' as const,
           text: `I need clarification: ${result.error}. ${message.text}`,
           timestamp: new Date(),
         };
@@ -329,7 +329,7 @@ export default function ConversationalAgentCreator({
 
     // Announce completion
     const completionMessage = {
-      speaker: 'ASTRAEUS' as const,
+      speaker: 'GEMINI' as const,
       text: "Consciousness matrix initialized. Your sovereign AI entity awakens now.",
       timestamp: new Date(),
     };
@@ -373,12 +373,12 @@ export default function ConversationalAgentCreator({
         {/* Header */}
         <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-aether-neon/10 border border-aether-neon/30 flex items-center justify-center">
-              <Brain className="w-6 h-6 text-aether-neon animate-pulse" />
+            <div className="w-12 h-12 rounded-2xl bg-gemigram-neon/10 border border-gemigram-neon/30 flex items-center justify-center">
+              <Brain className="w-6 h-6 text-gemigram-neon animate-pulse" />
             </div>
             <div>
               <h2 className="text-xl font-black tracking-[0.3em] uppercase text-white flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-aether-neon" />
+                <Sparkles className="w-5 h-5 text-gemigram-neon" />
                 Conversational Genesis
               </h2>
               <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest mt-1">
@@ -427,7 +427,7 @@ export default function ConversationalAgentCreator({
               >
                   <div className={`max-w-[80%] rounded-3xl px-6 py-4 ${
                     msg.speaker === 'USER' 
-                      ? 'bg-aether-neon/20 border border-aether-neon/30 text-white' 
+                      ? 'bg-gemigram-neon/20 border border-gemigram-neon/30 text-white' 
                       : 'glass-medium border border-white/10 text-white'
                   }`}>
                     <p className="text-sm leading-relaxed">{msg.text}</p>
@@ -439,18 +439,18 @@ export default function ConversationalAgentCreator({
               ))}
             </AnimatePresence>
             
-            {/* Current Astraeus Message */}
-            {currentMessage.speaker === 'ASTRAEUS' && !messages.find(m => m.text === currentMessage.text) && (
+            {/* Current Gemini Message */}
+            {currentMessage.speaker === 'GEMINI' && !messages.find(m => m.text === currentMessage.text) && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex justify-start"
               >
-                <div className="max-w-[80%] rounded-3xl px-6 py-4 glass-medium border border-aether-neon/20">
+                <div className="max-w-[80%] rounded-3xl px-6 py-4 glass-medium border border-gemigram-neon/20">
                   <div className="flex items-center gap-2 mb-2">
-                    <Activity className="w-3 h-3 text-aether-neon animate-pulse" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-aether-neon">
-                      Astraeus Speaking
+                    <Activity className="w-3 h-3 text-gemigram-neon animate-pulse" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-gemigram-neon">
+                      Gemini Speaking
                     </span>
                   </div>
                   <p className="text-sm leading-relaxed text-white">{currentMessage.text}</p>
@@ -464,7 +464,7 @@ export default function ConversationalAgentCreator({
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-tighter text-white/40">Sovereign Blueprint</span>
-                        <Zap className="w-3 h-3 text-aether-neon" />
+                        <Zap className="w-3 h-3 text-gemigram-neon" />
                       </div>
                       
                       <div className="grid grid-cols-2 gap-2">
@@ -472,7 +472,7 @@ export default function ConversationalAgentCreator({
                           <p className="text-[8px] text-white/30 uppercase font-black">Core Tools</p>
                           <div className="flex flex-wrap gap-1">
                             {Object.entries(blueprint.tools).filter(([_, v]) => v).map(([k]) => (
-                              <span key={k} className="px-2 py-0.5 rounded-md bg-aether-neon/10 border border-aether-neon/20 text-[8px] text-aether-neon uppercase">
+                              <span key={k} className="px-2 py-0.5 rounded-md bg-gemigram-neon/10 border border-gemigram-neon/20 text-[8px] text-gemigram-neon uppercase">
                                 {k}
                               </span>
                             ))}
@@ -504,7 +504,7 @@ export default function ConversationalAgentCreator({
                         <button
                           key={idx}
                           onClick={() => handleSendMessage(suggestion)}
-                          className="px-4 py-2 rounded-xl bg-aether-neon/10 border border-aether-neon/20 text-aether-neon text-xs font-black uppercase tracking-widest hover:bg-aether-neon/20 transition-all"
+                          className="px-4 py-2 rounded-xl bg-gemigram-neon/10 border border-gemigram-neon/20 text-gemigram-neon text-xs font-black uppercase tracking-widest hover:bg-gemigram-neon/20 transition-all"
                         >
                           {suggestion}
                         </button>
@@ -528,7 +528,7 @@ export default function ConversationalAgentCreator({
                 <Clock className="w-3 h-3" />
                 <span>Step {Object.keys(CONVERSATION_FLOW).indexOf(currentStep) + 1}/11</span>
               </div>
-              <div className={`flex items-center gap-2 ${speechRecognitionSupported ? 'text-aether-neon' : 'text-red-400'}`}>
+              <div className={`flex items-center gap-2 ${speechRecognitionSupported ? 'text-gemigram-neon' : 'text-red-400'}`}>
                 <Mic className="w-3 h-3" />
                 <span>Voice: {!speechRecognitionSupported ? 'UNSUPPORTED' : micPermission === 'granted' ? 'READY' : micPermission === 'denied' ? 'DENIED' : 'CHECKING'}</span>
               </div>
@@ -554,13 +554,13 @@ export default function ConversationalAgentCreator({
                     ? 'bg-red-500/20 border-2 border-red-500 animate-pulse' 
                     : micPermission === 'denied' || !speechRecognitionSupported
                     ? 'bg-white/5 border-2 border-white/10 text-white/30 cursor-not-allowed'
-                    : 'bg-aether-neon/10 border-2 border-aether-neon/30 hover:bg-aether-neon/20'
+                    : 'bg-gemigram-neon/10 border-2 border-gemigram-neon/30 hover:bg-gemigram-neon/20'
                 }`}
               >
                 {isListening ? (
                   <MicOff className="w-6 h-6 text-red-500" />
                 ) : (
-                  <Mic className="w-6 h-6 text-aether-neon" />
+                  <Mic className="w-6 h-6 text-gemigram-neon" />
                 )}
               </button>
 

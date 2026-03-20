@@ -216,8 +216,7 @@ export default function SettingsPage() {
                         <option>Fenrir</option>
                       </select>
                     </div>
-                  </div>
-
+                  
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                       <div>

@@ -1,6 +1,6 @@
 /**
  * Sovereign GWS Tool-Chain
- * Bridges AetherOS agents with the Google Workspace ecosystem.
+ * Bridges GemigramOS agents with the Google Workspace ecosystem.
  */
 
 export interface GWSFile {

@@ -1,5 +1,5 @@
 /**
- * AetherOS Free Tier Orchestrator
+ * GemigramOS Free Tier Orchestrator
  * Ensures all AI inference routes through $0-cost Gemini Flash models.
  */
 
