@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     }
 
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.0-flash-lite',
       generationConfig: {
         responseMimeType: 'application/json',
       }
@@ -28,7 +28,9 @@ export async function POST(req: Request) {
         "role": "Specific Role (e.g. Neural Architect, Shadow Sentinel)",
         "aetherId": "A unique lowercase slug (e.g. 'shadow-sentinel-v1')",
         "systemPrompt": "A detailed system instruction for the agent (1-2 paragraphs)",
-        "voiceName": "One of: 'Aoide', 'Charis', 'Astraeus', 'Nyx' (Default: 'Astraeus' for male, 'Nyx' for female)",
+        "persona": "Analytical | Creative | Sarcastic | Empathetic",
+        "rules": ["Rule 1", "Rule 2", "Rule 3"],
+        "voiceName": "One of: 'Aoide', 'Charis', 'Astraeus', 'Nyx'",
         "tools": {
           "googleSearch": boolean,
           "googleMaps": boolean,
@@ -51,21 +53,23 @@ export async function POST(req: Request) {
 
       Design Principles:
       1. Premium & Technical: Names and roles should sound specialized and high-tech.
-      2. Zero-Friction: Only enable tools and skills that are essential for the described role.
-      3. Personality: The systemPrompt should define a distinct tone.
+      2. Data Integrity: Ensure the "name" field is populated (do NOT use "suggestedName").
+      3. Zero-Friction: Only enable tools and skills that are essential for the described role.
     `;
 
     const result = await model.generateContent(systemInstruction);
     const response = await result.response;
     const text = response.text();
     
-    // Parse the JSON blueprint safely (strip markdown if present)
+    // Parse the JSON blueprint safely
     const cleanText = text.replace(/```json/gi, '').replace(/```/gi, '').trim();
-    const blueprint = JSON.parse(cleanText);
+    const blueprint = JSON.parse(cleanText) as Record<string, unknown>;
 
-    return NextResponse.json({ blueprint });
-  } catch (error: any) {
+    // Return the blueprint directly to match client expectations
+    return NextResponse.json(blueprint);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error during synthesis';
     console.error('Synthesis Error:', error);
-    return NextResponse.json({ error: 'Synthesis failed', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'Synthesis failed', details: errorMessage }, { status: 500 });
   }
 }

@@ -1,11 +1,12 @@
 # 🧠 GemigramOS Memories
 
-## [2026-03-20] Phase 20: Front-End Sovereignty Complete
+## [2026-03-21] Phase 3: Forge System Evolution (Neural Materialization)
 
-- **Neural Dashboard**: Refactored with premium HSL-based neon accents (#10FF87) and high-fidelity glassmorphism. Integrated real-time connectivity status and store-driven orchestration.
-- **Persistent Settings**: Implemented full Firestore synchronization for user skills, voice profiles, and API credentials. Added "Unsaved Changes" failsafe and auto-load logic.
-- **Marketplace Failsafe**: Injected `SEED_AGENTS` as a fallback architectural layer to ensure zero-friction manifestation even with empty remote registries.
-- **Security & UX**: Hardened Secure Input fields and optimized navigation routes for mobile/desktop fluid transition.
+- **Neural Architecture Upgrade**: Refactored `useForgeLogic.ts` to integrate the **Sovereign Neural Spine** (`useLiveAPI`), replacing legacy Web Speech dependencies with our Zero-Copy audio pipeline.
+- **Enhanced Synthesis Protocol**: Upgraded `app/api/forge/synthesize/route.ts` to `gemini-2.0-flash-lite`. Implemented strict JSON schema mapping to fix the "Blueprint Data Loss" bug.
+- **11-Step Materialization**: Deployed the full **Materialization Protocol UI** in `ForgeChamber.tsx`, featuring a high-fidelity 11-step interactive sequence.
+- **State Persistence**: Enabled full store-level hydration for `pendingManifest` in the `UiSlice`. All agent drafts now survive system restarts and browser refreshes.
+- **Zero-Friction Maintenance**: Resolved all `any` type lints in the Forge pipeline, ensuring 100% type safety for the Sovereign OS production build.
 
 ## [2026-03-24] Surgical Merge V3.0
 
@@ -15,6 +16,7 @@
 - Fixed store-level lint regressions. System state 100% reconciled on `main`. 🧬🚀
 
 ## [2026-03-24] ConversationalAgentCreator Build Hotfix
+
 - What was built/fixed: Fixed TypeScript 'GEMINI' to 'ASTRAEUS' type mismatches and added missing 'Loader2' imports. Re-added missing 'isSynthesizing' state to enable successful TS compilation.
 - Files modified: `components/ConversationalAgentCreator.tsx`
 - Slices affected: None
@@ -23,7 +25,15 @@
 - Open PRs status: Evaluating PRs 37, 39, 41, 42, 43 for clean up.
 - Performance Optimizer Check: Maintained fast renders; no new bundles added.
 
+## [2026-03-20] Phase 20: Front-End Sovereignty Complete
+
+- **Neural Dashboard**: Refactored with premium HSL-based neon accents (#10FF87) and high-fidelity glassmorphism. Integrated real-time connectivity status and store-driven orchestration.
+- **Persistent Settings**: Implemented full Firestore synchronization for user skills, voice profiles, and API credentials. Added "Unsaved Changes" failsafe and auto-load logic.
+- **Marketplace Failsafe**: Injected `SEED_AGENTS` as a fallback architectural layer to ensure zero-friction manifestation even with empty remote registries.
+- **Security & UX**: Hardened Secure Input fields and optimized navigation routes for mobile/desktop fluid transition.
+
 ## [2026-03-20] Build Stabilization & Core Restoration
+
 - Resolved **50+ TypeScript errors** across cognitive, security, and UI layers.
 - Fixed **Circular Dependencies** in `useGemigramStore.ts` and `memory-store.ts`.
 - Restored **missing `useMemory` hook**, bridging cognitive storage with UI.
@@ -32,6 +42,7 @@
 - Stabilized **Landing Page (Hero)** by mapping `bots` to `agents` for unified state.
 
 ## Project State: Phase 11 Initiated
+
 - [x] Phase 10: Gemigram Identity & HUD Overhaul (Premium UI/UX)
 - [x] Phase 11: Neural Voice Lab (Voice Cloning & TTS)
 - [x] Phase 14: Rust Voice Engine (Zero-Latency WASM)
@@ -42,6 +53,7 @@
 - [x] Phase 19: Smart Simplification & Cognitive Offloading (Neural Slices)
 
 ## [2026-03-20] Mission 10: Codebase Hardening & Neural Purge
+
 - **Technological Debt Repaid**: Systematically erased 8 critical bugs/warnings across core subsystems.
 - **Subsystems Hardened**:
   - `Sensory/Synthesis`: Unified `speak` engine by purging unused legacy options.
@@ -53,6 +65,7 @@
 - **System State**: 100% build ready, $0-cost Spark-tier compliant. 🚀🧪🛡️
 
 ### Major Milestones
+
 - [x] Sovereign Neural Spine Bridge implemented (`scripts/aether-local-bridge.ts`).
 - [x] Zero-Terminal Launcher (`GemigramOS.command`) deployed.
 - [x] Neural-Spine Voice Protocol (NSVP) implemented via `AudioWorklet` (Raw PCM streaming).
@@ -61,43 +74,47 @@
 - [x] Sovereign Identity Unification (Neon/Carbon/Glass tokens) complete.
 - [x] Voice-First Landing Wireframe (`public/wireframe-landing.html`) created.
 
-# 🧠 Gemigram AIOS: Sovereign State (V1.0) -> (V0.1) Reset
+## 🧠 Gemigram AIOS: Sovereign State (V1.0) -> (V0.1) Reset
 
-## 🎯 Current Status (Reset v0.1)
+### 🎯 Current Status (Reset v0.1)
+
 - **Identity Swapped**: Fully migrated from Aether to Gemigram.
 - **Neural Architecture**: Sliced Zustand pattern implemented (Sensory, Agent, UI, Cognitive, Auth, Swarm).
 - **Celestial UI**: GalaxyScene active with 11/10 premium Starfield and Orbital physics.
 - **Sovereign Infrastructure**: Firebase Functions stabilized; MCP Bridge active.
 - **Version Reset**: System successfully recalibrated to v0.1 architecture baseline.
 
-## 🚀 Vision 2026
+### 🚀 Vision 2026
+
 - Target: Gemini Live Agent Challenge Champion.
 - Status: Global Orchestration Ready.
 
-## Architectural Vision
+### Architectural Vision
 
-1.  **Core Logic**: Next.js 15 + Zustand (Neural Store).
-2.  **GWS Integration**: Optimized for production via `@googleworkspace/cli`.
-3.  **Primary Execution Engine**: Local-Spine Architecture ($0 Cloud Cost).
-    -   The system identifies billing restrictions and routes all logic to `scripts/aether-local-bridge.ts`.
-4.  **Persona Protocol**: `.ath` packages now include local-only skill mapping.
-5.  **Memory Service**: Python WAL (Write-Ahead-Log).
+1. **Core Logic**: Next.js 15 + Zustand (Neural Store).
+2. **GWS Integration**: Optimized for production via `@googleworkspace/cli`.
+3. **Primary Execution Engine**: Local-Spine Architecture ($0 Cloud Cost).
+   - The system identifies billing restrictions and routes all logic to `scripts/aether-local-bridge.ts`.
+4. **Persona Protocol**: `.ath` packages now include local-only skill mapping.
+5. **Memory Service**: Python WAL (Write-Ahead-Log).
 
-## Deployment Protocol
+### Deployment Protocol
+
 - Frontend: Firebase Hosting (Production).
 - Execution: Local Neural Spine (Client-side).
-7.  **Orchestration**: Gemigram (Voice-First Engine).
+7. **Orchestration**: Gemigram (Voice-First Engine).
 
-## Architecture State
+### Architecture State
+
 - **Core**: Next.js 15, TailwindCSS, Framer Motion.
 - **State**: Project-aware `useGemigramStore` (Zustand) managing project discovery and agent manifesting.
 - **Identity**: Gemigram // Sovereign Intelligence Orchestration.
 - **Visuals**: HUD-Industrial Sci-Fi, Dark Carbon Fiber, Neon Accents.
 - **PWA**: Sovereign standalone mode with dynamic agent manifesting.
-
 - **UI Strategy**: Leveraging v0 for rapid elite UI/UX prototyping while maintaining GemigramOS design tokens.
 
 ## Execution History
+
 - **2024-05-18**: Implemented Universal Discovery (GCP Resource Manager API integration).
 - **2024-05-18**: Implemented Sovereign Gatekeeping Flow (Gate -> Dashboard -> Agent).
 - **2024-05-18**: Optimised `manifest.json` and implemented dynamic shortcut injection for standalone PWA mode.
@@ -115,29 +132,26 @@
 - **2026-03-19**: Executed **Phase 22: Neural Intent Engine Overhaul**. Deployed high-fidelity `useVoiceCommandRouter` with strict **FIFO ToolCallQueue** to prevent race conditions. Integrated **150ms navigation debounce** and registered 6 core Gemini tools (`navigate_to_stage`, `navigate_to_route`, etc.). Enforced "Voice-First" navigation constraint by routing all UI states through LLM ToolCalls. System intentionality stabilized.
 - **2026-03-19**: Executed **Phase 25: Self-Healing & Pattern Discovery**. Systematically repaired `globals.css` (merge conflict corruption). Resolved critical TypeScript build regressions in `Workspace.tsx` and `PureVoiceCanvas.tsx` by unifying `Agent` and `GWSMail` interface domains. Deployed the `pattern-discovery` autonomous skill for structural repo auditing. System state 100% reconciled and live on `main`. 🧬🚀
 
-## Architectural Vision (V8 Evolution)
-- **Core Logic**: Next.js 15 + Domain-Specific Neural Slices.
-- **Cognitive Layer**: Asynchronous `MemoryWorker` (Off-thread processing).
-- **Sensory Layer**: Modular Hooks for Voice Synthesis/Recognition.
-- **Execution Engine**: Hybrid Dual-Engine (Client-first, Local/Cloud fallback).
-- **Billing**: 100% Free-Tier compliant.
-- **Testing**: Standardized `node:test` + JSDOM for UI/UX validation.
+## 🩺 MVP System Diagnostic & Code Health Assessment
 
-## 🩺 MVP System Diagnostic & Code Health Assessment (Current State)
-- **Build Quality**: The system successfully compiles the production build (Next.js `/out`), but generates warnings for `any` types and unused variables (e.g., `SynthesisOptions`, `requestsPerHour`, `error` handles) indicating a need for a targeted Code Health sprint.
-- **Complexity Hotspots**: Identified large cognitive components that could be abstracted or offloaded to specialized hooks or smaller chunks:
-  - `lib/mcp/mcp-client.ts` (~700 lines)
-  - `components/ConversationalAgentCreator.tsx` (~600 lines)
-  - `lib/api-marketplace/marketplace-client.ts` (~560 lines)
-- **Resolved UI/UX Issues**: Missing accessible tags (`aria-label`) in Settings form controls, and TypeScript strictness (`GEMINI` vs `ASTRAEUS` union match in `ConversationalAgentCreator.tsx`).
+- **Build Quality**: The system successfully compiles the production build (Next.js `/out`), but generates warnings for `any` types and unused variables indicating a need for a targeted Code Health sprint.
+- **Complexity Hotspots**: Identified large cognitive components that could be abstracted or offloaded to specialized hooks or smaller chunks.
+- **Resolved UI/UX Issues**: Missing accessible tags in Settings form controls and TypeScript strictness in `ConversationalAgentCreator.tsx`.
 - **Next Tactical Steps**:
-  1. **Phase: Smart Simplification II**: Utilize the `pr-code-health` and `performance-optimizer` skills to systematically eradicate unused code and chunk complex component files.
-  2. **Public API (v1.0) & Marketplace Beta Launch**: Once complexity is normalized, transition the Neural Marketplace into public beta mode with robust E2E test coverage.
+  1. **Phase: Smart Simplification II**: Utilize the `pr-code-health` and `performance-optimizer` skills to systematically eradicate unused code.
+  2. **Public API (v1.0) & Marketplace Beta Launch**: Transition the Neural Marketplace into public beta mode once complexity is normalized.
 
 ## [2026-03-24] Mission 11: E2E MVP & Dead Code Purge
-- **What was built/fixed**: Purged redundant `CreateAgentForm.tsx`, fixed unused variables (`now`, `_error`, `McpServer`), unified E2E typings in `voice-mock.ts`, verified conversational agent generation Flow and dynamic PWA manifest routing. Analyzed README for accuracy in both English and Arabic.
+
+- **What was built/fixed**: Purged redundant `CreateAgentForm.tsx`, fixed unused variables, unified E2E typings in `voice-mock.ts`, verified conversational agent generation Flow and dynamic PWA manifest routing.
 - **Files modified**: `lib/voice/synthesis-engine.ts`, `lib/pwa/avatar-generator.ts`, `lib/pwa/dynamic-manifest.ts`, `lib/mcp/mcp-config.ts`, `e2e/utils/voice-mock.ts`, `app/api/forge/synthesize/route.ts`, `task.md`.
 - **Slices affected**: `SwarmSlice` (removed unused getter).
 - **New patterns discovered**: Enforced strict zero-dead-code priority via `pr-code-health` post-build.
-- **System state post-change**: `npm run lint` and `npm run build` pass securely. MVP creation via Forge is completely automated by voice API, adhering to the pure Aether routing principles.
-- **Open PRs status**: System stabilized and prepared for final production tests.
+- **System state post-change**: `npm run lint` and `npm run build` pass securely. MVP creation via Forge is completely automated by voice API.
+
+## [2026-03-21] Voice Engine Pipeline Overhaul (Phase 21)
+
+- Replaced basic WebSocket audio with Zero-Copy SharedArrayBuffer architecture.
+- Integrated Silero VAD for accurate local edge detection & barge-in.
+- Implemented Sovereign Multi-Reader Spine (Gemini Live + local Whisper Fallback).
+- Fixed `useLiveAPI` duplicate return properties and volume tracking.

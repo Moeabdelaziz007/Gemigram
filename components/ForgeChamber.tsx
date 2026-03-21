@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Sparkles, Cpu, Brain, Package, Fingerprint, Database, Rocket, Activity } from 'lucide-react';
+import { Sparkles, Cpu, Brain, Package, Fingerprint, Database, Activity } from 'lucide-react';
 
 interface ForgeChamberProps {
   onComplete: () => void;
 }
 
 const FORGE_STEPS = [
-  { id: 'init', text: 'CALIBRATING NEURAL FREQUENCIES...', icon: Sparkles, duration: 2000 },
-  { id: 'soul', text: 'SYNTHESIZING CONSCIOUS CORE...', icon: Brain, duration: 3000 },
-  { id: 'persona', text: 'INJECTING ARCHETYPAL DIRECTIVES...', icon: Fingerprint, duration: 2000 },
-  { id: 'skills', text: 'ACTIVATING NEURAL SKILL BRIDGES...', icon: Cpu, duration: 2500 },
-  { id: 'memory', text: 'INITIALIZING SEMANTIC MEMORY NET...', icon: Database, duration: 3500 },
-  { id: 'identity', text: 'INSCRIBING SOVEREIGN SIGNATURE...', icon: Fingerprint, duration: 2000 },
-  { id: 'package', text: 'MATERIALIZING DIGITAL ENTITY...', icon: Package, duration: 2000 },
-  { id: 'heartbeat', text: 'MONITORING VITAL NEURAL SIGNS...', icon: Activity, duration: 1500 },
+  { id: 'init', text: 'CALIBRATING NEURAL FREQUENCIES...', icon: Sparkles, duration: 1500 },
+  { id: 'ingestion', text: 'INGESTING SEMANTIC CONTEXT...', icon: Database, duration: 2000 },
+  { id: 'logic', text: 'MAPPING LOGICAL ARCHITECTURE...', icon: Cpu, duration: 1800 },
+  { id: 'soul', text: 'SYNTHESIZING CONSCIOUS CORE...', icon: Brain, duration: 2500 },
+  { id: 'persona', text: 'INJECTING ARCHETYPAL DIRECTIVES...', icon: Fingerprint, duration: 1500 },
+  { id: 'ethical', text: 'ALIGNING MORAL CONSTRAINTS...', icon: Activity, duration: 1500 },
+  { id: 'skills', text: 'ACTIVATING NEURAL SKILL BRIDGES...', icon: Cpu, duration: 2000 },
+  { id: 'memory', text: 'INITIALIZING SEMANTIC MEMORY NET...', icon: Database, duration: 2500 },
+  { id: 'sandbox', text: 'STABILIZING NEURAL SANDBOX...', icon: Activity, duration: 2000 },
+  { id: 'identity', text: 'INSCRIBING SOVEREIGN SIGNATURE...', icon: Fingerprint, duration: 1500 },
+  { id: 'package', text: 'MATERIALIZING DIGITAL ENTITY...', icon: Package, duration: 1500 },
 ];
 
 // Forge Chamber internal imports
 import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import DeployAgentButton from './DeployAgentButton';
+import { AgentFormData } from '@/lib/hooks/useForgeLogic';
 
 export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
   const pendingManifest = useGemigramStore(state => state.pendingManifest);
@@ -47,12 +51,7 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
     return 'cyan';
   }, [pendingManifest]);
 
-  const colorClasses = {
-    cyan: 'bg-gemigram-neon text-gemigram-neon border-gemigram-neon/50 shadow-[0_0_20px_var(--gemigram-neon-glow)]',
-    fuchsia: 'bg-fuchsia-500 text-fuchsia-500 border-fuchsia-600 shadow-[0_0_20px_rgba(217,70,239,0.5)]',
-    red: 'bg-rose-500 text-rose-500 border-rose-600 shadow-[0_0_20px_rgba(244,63,94,0.5)]',
-    purple: 'bg-violet-500 text-violet-500 border-violet-600 shadow-[0_0_20px_rgba(139,92,246,0.5)]'
-  }[soulColor];
+  // (colorClasses was unused, removed)
 
   useEffect(() => {
     if (currentStepIndex < FORGE_STEPS.length) {
@@ -74,7 +73,7 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
         setShowDeployOption(true);
         
         // AUTO-DEPLOY LOGIC (Shortcut Creation)
-        if (pendingManifest && (pendingManifest as any).autoMaterialize) {
+        if (pendingManifest && (pendingManifest as AgentFormData).autoMaterialize) {
           console.log('[Forge] Auto-deploying Sovereign Agent...');
           // In a real PWA context, we would trigger the install prompt or redirect
           // For now, we simulate the completion
@@ -175,13 +174,13 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
         
         {/* Avatar Preview (Appears late in the process) */}
         <AnimatePresence>
-          {currentStepIndex >= 15 && (pendingManifest as any)?.avatarUrl && (
+          {currentStepIndex >= 9 && (pendingManifest as AgentFormData)?.avatarUrl && (
             <motion.div
               initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               className="absolute z-20 w-32 h-32 sm:w-40 sm:h-40 rounded-3xl overflow-hidden border-2 border-gemigram-neon shadow-[0_0_30px_rgba(16,255,135,0.4)]"
             >
-              <img src={(pendingManifest as any).avatarUrl} alt="Agent Avatar" className="w-full h-full object-cover" />
+              <img src={(pendingManifest as AgentFormData).avatarUrl} alt="Agent Avatar" className="w-full h-full object-cover" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -255,16 +254,16 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
                         id: agentId || 'agent',
                         aetherId: `gem://${agentId || 'agent'}`,
                         name: pendingManifest.name || 'Agent',
-                        role: (pendingManifest as any).description || 'Assistant',
+                        role: pendingManifest.role || 'Assistant',
                         users: '0',
                         seed: pendingManifest.soul || 'analytical',
-                        systemPrompt: (pendingManifest as any).systemPrompt || 'You are a helpful assistant.',
+                        systemPrompt: pendingManifest.systemPrompt || 'You are a helpful assistant.',
                         voiceName: pendingManifest.voiceName || 'Zephyr',
                         soul: pendingManifest.soul || 'Analytical',
                         memory: 'Sovereign memory initialized',
                         skills_desc: 'Configured skills',
-                        rules: '',
-                        tools: {
+                        rules: pendingManifest.rules || '',
+                        tools: pendingManifest.tools || {
                           googleSearch: true,
                           googleMaps: false,
                           weather: true,
@@ -273,7 +272,7 @@ export default function ForgeChamber({ onComplete }: ForgeChamberProps) {
                           calculator: true,
                           semanticMemory: true,
                         },
-                        skills: {
+                        skills: pendingManifest.skills || {
                           gmail: false,
                           calendar: false,
                           drive: false,

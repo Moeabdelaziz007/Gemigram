@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useSpeechSynthesis } from './useSpeechSynthesis';
-import { useSpeechRecognition } from './useSpeechRecognition';
+import { useEffect, useState, useCallback } from 'react';
+import { useLiveAPI } from '@/hooks/useLiveAPI';
+import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import { enhanceSystemPromptWithPersona } from '@/lib/persona/persona-templates';
+import { Agent } from '@/lib/store/slices/createAgentSlice';
+import { ToolResult } from '@/lib/types/live-api';
 
 export interface VoiceState {
   isListening: boolean;
@@ -12,156 +14,155 @@ export interface VoiceState {
   status: 'idle' | 'listening' | 'processing' | 'speaking' | 'complete';
 }
 
-export interface AgentFormData {
-  name: string;
-  description: string;
-  systemPrompt: string;
-  voiceName: string;
-  soul: string;
-  role: string;
-  tools: any;
-  skills: any;
-  persona?: string;
-  rules?: string[];
-  memoryDecay?: number;
-  avatarUrl?: string;
-  autoMaterialize?: boolean;
-}
+export type AgentFormData = Partial<Agent> & {
+    description?: string;
+    persona?: string;
+    autoMaterialize?: boolean;
+};
+
+const DEFAULT_FORM_DATA: AgentFormData = {
+  name: 'Nexus_Entity',
+  description: '',
+  systemPrompt: '',
+  voiceName: 'Astraeus',
+  soul: 'Analytical',
+  role: 'Synthesized Intelligence',
+  tools: { 
+    googleSearch: true, 
+    googleMaps: false,
+    weather: false,
+    news: false,
+    crypto: false,
+    calculator: false,
+    semanticMemory: true 
+  },
+  skills: { 
+    gmail: false,
+    calendar: false,
+    drive: false 
+  },
+  persona: 'Analytical',
+  rules: 'Always remain objective. Prioritize user intent.',
+  avatarUrl: '',
+};
 
 export function useForgeLogic() {
-  const [formData, setFormData] = useState<AgentFormData>({
-    name: 'Nexus_Entity',
-    description: '',
-    systemPrompt: '',
-    voiceName: 'Zephyr',
-    soul: 'Analytical',
-    role: 'Synthesized Intelligence',
-    tools: { webSearch: true, memoryStore: true },
-    skills: { analysis: true, generation: true },
-    persona: 'Analytical',
-    rules: ['Always remain objective', 'Prioritize user intent'],
-    memoryDecay: 0.01,
-    avatarUrl: '',
-    autoMaterialize: true,
-  });
-
+  const pendingManifest = useGemigramStore(state => state.pendingManifest);
+  const setPendingManifest = useGemigramStore(state => state.setPendingManifest);
+  
+  // Local state for UI responsiveness, synced with Zustand
+  const [formData, setLocalFormData] = useState<AgentFormData>((pendingManifest as AgentFormData) || DEFAULT_FORM_DATA);
   const [currentStep, setCurrentStep] = useState<VoiceState['currentStep']>('intro');
   const [status, setStatus] = useState<VoiceState['status']>('idle');
   const [showDeployment, setShowDeployment] = useState(false);
   const [transcript, setTranscript] = useState('');
-
-  const { speak, isSpeaking } = useSpeechSynthesis();
-  const { startListening, isListening } = useSpeechRecognition();
-
-  const handleVoiceCommand = useCallback(async (command: string) => {
-    if (command.trim().length === 0) return;
+  
+  // Materialization logic
+  const finalizeMaterialization = useCallback(() => {
+    let finalSystemPrompt = formData.systemPrompt || `You are ${formData.name}, an AI assistant.`;
+    if (formData.persona) {
+      finalSystemPrompt = enhanceSystemPromptWithPersona(finalSystemPrompt, formData.persona);
+    }
     
+    if (formData.rules) {
+      finalSystemPrompt += `\n\nCORE DIRECTIVES:\n${formData.rules}`;
+    }
+
+    const finalData = { ...formData, systemPrompt: finalSystemPrompt };
+    setLocalFormData(finalData);
+    setPendingManifest(finalData as Partial<Agent>);
+    setShowDeployment(true);
+  }, [formData, setPendingManifest]);
+
+  // Handle Tool Calls or specific responses from Live API
+  const onFunctionCall = useCallback((result: ToolResult) => {
+    console.log("[Forge] Neural Tool Result:", result);
+  }, []);
+
+  const { connect, disconnect, isRecording, startRecording, stopRecording } = useLiveAPI(
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY || '', 
+    onFunctionCall
+  );
+
+  const handleSynthesis = useCallback(async (userText: string) => {
     setStatus('processing');
     setCurrentStep('synthesis');
     
     try {
-      const response = await fetch('/api/forge/synthesize', {
+      const resp = await fetch('/api/forge/synthesize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: command }),
+        body: JSON.stringify({ prompt: userText }),
       });
 
-      if (!response.ok) throw new Error('Synthesis failed');
-      const blueprint = await response.json();
+      if (!resp.ok) throw new Error('Synthesis failure');
+      const blueprint = await resp.json();
 
-      setFormData(prev => ({
-          ...prev,
-          description: command,
-          name: blueprint.suggestedName || prev.name,
-          role: blueprint.suggestedRole || prev.role,
-          persona: blueprint.persona || 'Analytical',
-          rules: blueprint.rules || ['Always remain objective'],
-          skills: blueprint.skills || { analysis: true },
-          tools: blueprint.tools || { webSearch: true },
-          systemPrompt: blueprint.systemPrompt || prev.systemPrompt,
-          avatarUrl: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${blueprint.suggestedName}`
-      }));
+      const newFormData: AgentFormData = {
+        ...formData,
+        description: userText,
+        name: blueprint.name || formData.name,
+        role: blueprint.role || formData.role,
+        persona: blueprint.persona || 'Analytical',
+        rules: Array.isArray(blueprint.rules) ? blueprint.rules.join('. ') : (blueprint.rules || formData.rules),
+        skills: { ...formData.skills, ...blueprint.skills },
+        tools: { ...formData.tools, ...blueprint.tools },
+        systemPrompt: blueprint.systemPrompt || formData.systemPrompt,
+        avatarUrl: `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${blueprint.name || 'nexus'}`
+      };
 
+      setLocalFormData(newFormData);
+      setPendingManifest(newFormData as Partial<Agent>);
       setStatus('idle');
       setCurrentStep('blueprint');
       
-      speak(`Synthesis complete. ${blueprint.suggestedName} is ready for materialization.`, () => {
-        setTimeout(() => finalizeMaterialization(), 1500);
-      });
-    } catch (error) {
-      console.error('Neural Core Error:', error);
+      // Auto-finalize for MVP flow
+      setTimeout(() => finalizeMaterialization(), 1500);
+    } catch (err) {
+      console.error("Neural Core Error:", err);
       setStatus('idle');
-      speak('The neural forge is unstable. Reverting to basic template.');
     }
-  }, [speak]);
-
-  const initiateListening = useCallback(() => {
-    startListening((text) => {
-      setTranscript(prev => prev + ' ' + text);
-      handleVoiceCommand(text);
-    }, (err) => {
-      console.error("Forge Speech Error:", err);
-      if (process.env.NODE_ENV === 'development') {
-        handleVoiceCommand("I want a creative writing assistant specialized in sci-fi.");
-      }
-    });
-  }, [startListening, handleVoiceCommand]);
-
-  const speakPrompt = useCallback((text: string) => {
-    speak(text, () => {
-      if (currentStep === 'description' || currentStep === 'intro') {
-        setTimeout(() => initiateListening(), 100);
-      }
-    });
-  }, [speak, currentStep, initiateListening]);
-
-  const finalizeMaterialization = () => {
-    let finalSystemPrompt = formData.systemPrompt || `You are ${formData.name}, an AI assistant.`;
-    if (formData.persona) {
-        finalSystemPrompt = enhanceSystemPromptWithPersona(finalSystemPrompt, formData.persona);
-    }
-    
-    if (formData.rules && formData.rules.length > 0) {
-        finalSystemPrompt += `\n\nCORE DIRECTIVES:\n${formData.rules.map(r => `- ${r}`).join('\n')}`;
-    }
-
-    setFormData(prev => ({ ...prev, systemPrompt: finalSystemPrompt }));
-    setShowDeployment(true);
-  };
+  }, [formData, finalizeMaterialization, setPendingManifest]);
 
   // Initial greeting
   useEffect(() => {
     const timer = setTimeout(() => {
-      speakPrompt("Welcome to the Neural Forge. Describe the entity you wish to materialize.");
       setCurrentStep('description');
-    }, 1000);
+      setStatus('listening');
+    }, 1500);
     return () => clearTimeout(timer);
-  }, [speakPrompt]);
+  }, []);
 
-  // Sync VoiceState for component
+  // Voice State Mapping
   const voiceState: VoiceState = {
-    isListening,
-    isSpeaking,
+    isListening: isRecording,
+    isSpeaking: false, // Managed by LiveAPI internally
     currentStep,
-    status: isSpeaking ? 'speaking' : isListening ? 'listening' : status
+    status: isRecording ? 'listening' : status
   };
 
   return {
     formData,
-    setFormData,
+    setFormData: (data: AgentFormData) => {
+        setLocalFormData(data);
+        setPendingManifest(data as Partial<Agent>);
+    },
     voiceState,
     transcript,
     setTranscript,
     showDeployment,
     setShowDeployment,
-    speak: speakPrompt,
-    startListening: initiateListening,
+    connect,
+    disconnect,
+    startListening: startRecording,
+    stopListening: stopRecording,
     finalizeMaterialization,
     setCurrentStep,
     resynthesize: () => {
       setTranscript('');
       setCurrentStep('description');
       setStatus('idle');
-    }
+    },
+    handleManualSubmit: handleSynthesis // For fallback/testing
   };
 }
