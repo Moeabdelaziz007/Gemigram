@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Fingerprint, Mail, ShieldCheck, Globe, ChevronRight, Loader2, Sparkles, Lock, Shield } from 'lucide-react';
+import { X, Fingerprint, Mail, ShieldCheck, Globe, ChevronRight, Lock, Shield } from 'lucide-react';
 import { useAuth } from '@/components/Providers';
 
 type AuthMode = 'login' | 'signup' | 'scanning';
@@ -12,7 +12,31 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
   const [mode, setMode] = useState<AuthMode>('login');
   const [scanProgress, setScanProgress] = useState(0);
   const [authStatus, setAuthStatus] = useState('Standby');
+  const [displayText, setDisplayText] = useState('');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Terminal Decoding Effect
+  useEffect(() => {
+    const target = mode === 'login' ? 'Nexus_Access' : 'Neural_Genesis';
+    let iteration = 0;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
+    
+    const decodeInterval = setInterval(() => {
+      setDisplayText(
+        target.split('')
+          .map((char, index) => {
+            if (index < iteration) return target[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join('')
+      );
+      
+      if (iteration >= target.length) clearInterval(decodeInterval);
+      iteration += 1/3;
+    }, 30);
+
+    return () => clearInterval(decodeInterval);
+  }, [mode]);
 
   useEffect(() => {
     return () => {
@@ -45,7 +69,7 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
       setScanProgress(100);
       setAuthStatus('Sovereign Link Established.');
       setTimeout(() => onClose(), 300);
-    } catch (err) {
+    } catch {
       if (intervalRef.current) clearInterval(intervalRef.current);
       setMode('login');
       setAuthStatus('Authentication Failed');
@@ -78,9 +102,15 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
               }}
               className="absolute -top-32 -left-32 w-96 h-96 bg-gemigram-neon blur-[120px] rounded-full pointer-events-none" 
             />
+
+            {/* Scanlines Background */}
+            <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
+               <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
+            </div>
             
             <button 
               onClick={onClose}
+              title="Close Authentication Overlay"
               className="absolute top-10 right-10 text-white/20 hover:text-gemigram-neon transition-all hover:rotate-90 z-20 group"
             >
               <X size={24} className="group-hover:scale-110" />
@@ -148,9 +178,20 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
                         transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                         className="absolute inset-0 border border-gemigram-neon/20 rounded-3xl border-dashed"
                       />
+                      {/* Neural Mesh Scan Pulses */}
+                      <motion.div 
+                        animate={{ scale: [1, 1.5, 1], opacity: [0, 0.2, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        className="absolute inset-0 bg-gemigram-neon/20 rounded-3xl blur-xl"
+                      />
                     </div>
-                    <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-3">
-                      {mode === 'login' ? 'Nexus_Access' : 'Neural_Genesis'}
+                    <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-3 font-mono min-h-[40px]">
+                      {displayText}
+                      <motion.span 
+                        animate={{ opacity: [0, 1, 0] }}
+                        transition={{ duration: 0.8, repeat: Infinity }}
+                        className="inline-block w-3 h-8 bg-gemigram-neon ml-2 align-middle"
+                      />
                     </h2>
                     <p className="text-[10px] font-black uppercase tracking-[0.5em] text-gemigram-neon shadow-neon">
                       Sovereign Identity Protocol
@@ -200,7 +241,12 @@ export function AuthOverlay({ isOpen, onClose }: { isOpen: boolean, onClose: () 
                       onClick={handleGoogleLogin}
                       className="w-full py-6 rounded-3xl bg-white/[0.03] border border-white/10 text-white font-black uppercase tracking-[0.2em] text-[10px] hover:bg-white/[0.06] hover:border-white/20 transition-all flex items-center justify-center gap-4"
                     >
-                      <img src="https://www.gstatic.c@/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 invert opacity-50" alt="Google" />
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                      </svg>
                       Google_Genesis (One-Click)
                     </button>
                   </div>

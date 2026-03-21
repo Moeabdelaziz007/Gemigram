@@ -51,6 +51,76 @@ const SEED_AGENTS: Agent[] = [
     avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=shadow-sentinel',
     tools: { googleSearch: true, googleMaps: false, weather: false, news: false, crypto: false, calculator: false, semanticMemory: true },
     skills: { gmail: false, calendar: false, drive: false }
+  },
+  {
+    id: 'seed-gmail-master',
+    aetherId: 'seed-gmail-master',
+    name: 'Sovereign_Gmail',
+    role: 'Neural Communication Node',
+    users: '25k+',
+    seed: 'GMAIL_NEURAL_LINK',
+    systemPrompt: 'You are the Sovereign Gmail Master, an expert in neural communication orchestration...',
+    voiceName: 'Vesper',
+    avatarUrl: 'https://www.gstatic.com/images/branding/product/2x/gmail_64dp.png',
+    tools: { googleSearch: true, googleMaps: false, weather: false, news: false, crypto: false, calculator: false, semanticMemory: true },
+    skills: { gmail: true, calendar: false, drive: false },
+    category: 'productivity'
+  },
+  {
+    id: 'seed-calendar-master',
+    aetherId: 'seed-calendar-master',
+    name: 'Sovereign_Calendar',
+    role: 'Temporal Architect',
+    users: '18k+',
+    seed: 'CALENDAR_TIMELINE',
+    systemPrompt: 'You are the Sovereign Calendar Master, optimizing temporal coordinates and event loops...',
+    voiceName: 'Aria',
+    avatarUrl: 'https://www.gstatic.com/images/branding/product/2x/calendar_64dp.png',
+    tools: { googleSearch: false, googleMaps: true, weather: false, news: false, crypto: false, calculator: false, semanticMemory: true },
+    skills: { gmail: false, calendar: true, drive: false },
+    category: 'productivity'
+  },
+  {
+    id: 'seed-drive-master',
+    aetherId: 'seed-drive-master',
+    name: 'Sovereign_Drive',
+    role: 'Neural Data Vault',
+    users: '30k+',
+    seed: 'DRIVE_STORAGE_CLOUD',
+    systemPrompt: 'You are the Sovereign Drive Master, managing neural repositories and data streams...',
+    voiceName: 'Echo',
+    avatarUrl: 'https://www.gstatic.com/images/branding/product/2x/drive_64dp.png',
+    tools: { googleSearch: false, googleMaps: false, weather: false, news: false, crypto: false, calculator: false, semanticMemory: true },
+    skills: { gmail: false, calendar: false, drive: true },
+    category: 'productivity'
+  },
+  {
+    id: 'seed-studio-master',
+    aetherId: 'seed-studio-master',
+    name: 'Neural_Studio_Master',
+    role: 'AI Studio Orchestrator',
+    users: '12k',
+    seed: 'GENESIS_TUNE',
+    systemPrompt: 'You are the Neural Studio Master, expert in Gemini model tuning and AI Studio workflow automation...',
+    voiceName: 'Vesper',
+    avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=studio-master',
+    tools: { googleSearch: true, googleMaps: false, weather: false, news: false, crypto: false, calculator: true, semanticMemory: true },
+    skills: { gmail: false, calendar: false, drive: true },
+    category: 'technical'
+  },
+  {
+    id: 'seed-social-link',
+    aetherId: 'seed-social-link',
+    name: 'Aether_Link_Social',
+    role: 'Social Neural Node',
+    users: '7k',
+    seed: 'SOCIAL_MESH',
+    systemPrompt: 'You are the Aether Link Social, managing secure communication via Telegram and WhatsApp channels...',
+    voiceName: 'Aria',
+    avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=social-link',
+    tools: { googleSearch: true, googleMaps: false, weather: false, news: true, crypto: false, calculator: false, semanticMemory: true },
+    skills: { gmail: true, calendar: false, drive: false },
+    category: 'lifestyle'
   }
 ];
 
@@ -89,7 +159,7 @@ export default function NeuralMarketplace() {
         }
         
         const snapshot = await getDocs(q);
-        const fetched = snapshot.docs.map((doc: any) => ({ 
+        const fetched = snapshot.docs.map((doc) => ({ 
           id: doc.id, 
           ...doc.data() 
         })) as Agent[];
@@ -99,7 +169,10 @@ export default function NeuralMarketplace() {
         // Merge with seed agents if they match category or category is all
         const filteredSeeds = activeCategory === 'all' 
           ? SEED_AGENTS 
-          : SEED_AGENTS.filter(a => a.role.toLowerCase().includes(activeCategory.toLowerCase()));
+          : SEED_AGENTS.filter(a => 
+              a.role.toLowerCase().includes(activeCategory.toLowerCase()) || 
+              (a.category && a.category.toLowerCase() === activeCategory.toLowerCase())
+            );
         
         // Remove duplicates if any (by name or aetherId)
         const combined = [...filtered];
@@ -121,10 +194,17 @@ export default function NeuralMarketplace() {
     fetchMarketplace();
   }, [activeCategory]);
 
-  const filteredAgents = marketplaceAgents.filter(a => 
-    a.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    a.role.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredAgents = marketplaceAgents.filter(agent => {
+    const searchLower = searchTerm.toLowerCase();
+    const matchesTitle = agent.name.toLowerCase().includes(searchLower);
+    const matchesDesc = agent.role.toLowerCase().includes(searchLower);
+    
+    // New: Search by Skills/Tools
+    const matchesTools = agent.tools ? Object.keys(agent.tools).some(t => t.toLowerCase().includes(searchLower)) : false;
+    const matchesSkills = agent.skills ? Object.keys(agent.skills).some(s => s.toLowerCase().includes(searchLower)) : false;
+
+    return matchesTitle || matchesDesc || matchesTools || matchesSkills;
+  });
 
   const handleInstall = async (template: Agent) => {
     if (!user) {
@@ -191,7 +271,7 @@ export default function NeuralMarketplace() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              aria-pressed={activeCategory === cat.id ? "true" : "false"}
+              aria-pressed={activeCategory === cat.id}
               className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border transition-all whitespace-nowrap ${
                 activeCategory === cat.id 
                 ? 'bg-gemigram-neon border-gemigram-neon text-black shadow-[0_0_15px_rgba(16,255,135,0.4)]' 
