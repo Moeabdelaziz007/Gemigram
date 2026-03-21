@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/Providers';
 import { useGemigramStore } from '@/lib/store/useGemigramStore';
+import { useSearchParams } from 'next/navigation';
 
 export function useWorkspaceLogic() {
   const { user, googleAccessToken } = useAuth();
@@ -10,6 +11,9 @@ export function useWorkspaceLogic() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const agentParam = searchParams.get('agent');
+  const setActiveAgentId = useGemigramStore(state => state.setActiveAgentId);
 
   useEffect(() => {
     if (!user) {
@@ -39,8 +43,16 @@ export function useWorkspaceLogic() {
   useEffect(() => {
     if (user && agents.length > 0) {
       setIsLoading(false);
+      
+      // If agent is specified in URL, set it as active
+      if (agentParam) {
+        const found = agents.find(a => a.id === agentParam || a.aetherId === agentParam);
+        if (found) {
+          setActiveAgentId(found.id);
+        }
+      }
     }
-  }, [user, agents]);
+  }, [user, agents, agentParam, setActiveAgentId]);
 
   const activeAgent = agents.find(a => a.id === activeAgentId) || agents[0];
 

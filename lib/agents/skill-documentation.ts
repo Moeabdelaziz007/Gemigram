@@ -221,7 +221,7 @@ export function generateAllSkillsDocumentation(enabledSkills: Record<string, boo
   const docs: Record<string, SkillDocumentation> = {};
   
   Object.entries(enabledSkills)
-    .filter(([_, enabled]) => enabled)
+    .filter(([, enabled]) => enabled)
     .forEach(([skillId]) => {
       const skill = skillRegistry.get(skillId);
       if (skill) {

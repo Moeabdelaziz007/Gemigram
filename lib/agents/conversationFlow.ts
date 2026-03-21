@@ -163,7 +163,7 @@ export const CONVERSATION_FLOW: Record<ConversationStep, ConversationMessage> = 
     voicePrompt: "Which Google Workspace integrations do you need? You can say: all three, Gmail only, Calendar and Drive, or none.",
     suggestions: ['All three', 'Gmail only', 'Calendar only', 'None'],
     requiresInput: true,
-    validation: (input) => {
+    validation: () => {
       return { valid: true };
     },
   },
@@ -175,7 +175,7 @@ export const CONVERSATION_FLOW: Record<ConversationStep, ConversationMessage> = 
     voicePrompt: "Your AI entity is ready to be created. All settings have been configured. Say yes to finalize, or no to make changes.",
     suggestions: ['Yes, finalize!', 'Make changes', 'Review settings'],
     requiresInput: true,
-    validation: (input) => {
+    validation: () => {
       return { valid: true };
     },
   },
@@ -267,9 +267,15 @@ export const parseSkillSelection = (input: string): Record<string, boolean> => {
     return { gmail: false, calendar: false, drive: false };
   }
   
+  // Parse individual skills
+  return {
+    gmail: lower.includes('mail'),
+    calendar: lower.includes('calendar') || lower.includes('schedule'),
+    drive: lower.includes('drive') || lower.includes('storage') || lower.includes('file'),
+  };
 };
 
-export const getStepDataUpdate = (step: ConversationStep, input: string): Record<string, any> => {
+export const getStepDataUpdate = (step: ConversationStep, input: string): Record<string, string | Record<string, boolean>> => {
   switch (step) {
     case 'ENTITY_NAME': return { name: input };
     case 'CORE_PURPOSE': return { description: input };

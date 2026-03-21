@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Activity, Shield, Zap, Cpu, Search, Filter } from 'lucide-react';
+import { Activity, Shield, Zap, Cpu } from 'lucide-react';
 
 interface AgentCardProps {
   name: string;

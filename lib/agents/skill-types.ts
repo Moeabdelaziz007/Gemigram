@@ -116,7 +116,7 @@ export interface SkillInstance {
   /** Whether the skill has been properly configured */
   configured: boolean;
   /** Custom settings for this skill instance */
-  settings?: Record<string, any>;
+  settings?: Record<string, unknown>;
   /** Last time the skill was used */
   lastUsed?: Timestamp;
   /** Number of times the skill has been used */
@@ -182,7 +182,7 @@ export interface SkillEvent {
   /** Timestamp of the event */
   timestamp: number;
   /** Additional event data */
-  data?: any;
+  data?: unknown;
 }
 
 /**
@@ -265,7 +265,7 @@ export interface MCPTool {
   /** Tool description */
   description: string;
   /** JSON Schema for tool parameters */
-  inputSchema: Record<string, any>;
+  inputSchema: Record<string, unknown>;
   /** Whether tool requires confirmation */
   requiresConfirmation: boolean;
 }
@@ -285,7 +285,7 @@ export interface MCPPrompt {
   /** Template variables */
   variables?: string[];
   /** Default arguments */
-  defaultArgs?: Record<string, any>;
+  defaultArgs?: Record<string, unknown>;
 }
 
 /**

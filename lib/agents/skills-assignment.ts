@@ -317,7 +317,7 @@ Signature: ${neuralSignature}
  */
 export function generateSkillsConfirmation(skills: Partial<SkillsConfig>): string {
   const enabledSkills = Object.entries(skills)
-    .filter(([_, enabled]) => enabled)
+    .filter(([, enabled]) => enabled)
     .map(([skillId]) => {
       const skill = SKILL_DEFINITIONS[skillId as keyof SkillsConfig];
       return skill?.name;

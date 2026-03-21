@@ -119,13 +119,13 @@ class APIMarketplaceClient {
   /**
    * Fetch APIs from APIs.guru (Real Public Directory)
    */
-  async fetchFromRapidAPI(apiKey?: string): Promise<APIMetadata[]> {
+  async fetchFromRapidAPI(_apiKey?: string): Promise<APIMetadata[]> {
     try {
       const res = await fetch('https://api.apis.guru/v2/list.json');
       const data = await res.json();
       
       // Convert APIs.guru format to our APIMetadata
-      const apis: APIMetadata[] = Object.entries(data).slice(0, 50).map(([id, details]: [string, any]) => {
+      const apis: APIMetadata[] = Object.entries(data).slice(0, 50).map(([id, details]: [string, Record<string, any>]) => {
         const latest = details.versions[details.preferred];
         const info = latest.info;
         return {
@@ -165,7 +165,7 @@ class APIMarketplaceClient {
   /**
    * Fetch APIs from APILayer
    */
-  async fetchFromAPILayer(apiKey?: string): Promise<APIMetadata[]> {
+  async fetchFromAPILayer(_apiKey?: string): Promise<APIMetadata[]> {
     try {
       // Mock implementation - would use actual API in production
       const response = await this.mockAPILayerResponse();

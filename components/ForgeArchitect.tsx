@@ -220,12 +220,12 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
                                             <Settings2 className="w-4 h-4" /> Integrated_Capabilities
                                         </p>
                                         <div className="flex flex-wrap gap-3">
-                                            {Object.keys(formData.skills).map(t => (
+                                            {Object.keys(formData.skills || {}).map(t => (
                                                 <span key={t} className="px-5 py-2 glass-strong border border-gemigram-neon/30 rounded-full text-xs font-bold text-gemigram-neon uppercase tracking-widest shadow-[0_0_15px_rgba(57,255,20,0.1)]">
                                                     {t}
                                                 </span>
                                             ))}
-                                            {Object.keys(formData.tools).map(t => (
+                                            {Object.keys(formData.tools || {}).map(t => (
                                                 <span key={t} className="px-5 py-2 glass-strong border border-gemigram-neon/30 rounded-full text-xs font-bold text-white uppercase tracking-widest shadow-[0_0_15px_rgba(16,255,135,0.1)]">
                                                     {t}
                                                 </span>
@@ -237,7 +237,7 @@ export default function ForgeArchitect({ onComplete, onCancel }: ForgeArchitectP
                                         <div className="pt-6 border-t border-white/5">
                                             <p className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-400/80 mb-4">Hardcoded_Directives</p>
                                             <ul className="space-y-3">
-                                                {formData.rules.map((rule, idx) => (
+                                                {formData.rules.split('\n').filter(r => r.trim()).map((rule, idx) => (
                                                     <li key={idx} className="flex items-start gap-3 text-sm text-white/70 font-mono">
                                                         <span className="text-amber-400 mt-1">▹</span> {rule}
                                                     </li>

@@ -36,9 +36,6 @@ export interface Agent {
     drive: boolean;
   };
   avatarUrl?: string;
-  creatorNickname?: string;
-  rating?: number;
-  category?: 'productivity' | 'creative' | 'technical' | 'lifestyle' | string;
 }
 
 export interface AgentSlice {

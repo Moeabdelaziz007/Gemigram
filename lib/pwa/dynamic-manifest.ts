@@ -24,7 +24,7 @@ export function generateAgentManifest(config: AgentManifestConfig): WebAppManife
     short_name: agent.name.length > 15 ? agent.name.substring(0, 15) : agent.name,
     description: agent.role || 'AI Assistant',
     start_url: `${baseUrl}/?agent=${agent.id}`,
-    display: 'standalone',
+    display: 'fullscreen',
     orientation: 'portrait',
     background_color: '#050B14',
     theme_color: '#10ff87',

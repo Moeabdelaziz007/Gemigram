@@ -4,14 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
-  Filter,
   Download,
   Star,
   TrendingUp,
   Clock,
   CheckCircle,
   AlertTriangle,
-  X,
   Package,
   Cpu,
   Zap,
@@ -27,7 +25,7 @@ interface MCPServerBrowserProps {
 }
 
 interface ServerCardProps {
-  server: any;
+  server: Record<string, unknown>;
   isInstalled: boolean;
   onInstall: () => void;
   onUninstall: () => void;
@@ -245,7 +243,7 @@ export default function MCPServerBrowser({
   onServerInstall,
   onServerUninstall
 }: MCPServerBrowserProps) {
-  const [servers, setServers] = useState<any[]>([]);
+  const [servers, setServers] = useState<Record<string, unknown>[]>([]);
   const [installedServers, setInstalledServers] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -331,6 +329,7 @@ export default function MCPServerBrowser({
 
         {/* Category Filter */}
         <select
+          aria-label="Filter by category"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="px-4 py-2.5 bg-white/5 border border-white/10 
@@ -345,8 +344,9 @@ export default function MCPServerBrowser({
 
         {/* Sort */}
         <select
+          aria-label="Sort servers by"
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as any)}
+          onChange={(e) => setSortBy(e.target.value as 'popularity' | 'rating' | 'lastUpdated')}
           className="px-4 py-2.5 bg-white/5 border border-white/10 
                    rounded-lg text-white focus:outline-none focus:border-gemigram-neon"
         >

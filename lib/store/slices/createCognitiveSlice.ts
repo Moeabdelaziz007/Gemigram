@@ -35,14 +35,9 @@ export interface CognitiveSlice {
   tokensUsed: number;
   tokenBudget: number;
 
-  // Neural Selection
-  activeProvider: "google" | "anthropic" | "deepseek" | "openai";
-  activeModel: string;
-
   // Actions
   setSessionState: (state: SessionState) => void;
   updateSessionMetadata: (meta: Partial<SessionMetadata>) => void;
-  setNeuralSelection: (provider: "google" | "anthropic" | "deepseek" | "openai", model: string) => void;
   setMicLevel: (level: number) => void;
   setSpeakerLevel: (level: number) => void;
   setLatencyMs: (ms: number) => void;
@@ -61,8 +56,6 @@ const INITIAL_STATE = {
   isVisionActive: false,
   tokensUsed: 0,
   tokenBudget: 1_000_000,
-  activeProvider: "google" as const,
-  activeModel: "gemini-2.0-flash-exp",
 };
 
 export const createCognitiveSlice: StateCreator<CognitiveSlice> = (set, get) => ({
@@ -75,8 +68,6 @@ export const createCognitiveSlice: StateCreator<CognitiveSlice> = (set, get) => 
       ? { ...state.sessionMetadata, ...meta, lastActivity: Date.now() } 
       : null
   })),
-
-  setNeuralSelection: (provider, model) => set({ activeProvider: provider, activeModel: model }),
 
   setMicLevel: (level) => set({ micLevel: Math.max(0, Math.min(1, level)) }),
   setSpeakerLevel: (level) => set({ speakerLevel: Math.max(0, Math.min(1, level)) }),

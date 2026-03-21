@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/components/Providers';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useGemigramStore } from '@/lib/store/useGemigramStore';
 import HeroBackground from '@/components/HeroBackground';
 import { EnterpriseHeader } from '@/components/landing/Header';
@@ -28,11 +28,20 @@ export default function LandingPage() {
     setIsAuthOpen(true);
   };
 
+  const searchParams = useSearchParams();
+  const agentId = searchParams.get('agent');
+
   useEffect(() => {
+    // If agent ID is in URL, materialize the experience immediately
+    if (agentId && !user && voiceSession.stage === 'landing') {
+      setVoiceSession({ stage: 'workspace' });
+      return;
+    }
+
     if (!user) return;
 
     if (voiceSession.stage === 'workspace') {
-      router.push('/workspace');
+      router.push('/workspace' + (agentId ? `?agent=${agentId}` : ''));
       return;
     }
     if (voiceSession.stage === 'forge') {
@@ -41,7 +50,7 @@ export default function LandingPage() {
     }
 
     router.push('/dashboard');
-  }, [user, router, voiceSession.stage]);
+  }, [user, router, voiceSession.stage, agentId, setVoiceSession]);
 
   if (user) return null;
 

@@ -63,8 +63,7 @@ const SEED_AGENTS: Agent[] = [
     voiceName: 'Vesper',
     avatarUrl: 'https://www.gstatic.com/images/branding/product/2x/gmail_64dp.png',
     tools: { googleSearch: true, googleMaps: false, weather: false, news: false, crypto: false, calculator: false, semanticMemory: true },
-    skills: { gmail: true, calendar: false, drive: false },
-    category: 'productivity'
+    skills: { gmail: true, calendar: false, drive: false }
   },
   {
     id: 'seed-calendar-master',
@@ -77,8 +76,7 @@ const SEED_AGENTS: Agent[] = [
     voiceName: 'Aria',
     avatarUrl: 'https://www.gstatic.com/images/branding/product/2x/calendar_64dp.png',
     tools: { googleSearch: false, googleMaps: true, weather: false, news: false, crypto: false, calculator: false, semanticMemory: true },
-    skills: { gmail: false, calendar: true, drive: false },
-    category: 'productivity'
+    skills: { gmail: false, calendar: true, drive: false }
   },
   {
     id: 'seed-drive-master',
@@ -91,8 +89,7 @@ const SEED_AGENTS: Agent[] = [
     voiceName: 'Echo',
     avatarUrl: 'https://www.gstatic.com/images/branding/product/2x/drive_64dp.png',
     tools: { googleSearch: false, googleMaps: false, weather: false, news: false, crypto: false, calculator: false, semanticMemory: true },
-    skills: { gmail: false, calendar: false, drive: true },
-    category: 'productivity'
+    skills: { gmail: false, calendar: false, drive: true }
   },
   {
     id: 'seed-studio-master',
@@ -105,8 +102,7 @@ const SEED_AGENTS: Agent[] = [
     voiceName: 'Vesper',
     avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=studio-master',
     tools: { googleSearch: true, googleMaps: false, weather: false, news: false, crypto: false, calculator: true, semanticMemory: true },
-    skills: { gmail: false, calendar: false, drive: true },
-    category: 'technical'
+    skills: { gmail: false, calendar: false, drive: true }
   },
   {
     id: 'seed-social-link',
@@ -119,8 +115,7 @@ const SEED_AGENTS: Agent[] = [
     voiceName: 'Aria',
     avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=social-link',
     tools: { googleSearch: true, googleMaps: false, weather: false, news: true, crypto: false, calculator: false, semanticMemory: true },
-    skills: { gmail: true, calendar: false, drive: false },
-    category: 'lifestyle'
+    skills: { gmail: true, calendar: false, drive: false }
   }
 ];
 
@@ -170,8 +165,7 @@ export default function NeuralMarketplace() {
         const filteredSeeds = activeCategory === 'all' 
           ? SEED_AGENTS 
           : SEED_AGENTS.filter(a => 
-              a.role.toLowerCase().includes(activeCategory.toLowerCase()) || 
-              (a.category && a.category.toLowerCase() === activeCategory.toLowerCase())
+              a.role.toLowerCase().includes(activeCategory.toLowerCase())
             );
         
         // Remove duplicates if any (by name or aetherId)
@@ -271,7 +265,7 @@ export default function NeuralMarketplace() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              aria-pressed={activeCategory === cat.id}
+              aria-pressed={activeCategory === cat.id ? "true" : "false"}
               className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border transition-all whitespace-nowrap ${
                 activeCategory === cat.id 
                 ? 'bg-gemigram-neon border-gemigram-neon text-black shadow-[0_0_15px_rgba(16,255,135,0.4)]' 
