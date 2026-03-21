@@ -9,6 +9,7 @@ import { GemigramLogo } from '@/components/GemigramLogo';
 import { useRouter } from 'next/navigation';
 import { BRAND } from '@/lib/constants/branding';
 import { useUnreadNotificationsCount } from '@/lib/store/useGemigramStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import type { User } from 'firebase/auth';
 
 const ORBS_CONFIG = [
@@ -83,6 +84,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
   const unreadNotificationsCount = useUnreadNotificationsCount();
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
+  const { t } = useTranslation();
 
 
   const handleNavigate = (id: string, path: string) => {
@@ -144,8 +146,9 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
               <div key={orb.id} className="group relative">
                 <button
                   onClick={() => handleNavigate(orb.id, orb.path)}
-                  title={`Navigate to ${orb.label}`}
-                  aria-label={`Navigate to ${orb.label}`}
+                  title={t(`common.nav.${orb.id}`)}
+                  aria-label={t(`common.nav.${orb.id}`)}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`flex w-full items-center gap-4 rounded-2xl px-4 py-3.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80 ${
                     isActive
                       ? 'border border-gemigram-neon/25 bg-gemigram-neon/10 text-gemigram-neon shadow-[0_0_25px_rgba(57,255,20,0.15)]'
@@ -160,10 +163,10 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
                       </span>
                     )}
                   </div>
-                  <span className="hidden whitespace-nowrap text-[10px] font-black uppercase tracking-[0.15em] xl:block">{orb.label}</span>
+                  <span className="hidden whitespace-nowrap text-[10px] font-black uppercase tracking-[0.15em] xl:block">{t(`common.nav.${orb.id}`)}</span>
                 </button>
                 <span className="invisible pointer-events-none absolute left-full top-1/2 ml-2 -translate-y-1/2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 opacity-0 transition-opacity duration-200 group-hover:visible group-hover:opacity-100 xl:hidden">
-                  {orb.label}
+                  {t(`common.nav.${orb.id}`)}
                 </span>
               </div>
             );
@@ -200,7 +203,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
                 className="flex items-center gap-4 rounded-2xl border border-transparent px-4 py-3 text-red-400 transition-colors hover:border-red-400/20 hover:bg-red-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
               >
                 <LogOut aria-hidden="true" className="h-5 w-5 shrink-0" />
-                <span className="hidden text-[10px] font-black uppercase tracking-widest xl:block">Terminate_Session</span>
+                <span className="hidden text-[10px] font-black uppercase tracking-widest xl:block">{t('common.terminate_session')}</span>
               </button>
             </div>
           ) : (
@@ -208,7 +211,7 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
               onClick={onLogin}
               className="w-full rounded-2xl bg-gemigram-neon px-4 py-4 text-[10px] font-black uppercase tracking-widest text-black shadow-[0_0_30px_rgba(16,255,135,0.3)] transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gemigram-neon focus-visible:ring-offset-2 focus-visible:ring-offset-black/80"
             >
-              Access_System
+              {t('common.access_system')}
             </button>
           )}
         </div>
@@ -239,14 +242,27 @@ export function FloatingNav({ currentView, user, onLogin, onLogout }: FloatingNa
   );
 }
 
-function NavOrb({ orb, currentView, handleNavigate, unreadNotificationsCount, showHint, hideHint, activeHint }: any) {
+interface NavOrbProps {
+  orb: typeof ORBS_CONFIG[0];
+  currentView: string;
+  handleNavigate: (id: string, path: string) => void;
+  unreadNotificationsCount: number;
+  showHint: (id: string) => void;
+  hideHint: () => void;
+  activeHint: string | null;
+}
+
+function NavOrb({ orb, currentView, handleNavigate, unreadNotificationsCount, showHint, hideHint, activeHint }: NavOrbProps) {
   const isActive = currentView === orb.id;
+  const { t } = useTranslation();
+  
   return (
     <div className="group relative flex min-w-0 flex-1 items-center justify-center">
       <button
         onClick={() => handleNavigate(orb.id, orb.path)}
-        title={`Navigate to ${orb.label}`}
-        aria-label={`Navigate to ${orb.label}`}
+        title={t(`common.nav.${orb.id}`)}
+        aria-label={t(`common.nav.${orb.id}`)}
+        aria-current={isActive ? 'page' : undefined}
         onTouchStart={() => showHint(orb.id)}
         onTouchEnd={hideHint}
         onTouchCancel={hideHint}
@@ -262,12 +278,12 @@ function NavOrb({ orb, currentView, handleNavigate, unreadNotificationsCount, sh
             </span>
           )}
         </div>
-        <span className="truncate text-[8px] leading-none">{orb.label}</span>
+        <span className="truncate text-[8px] leading-none">{t(`common.nav.${orb.id}`)}</span>
       </button>
       <span
         className={`invisible pointer-events-none absolute bottom-full mb-2 rounded-lg border border-white/10 bg-black/85 px-2 py-1 text-[10px] uppercase tracking-wider text-white/80 opacity-0 transition-opacity duration-200 md:group-hover:visible md:group-hover:opacity-100 ${activeHint === orb.id ? 'visible opacity-100' : ''}`}
       >
-        {orb.label}
+        {t(`common.nav.${orb.id}`)}
       </span>
     </div>
   );

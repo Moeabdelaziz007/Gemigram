@@ -3,6 +3,7 @@
 import React, { useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Brain, Cpu, ShieldCheck, Radio } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface DigitalEntityProps {
   state: 'Disconnected' | 'Listening' | 'Thinking' | 'Speaking' | 'Executing';
@@ -13,6 +14,7 @@ interface DigitalEntityProps {
 
 export function DigitalEntity({ state, volume, agentName, linkType = 'stateless' }: DigitalEntityProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   const isLocal = linkType === 'bridge';
 
@@ -67,7 +69,11 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
   }, [state, volume, isLocal]);
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden" ref={containerRef}>
+    <div 
+      className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden" 
+      ref={containerRef}
+      style={{ '--orbit-radius': 'clamp(140px, 40vw, 440px)' } as React.CSSProperties}
+    >
       {/* Liquid Gooey Filters */}
       <svg className="absolute w-0 h-0 invisible">
         <defs>
@@ -99,7 +105,7 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
           >
             <ShieldCheck className={`w-3 h-3 ${isLocal ? 'text-purple-400' : 'text-gemigram-neon'}`} />
             <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/60">
-              {isLocal ? 'Sovereign Local Spine' : 'Direct Cloud Neural'}
+              {isLocal ? t('common.status.local_spine') : t('common.status.cloud_neural')}
             </span>
           </motion.div>
         )}
@@ -126,7 +132,7 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
 
           {/* Liquid Obsidian Mascot - The 11/10 Asset */}
           <motion.div 
-            className="relative w-80 h-[500px] flex flex-col items-center justify-center"
+            className="relative w-60 sm:w-80 h-[400px] sm:h-[500px] flex flex-col items-center justify-center"
             style={{ filter: "url(#liquid-gooey)" }}
             animate={{ 
               y: [0, -20, 0],
@@ -139,7 +145,7 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
           >
             {/* The Head - Liquid Singularity */}
             <motion.div 
-              className="relative w-32 h-36 mb-6 rounded-[50px] bg-black/90 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/5 flex items-center justify-center overflow-hidden"
+              className="relative w-24 sm:w-32 h-28 sm:h-36 mb-4 sm:mb-6 rounded-[40px] sm:rounded-[50px] bg-black/90 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-white/5 flex items-center justify-center overflow-hidden"
               style={{
                 background: 'linear-gradient(135deg, #050505 0%, #1a1a1a 100%)'
               }}
@@ -189,7 +195,7 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
             
             {/* Torso - Liquid Volume */}
             <motion.div 
-              className="relative w-56 h-80 rounded-[80px] bg-black/90 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(255,255,255,0.02)] overflow-hidden flex items-center justify-center"
+              className="relative w-40 sm:w-56 h-64 sm:h-80 rounded-[60px] sm:rounded-[80px] bg-black/90 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8),inset_0_0_30px_rgba(255,255,255,0.02)] overflow-hidden flex items-center justify-center"
               animate={{
                 borderRadius: state === 'Speaking' ? ["80px", "60px", "80px"] : "80px"
               }}
@@ -248,7 +254,9 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
                 'text-gemigram-neon bg-gemigram-neon animate-bounce'
               }`} />
               <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50">
-                {state === 'Disconnected' ? 'Standby Matrix' : `${state} Mode`}
+                {state === 'Disconnected' 
+                  ? t('common.status.standby') 
+                  : `${t(`common.status.${state.toLowerCase() === 'listening' ? 'listening' : state.toLowerCase() === 'thinking' ? 'thinking' : state.toLowerCase() === 'speaking' ? 'speaking' : 'executing'}` as const)} ${t('common.status.mode')}`}
               </span>
             </div>
             
@@ -258,7 +266,7 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
                 animate={{ opacity: 1 }}
                 className="text-[9px] font-mono text-emerald-400/60 uppercase tracking-widest pt-2"
               >
-                Output Amplitude: {(volume * 100).toFixed(1)}%
+                {t('common.status.amplitude')}: {(volume * 100).toFixed(1)}%
               </motion.div>
             )}
           </div>
@@ -268,36 +276,34 @@ export function DigitalEntity({ state, volume, agentName, linkType = 'stateless'
       {/* Sovereign Context Satellites */}
       <div className="absolute inset-0 pointer-events-none">
         {[
-          { label: 'Memory', icon: Brain, color: 'text-purple-400' },
-          { label: 'Neural', icon: Cpu, color: 'text-gemigram-neon' },
-          { label: 'Gemi', icon: Zap, color: 'text-emerald-400' },
-          { label: 'Identity', icon: ShieldCheck, color: 'text-blue-400' }
+          { id: 'memory', icon: Brain, color: 'text-purple-400' },
+          { id: 'neural', icon: Cpu, color: 'text-gemigram-neon' },
+          { id: 'gemi', icon: Zap, color: 'text-emerald-400' },
+          { id: 'identity', icon: ShieldCheck, color: 'text-blue-400' }
         ].map((sys, i) => (
           <motion.div
-            key={sys.label}
-            className="absolute top-1/2 left-1/2 w-32 h-14 rounded-full quantum-glass border border-white/5 flex items-center justify-center gap-3 group/sat"
+            key={sys.id}
+            className="absolute top-1/2 left-1/2 w-28 sm:w-32 h-12 sm:h-14 rounded-full quantum-glass border border-white/5 flex items-center justify-center gap-2 sm:gap-3 group/sat"
+            style={{ 
+              '--index': i,
+              left: '50%',
+              top: '50%',
+              transform: `translate(-50%, -50%) rotate(${i * 90}deg) translateY(var(--orbit-radius)) rotate(-${i * 90}deg)`
+            } as React.CSSProperties}
             animate={{ 
-              rotate: 360,
-              x: Math.cos(i * 90 * Math.PI / 180) * 440,
-              y: Math.sin(i * 90 * Math.PI / 180) * 440,
+              rotate: [0, 360],
             }}
             transition={{ 
               rotate: { duration: 40 + i * 10, repeat: Infinity, ease: "linear" },
-              x: { duration: 0 },
-              y: { duration: 0 }
             }}
           >
-            {/* Counter-rotation to keep labels upright */}
-            <motion.div 
-              className="flex items-center gap-2"
-              animate={{ rotate: -360 }}
-              transition={{ duration: 40 + i * 10, repeat: Infinity, ease: "linear" }}
-            >
-              <sys.icon className={`w-3.5 h-3.5 ${sys.color} opacity-60`} />
-              <span className="text-[9px] font-black tracking-[0.2em] uppercase text-white/30 group-hover/sat:text-white/70 transition-colors">
-                {sys.label}
+            {/* Counter-rotation to keep icons/text upright if needed or just keep them synced */}
+            <div className="flex items-center gap-2">
+              <sys.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${sys.color} opacity-60`} />
+              <span className="text-[8px] sm:text-[9px] font-black tracking-[0.2em] uppercase text-white/30 group-hover/sat:text-white/70 transition-colors">
+                {t(`common.status.satellite_${sys.id}` as 'common.status.satellite_memory' | 'common.status.satellite_neural' | 'common.status.satellite_gemi' | 'common.status.satellite_identity')}
               </span>
-            </motion.div>
+            </div>
           </motion.div>
         ))}
       </div>

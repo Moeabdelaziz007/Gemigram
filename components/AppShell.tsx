@@ -15,6 +15,7 @@ import { useVisualTier } from '@/lib/hooks/useVisualTier';
 import { useFirestoreSync } from '../lib/hooks/useFirestoreSync';
 import { useVoiceCommandRouter } from '../lib/hooks/useVoiceCommandRouter';
 import { useGemigramStore } from '@/lib/store/useGemigramStore';
+import { useTranslation } from '../hooks/useTranslation';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -27,6 +28,7 @@ export default function AppShell({ children }: AppShellProps) {
   const { tier, allowMotion, allowAmbientMotion, isMobile } = useVisualTier();
   const telemetry = useSystemTelemetry();
   const { linkType } = useGemigramStore();
+  const { t } = useTranslation();
   
   // Activate Sovereign Sync & Command Router
   useFirestoreSync();
@@ -52,7 +54,6 @@ export default function AppShell({ children }: AppShellProps) {
 
   const isLandingPage = pathname === '/';
   const currentView = getCurrentView();
-  const viewLabels: Record<string, string> = BRAND.labels.views;
   const shellGlassClass = isMobile ? 'glass-subtle' : 'glass-strong';
 
   if (isLandingPage) {
@@ -72,13 +73,8 @@ export default function AppShell({ children }: AppShellProps) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-gemigram-neon/30 bg-gemigram-neon/10">
-                  <GemigramLogo size={14} />
-                </div>
-                <div className="flex min-w-0 flex-col">
-                  <span className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-gemigram-neon leading-none">{BRAND.product.name}</span>
-                  <span className="truncate text-[8px] font-mono uppercase tracking-[0.1em] text-white/30">{BRAND.product.systemVersion}</span>
-                </div>
+                <GemigramLogo variant="full" size={32} className="shrink-0" />
+                <div className="hidden h-6 w-px bg-white/5 lg:block" />
               </div>
 
               <div className="hidden h-6 w-px bg-white/5 lg:block" />
@@ -87,7 +83,7 @@ export default function AppShell({ children }: AppShellProps) {
                 <div className="group flex cursor-pointer items-center gap-2">
                   <Cloud className="h-3.5 w-3.5 text-gemigram-neon/50 transition-colors group-hover:text-gemigram-neon" />
                   <div className="flex flex-col">
-                    <span className="text-[9px] font-bold text-white/40 transition-colors group-hover:text-white">Weather</span>
+                    <span className="text-[9px] font-bold text-white/40 transition-colors group-hover:text-white">{t('common.weather')}</span>
                     <span className="text-[10px] font-mono font-bold text-white">
                       {telemetry.weather.temp}°C · {telemetry.weather.condition}
                     </span>
@@ -97,28 +93,30 @@ export default function AppShell({ children }: AppShellProps) {
                 <div className="group flex cursor-pointer items-center gap-2 border-l border-white/5 pl-5">
                   <Activity className={`h-3.5 w-3.5 text-gemigram-neon/50 transition-colors group-hover:text-gemigram-neon ${allowAmbientMotion ? 'animate-pulse' : ''}`} />
                   <div className="flex flex-col">
-                    <span className="text-[9px] font-bold text-white/40 transition-colors group-hover:text-white">Network</span>
-                    <span className="text-[10px] font-mono font-bold text-gemigram-neon">{telemetry.latency}ms Latency</span>
+                    <span className="text-[9px] font-bold text-white/40 transition-colors group-hover:text-white">{t('common.network')}</span>
+                    <span className="text-[10px] font-mono font-bold text-gemigram-neon">{telemetry.latency}ms {t('common.latency')}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="hidden flex-1 flex-col items-center xl:flex">
-              <span className="mb-1 text-[9px] font-black uppercase tracking-[0.5em] text-white/20">Active_Sector</span>
+              <span className="mb-1 text-[9px] font-black uppercase tracking-[0.5em] text-white/20">{t('common.active_sector')}</span>
               <div className="flex items-center gap-2">
                 <span className={`h-1.5 w-1.5 rounded-full bg-gemigram-neon ${allowAmbientMotion ? 'animate-pulse' : ''}`} />
-                <span className="text-xs font-black uppercase tracking-[0.3em] text-white">{viewLabels[currentView]}</span>
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-white">
+                  {t(`common.nav.${currentView}` as any)}
+                </span>
               </div>
             </div>
 
             <div className="flex items-center gap-3 sm:gap-5">
               <div className="hidden items-center gap-2 border-r border-white/5 pr-4 md:flex">
-                <button className="group relative rounded-xl p-2">
+                <button className="group relative rounded-xl p-2" aria-label={t('common.signal_status')} title={t('common.signal_status')}>
                   <div className="absolute right-1 top-1 z-10 h-2 w-2 rounded-full border-2 border-bg-primary bg-gemigram-neon" />
                   <Signal className="h-4 w-4 text-white/30 transition-colors group-hover:text-white" />
                 </button>
-                <button className="group rounded-xl p-2">
+                <button className="group rounded-xl p-2" aria-label={t('common.system_activity')} title={t('common.system_activity')}>
                   <Activity className="h-4 w-4 text-white/30 transition-colors group-hover:text-white" />
                 </button>
                 <div className="rounded-xl p-2"><ThemeToggle /></div>
@@ -140,7 +138,7 @@ export default function AppShell({ children }: AppShellProps) {
                     className="relative h-10 w-10 cursor-pointer overflow-hidden rounded-xl border border-gemigram-neon/30 bg-gradient-to-br from-gemigram-neon/20 to-transparent p-0.5 transition-colors hover:border-gemigram-neon"
                   >
                     <div className="h-full w-full overflow-hidden rounded-[10px] bg-black/40">
-                      <img src={user?.photoURL || '/avatars/default.png'} alt="User" className="h-full w-full object-cover" />
+                      <img src={user?.photoURL || BRAND.assets.avatar.default} alt={t('marketplace.avatar')} className="h-full w-full object-cover" />
                     </div>
                     <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-bg-primary bg-gemigram-neon" />
                   </motion.div>
@@ -152,14 +150,14 @@ export default function AppShell({ children }: AppShellProps) {
                           <img src={user?.photoURL || '/avatars/default.png'} alt="" className="h-full w-full rounded-full object-cover" />
                         </div>
                         <div className="flex min-w-0 flex-col overflow-hidden">
-                          <span className="truncate text-xs font-black text-white">{user?.displayName || 'Anonymous Architect'}</span>
-                          <span className="truncate text-[9px] uppercase text-gemigram-neon/60 font-mono">{user?.email || 'OFFLINE'} · {linkType || 'LOCAL'}</span>
+                          <span className="truncate text-xs font-black text-white">{user?.displayName || t('common.anonymous_architect')}</span>
+                          <span className="truncate text-[9px] uppercase text-gemigram-neon/60 font-mono">{user?.email || t('common.offline')} · {linkType || 'LOCAL'}</span>
                         </div>
                       </div>
 
                       <div className="space-y-3">
                         <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/5 bg-white/5 py-2.5 text-[9px] font-black uppercase tracking-widest text-white/40 transition-all hover:bg-white/10 hover:text-white">
-                          Nexus_Profile
+                          {t('common.nexus_profile')}
                         </button>
                         <button
                           onClick={async () => {
@@ -172,7 +170,7 @@ export default function AppShell({ children }: AppShellProps) {
                           }}
                           className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 py-2.5 text-[9px] font-black uppercase tracking-widest text-red-400 transition-all hover:bg-red-500 hover:text-black"
                         >
-                          Terminate_Session
+                          {t('common.terminate_session')}
                         </button>
                       </div>
                     </div>

@@ -10,6 +10,7 @@ import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { Agent } from '@/lib/store/slices/createAgentSlice';
 import { useAuth } from '@/components/Providers';
 import { installMarketplaceAgent } from '@/lib/data-access/gemigramRepository';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const SEED_AGENTS: Agent[] = [
   {
@@ -60,6 +61,7 @@ export default function NeuralMarketplace() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
   const [installingId, setInstallingId] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const userAgents = useGemigramStore((state) => state.agents);
   const addAgentToStore = (agent: Agent) => {
@@ -88,7 +90,7 @@ export default function NeuralMarketplace() {
         
         const snapshot = await getDocs(q);
         const fetched = snapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .map(doc => ({ id: doc.id, ...(doc.data() as Record<string, unknown>) }))
           .filter(a => !(a as any).ownerId) as Agent[];
 
         // Merge with seed agents if they match category or category is all
@@ -123,7 +125,7 @@ export default function NeuralMarketplace() {
 
   const handleInstall = async (template: Agent) => {
     if (!user) {
-      alert('Authentication required for neural manifestation.');
+      alert(t('common.error_auth_required'));
       return;
     }
 
@@ -135,7 +137,7 @@ export default function NeuralMarketplace() {
       await new Promise(r => setTimeout(r, 800));
     } catch (error) {
       console.error('Installation Failed:', error);
-      alert('Neural link interrupted. Please try again.');
+      alert(t('common.error_install_failed'));
     } finally {
       setInstallingId(null);
     }
@@ -155,23 +157,24 @@ export default function NeuralMarketplace() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-2 text-cyan-500 mb-2"
             >
-              <Sparkles className="w-5 h-5 animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-widest">Sovereign Registry</span>
+              <Sparkles aria-hidden="true" className="w-5 h-5 animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-widest">{t('marketplace.registry')}</span>
             </motion.div>
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 italic">
-              NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">MARKETPLACE</span>
+              NEURAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">{t('marketplace.marketplace')}</span>
             </h1>
             <p className="text-zinc-500 max-w-xl text-lg">
-              Discover and deploy specialized intelligence entities to optimize your neural link.
+              {t('marketplace.tagline')}
             </p>
           </div>
 
           <div className="flex flex-col gap-4">
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-cyan-400 transition-colors" />
+              <Search aria-hidden="true" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-cyan-400 transition-colors" />
               <input 
                 type="text"
-                placeholder="Search entities..."
+                placeholder={t('marketplace.search_placeholder')}
+                aria-label={t('marketplace.search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="bg-zinc-900/50 border border-zinc-800 rounded-xl pl-12 pr-6 py-3 w-full md:w-80 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all"
@@ -185,13 +188,14 @@ export default function NeuralMarketplace() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
+              aria-pressed={activeCategory === cat.id}
               className={`px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest border transition-all whitespace-nowrap ${
                 activeCategory === cat.id 
                 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(6,182,212,0.4)]' 
                 : 'bg-zinc-900 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300'
               }`}
             >
-              {cat.name}
+              {t(`marketplace.category_${cat.id}`)}
             </button>
           ))}
         </div>
@@ -221,10 +225,10 @@ export default function NeuralMarketplace() {
         )}
 
         {!loading && filteredAgents.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <Box className="w-12 h-12 text-zinc-800 mb-4" />
-            <h2 className="text-xl font-bold text-zinc-400 mb-2">No entities found</h2>
-            <p className="text-zinc-600">Try adjusting your filters or search terms.</p>
+          <div className="flex flex-col items-center justify-center py-24 text-center" role="status" aria-live="polite">
+            <Box aria-hidden="true" className="w-12 h-12 text-zinc-800 mb-4" />
+            <h2 className="text-xl font-bold text-zinc-400 mb-2">{t('marketplace.no_results')}</h2>
+            <p className="text-zinc-600">{t('marketplace.try_adjusting')}</p>
           </div>
         )}
       </main>

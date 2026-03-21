@@ -2,7 +2,7 @@ export const BRAND = {
   product: {
     name: 'Gemigram',
     platformName: 'Gemigram AIOS',
-    tagline: 'The Voice-Native AI Social Nexus',
+    tagline: 'Sovereign Intelligence Orchestration System',
     systemVersion: 'OS_Sovereign.v3.0',
   },
   subProducts: {
@@ -14,8 +14,8 @@ export const BRAND = {
   },
   naming: {
     aether: {
-      role: 'legacy_alias',
-      note: 'Gemigram is retained only for backwards compatibility in code exports and storage keys.',
+      role: 'architectural_framework',
+      note: 'Aether is the underlying neural spine. Gemigram is the Sovereign Interface.',
     },
   },
   labels: {
@@ -43,15 +43,19 @@ export const BRAND = {
   assets: {
     primaryLogo: {
       path: '/assets/branding/logo.png',
-      usage: 'Primary wordmark/logo for app shell and brand surfaces (canonical key: primaryLogo).',
+      usage: 'Primary wordmark/logo for app shell and brand surfaces.',
     },
     icon: {
       path: '/assets/branding/logo.png',
-      usage: 'Compact icon for avatars, favicons, and constrained UI elements (canonical key: icon).',
+      usage: 'Compact Sovereign icon for avatars and constrained UI.',
     },
     forgeMark: {
-      path: '/assets/branding/forge-logo.png',
-      usage: 'Gemigram Forge mark used for forge workflows and forge-themed logo variants (canonical key: forgeMark).',
+      path: '/assets/branding/logo.png', // Unified for now
+      usage: 'Gemigram Forge mark.',
+    },
+    avatar: {
+      default: '/avatars/default.png',
+      usage: 'Default placeholder for neural entities.',
     },
   },
 } as const;
