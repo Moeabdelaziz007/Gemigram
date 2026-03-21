@@ -62,7 +62,7 @@ export async function getAgentAvatar(agentId: string): Promise<string> {
     const avatarRef = ref(storage, `${AVATAR_PATH}/${agentId}.png`);
     const url = await getDownloadURL(avatarRef);
     return url;
-  } catch (error) {
+  } catch (_error) {
     console.warn('[AvatarStorage] Avatar not found, using fallback:', agentId);
     return '/aether-entity.png';
   }

@@ -130,7 +130,7 @@ async function handleDesktopInstall(): Promise<void> {
 /**
  * Show iOS installation instructions
  */
-export function showIOSInstallInstructions(agentName: string): void {
+export function showIOSInstallInstructions(_agentName: string): void {
   // This would typically show a modal/dialog
   /* 
   console.log(`

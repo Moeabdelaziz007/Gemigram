@@ -7,12 +7,7 @@
 
 import { useGemigramStore } from '../store/useGemigramStore';
 
-interface SynthesisOptions {
-  voiceId?: string;
-  stability?: number;
-  similarityBoost?: number;
-  provider?: 'google' | 'browser';
-}
+
 
 export class SynthesisEngine {
   /**

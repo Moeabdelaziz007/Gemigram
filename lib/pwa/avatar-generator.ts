@@ -5,12 +5,6 @@ import { Agent } from '@/lib/store/useGemigramStore';
 /**
  * Avatar Styles from DiceBear
  */
-const DICEBEAR_STYLES = [
-  'bottts-neutral',  // Robots (Default)
-  'shapes',          // Geometric shapes
-  'identicon',       // Unique patterns
-  'rings',           // Rings
-];
 
 /**
  * Generate agent avatar URL using DiceBear API

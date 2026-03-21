@@ -7,7 +7,7 @@ export interface SwarmSlice extends SwarmSliceShape {
   isSwarmActive?: boolean;
 }
 
-export const createSwarmSlice: StateCreator<SwarmSlice> = (set, get) => ({
+export const createSwarmSlice: StateCreator<SwarmSlice> = (set, _get) => ({
   activeSwarm: null,
   swarmHistory: [],
   isSwarmThinking: false,

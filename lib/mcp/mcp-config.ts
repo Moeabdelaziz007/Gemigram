@@ -171,8 +171,7 @@ export class MCPConfigManager {
    */
   getDiscoveredServers(): DiscoveredServer[] {
     // Check if cache is stale
-    const now = Date.now();
-    
+    // Check if cache is stale
     return [...this.discoveredServers];
   }
   
@@ -212,7 +211,7 @@ export class MCPConfigManager {
     profileName: string,
     server: DiscoveredServer
   ): MCPConnectionProfile {
-    const mcpServer: MCPServer = {
+    const _mcpServer: MCPServer = {
       id: server.id,
       providerId: server.providerId,
       name: server.name,
@@ -271,7 +270,7 @@ export class MCPConfigManager {
       if (config.credentials) {
         // Clear existing and import new
         apiCredentialsManager.clearAll();
-        for (const cred of config.credentials) {
+        for (const _cred of config.credentials) {
           // Note: This is simplified. In real migration, we'd handle encryption keys.
           // For now, we assume the import is for the same environment.
           // This would actually need a low-level set method in apiCredentialsManager

@@ -1,4 +1,5 @@
-import { Page, test, expect } from '@playwright/test';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Page } from '@playwright/test';
 
 /**
  * Mocks the Web Speech API (SpeechRecognition and SpeechSynthesis)

@@ -30,6 +30,7 @@ export function useLiveAPI(apiKey: string, onFunctionCall: (call: ToolResult) =>
   const lastConnectArgsRef = useRef<{ systemInstruction?: string; voiceName?: string; tools?: Tool[] }>({});
   const audioQueueRef = useRef<string[]>([]);
   const isPlayingRef = useRef(false);
+  const intentionalDisconnectRef = useRef(false);
 
   // 1. Utility Callbacks (Top-Level)
   const addLog = useCallback((text: string, type: 'system' | 'user' | 'agent' | 'tool') => {
